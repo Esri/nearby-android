@@ -34,7 +34,25 @@ captures/
 
 # Intellij
 *.iml
-.idea/workspace.xml
+.idea/
+
+# StarUML project files
+*.mdj
+
+# SublimeText
+/*.sublime-project
+*.sublime-workspace
 
 # Keystore files
 *.jks
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
