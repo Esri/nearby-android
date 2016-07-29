@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:background="@drawable/touch_feedback"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+    <Button
+            android:id="@+id/categoryBtn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+
+
+    <TextView
+            android:layout_toEndOf="@id/categoryBtn"
+            android:id="@+id/categoryName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:text="category"
+            android:gravity="center_vertical"/>
+</RelativeLayout>
