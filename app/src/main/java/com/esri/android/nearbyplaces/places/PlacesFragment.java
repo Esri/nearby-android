@@ -77,6 +77,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
   @Override
   public void onCreate(@NonNull Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
+    // retain this fragment
+    setRetainInstance(true);
     List<Place> placeList = new ArrayList<>();
     mPlaceItemListener = new OnItemClickListener() {
       @Override public void onItemClick(Place p ) {
@@ -121,7 +123,10 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
     mPresenter.start();
 
   }
-
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+  }
 
   @Override public void showNearbyPlaces(List<Place> places) {
     mPlaceAdapter.setPlaces(places);

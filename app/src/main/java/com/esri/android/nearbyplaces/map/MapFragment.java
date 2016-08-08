@@ -89,6 +89,8 @@ public class MapFragment extends Fragment implements  MapContract.View {
   public void onCreate(@NonNull Bundle savedInstance){
 
     super.onCreate(savedInstance);
+    // retain this fragment
+    setRetainInstance(true);
 
   }
 
@@ -149,7 +151,12 @@ public class MapFragment extends Fragment implements  MapContract.View {
       throw new ClassCastException(context.toString()
           + " must implement PlacesListener");
     }
+  }
 
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+    // Always call the superclass so it can save the view hierarchy state
+    super.onSaveInstanceState(savedInstanceState);
   }
   /**
    * Attach the viewpoint change listener

@@ -43,9 +43,11 @@ import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
+import com.esri.android.nearbyplaces.filter.FilterItem;
 import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,8 +58,10 @@ public class PlacesActivity extends AppCompatActivity
 
   private static final String TAG = PlacesActivity.class.getSimpleName();
   private static final int PERMISSION_REQUEST_LOCATION = 0;
+  private static final String CURRENT_FILTERS = "current_filters";
   private CoordinatorLayout mMainLayout;
   private PlacesPresenter mPlacePresenter;
+  private ArrayList<String> mCurrentFilters;
 
 
   @Override
@@ -85,6 +89,14 @@ public class PlacesActivity extends AppCompatActivity
     return super.onCreateOptionsMenu(menu);
   }
 
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+    // Save the user's current filters
+    savedInstanceState.putStringArrayList(CURRENT_FILTERS, mCurrentFilters);
+
+    // Always call the superclass so it can save the view hierarchy state
+    super.onSaveInstanceState(savedInstanceState);
+  }
   /**
    * Set up toolbar
    */

@@ -106,6 +106,13 @@ public class MapActivity extends AppCompatActivity implements PlaceListener {
     inflater.inflate(R.menu.map_menu, menu);
     return super.onCreateOptionsMenu(menu);
   }
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+    // Always call the superclass so it can save the view hierarchy state
+    super.onSaveInstanceState(savedInstanceState);
+  }
+
+
   private void setUpToolbar(){
     Toolbar toolbar = (Toolbar) findViewById(R.id.map_toolbar);
     setSupportActionBar(toolbar);
