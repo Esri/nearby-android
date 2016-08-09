@@ -26,10 +26,7 @@ package com.esri.android.nearbyplaces.map;
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
-import com.esri.android.nearbyplaces.places.PlaceFilterType;
-import com.esri.android.nearbyplaces.places.PlacesContract;
 import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.mapping.view.Graphic;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 

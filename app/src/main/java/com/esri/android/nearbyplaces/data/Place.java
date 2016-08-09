@@ -48,13 +48,13 @@ public final class Place {
 
   public Place(String name, @Nullable String type, @Nullable Point location, @Nullable String address, @Nullable String URL, @Nullable String phone,
       @Nullable String bearing) {
-    this.mName = name;
-    this.mType = type;
-    this.mLocation = location;
-    this.mAddress = address;
-    this.mURL = URL;
-    this.mPhone = phone;
-    this.mBearing = bearing;
+    mName = name;
+    mType = type;
+    mLocation = location;
+    mAddress = address;
+    mURL = URL;
+    mPhone = phone;
+    mBearing = bearing;
   }
 
   public String getName() {

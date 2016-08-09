@@ -25,7 +25,6 @@
 package com.esri.android.nearbyplaces.map;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
@@ -83,7 +82,7 @@ public class MapPresenter implements MapContract.Presenter {
     Place foundPlace = null;
     List<Place> foundPlaces =mLocationService.getPlacesFromRepo();
     for (Place place : foundPlaces){
-      if ((p).equals(place.getLocation())){
+      if (p.equals(place.getLocation())){
         foundPlace = place;
         break;
       }
@@ -109,4 +108,5 @@ public class MapPresenter implements MapContract.Presenter {
     }
 
   }
+
 }

@@ -24,16 +24,12 @@
 
 package com.esri.android.nearbyplaces.places;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,8 +40,6 @@ import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
-import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
-import com.esri.arcgisruntime.mapping.view.MapView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +76,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
     List<Place> placeList = new ArrayList<>();
     mPlaceItemListener = new OnItemClickListener() {
       @Override public void onItemClick(Place p ) {
-        Log.i(TAG, "Place clicked " + p.toString());
+        Log.i(TAG, "Place clicked " + p);
         mCallback.showDetail(p);
       }
     };
@@ -112,7 +106,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
     try {
       mCallback = (PlaceListener) context;
     } catch (ClassCastException e) {
-      throw new ClassCastException(context.toString()
+      throw new ClassCastException(context
           + " must implement PlacesListener");
     }
   }
@@ -158,10 +152,11 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
     mPresenter = checkNotNull(presenter);
   }
 
+
   public  class PlacesAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private List<Place> mPlaces = Collections.emptyList();
-    private  OnItemClickListener listener;
+    private final OnItemClickListener listener;
     public PlacesAdapter(Context context, int resource, List<Place> places, OnItemClickListener listener){
           this.listener = listener;
           mPlaces = places;

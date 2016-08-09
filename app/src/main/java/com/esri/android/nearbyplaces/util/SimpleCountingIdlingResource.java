@@ -25,6 +25,7 @@
 package com.esri.android.nearbyplaces.util;
 
 import android.support.test.espresso.IdlingResource;
+import android.support.test.espresso.IdlingResource.ResourceCallback;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

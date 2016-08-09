@@ -23,8 +23,6 @@
  */
 package com.esri.android.nearbyplaces.filter;
 
-import android.media.Image;
-
 /**
  * Created by sand8529 on 7/28/16.
  */
@@ -51,7 +49,7 @@ public class FilterItem {
   }
 
   public void setIconId(int iconId) {
-    this.mIconId = iconId;
+    mIconId = iconId;
   }
 
   public String getTitle() {

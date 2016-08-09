@@ -148,7 +148,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
     try {
       mCallback = (PlaceListener) context;
     } catch (ClassCastException e) {
-      throw new ClassCastException(context.toString()
+      throw new ClassCastException(context
           + " must implement PlacesListener");
     }
   }
@@ -200,6 +200,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
       mLocationDisplay.stop();
     }
     Log.i(TAG, "Map fragment onPause " + "and location display is " + mLocationDisplay.isStarted());
+
   }
 
   /**
@@ -221,7 +222,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
 
     // Create a graphic for every place
     for (Place place : places){
-      BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(this.getActivity(),getDrawableForPlace(place)) ;
+      BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(place)) ;
       final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
       Point graphicPoint = place.getLocation();
       Graphic graphic = new Graphic(graphicPoint, pinSymbol);
@@ -275,14 +276,14 @@ public class MapFragment extends Fragment implements  MapContract.View {
     });
     // Change the pin icon
     if (mCenteredGraphic != null){
-      BitmapDrawable oldPin = (BitmapDrawable) ContextCompat.getDrawable(this.getActivity(),getDrawableForPlace(mCenteredPlace)) ;
+      BitmapDrawable oldPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(mCenteredPlace)) ;
       mCenteredGraphic.setSymbol(new PictureMarkerSymbol(oldPin));
     }
     List<Graphic> graphics = mGraphicOverlay.getGraphics();
     for (Graphic g : graphics){
       if (g.getGeometry().equals(p.getLocation())){
         mCenteredGraphic = g;
-        BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(this.getActivity(),getPinForCenterPlace(p)) ;
+        BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getPinForCenterPlace(p)) ;
         final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
         g.setSymbol(pinSymbol);
         break;

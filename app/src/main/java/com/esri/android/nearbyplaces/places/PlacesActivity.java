@@ -31,19 +31,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.*;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.*;
-import android.widget.*;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
-import com.esri.android.nearbyplaces.filter.FilterItem;
+import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 
@@ -54,7 +51,7 @@ import java.util.List;
  * Created by sand8529 on 6/16/16.
  */
 public class PlacesActivity extends AppCompatActivity
-    implements ActivityCompat.OnRequestPermissionsResultCallback, PlaceListener{
+    implements ActivityCompat.OnRequestPermissionsResultCallback, PlaceListener, FilterContract.FilterView{
 
   private static final String TAG = PlacesActivity.class.getSimpleName();
   private static final int PERMISSION_REQUEST_LOCATION = 0;
@@ -85,7 +82,7 @@ public class PlacesActivity extends AppCompatActivity
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu items for use in the action bar
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.menu_main, menu);
+    inflater.inflate(menu.menu_main, menu);
     return super.onCreateOptionsMenu(menu);
   }
 
@@ -115,6 +112,8 @@ public class PlacesActivity extends AppCompatActivity
          }
          if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.filter))){
            FilterDialogFragment dialogFragment = new FilterDialogFragment();
+           FilterPresenter filterPresenter = new FilterPresenter();
+           dialogFragment.setPresenter(filterPresenter);
            dialogFragment.show(getFragmentManager(),"dialog_fragment");
 
          }
@@ -124,7 +123,7 @@ public class PlacesActivity extends AppCompatActivity
    }
 
   private void showMap(MenuItem item){
-    Intent intent = new Intent(PlacesActivity.this, MapActivity.class);
+    Intent intent = new Intent(this, MapActivity.class);
     startActivity(intent);
   }
 
@@ -169,15 +168,15 @@ public class PlacesActivity extends AppCompatActivity
             public void onClick(View view) {
               // Request the permission
               ActivityCompat.requestPermissions(PlacesActivity.this,
-                  new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                  new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},
                   PERMISSION_REQUEST_LOCATION);
             }
           }).show();
 
     } else {
       // Request the permission. The result will be received in
-      // onRequestPermissionResult().
-      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+      // onRequestPermissionResult()
+      ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},
           PERMISSION_REQUEST_LOCATION);
     }
   }
@@ -223,5 +222,11 @@ public class PlacesActivity extends AppCompatActivity
 
   @Override public void onMapScroll() {
 
+  }
+
+  @Override public void onFilterDialogClose(boolean applyFilter) {
+    if (applyFilter){
+      mPlacePresenter.start();
+    }
   }
 }

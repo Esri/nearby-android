@@ -16,10 +16,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.any;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.

@@ -1,9 +1,9 @@
 package com.esri.android.nearbyplaces.data;
 
 import android.support.annotation.NonNull;
+import com.esri.android.nearbyplaces.data.PlacesRepository.LoadPlacesCallback;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
-import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.google.common.collect.Lists;
 
 import java.util.LinkedHashMap;
@@ -30,7 +30,7 @@ public class FakePlaceDataSource implements PlacesRepository {
 
 
   @Override public void getPlaces( @NonNull LoadPlacesCallback callback) {
-    callback.onPlacesLoaded(Lists.<Place>newArrayList(PLACES_SERVICE_DATA.values()));
+    callback.onPlacesLoaded(Lists.newArrayList(PLACES_SERVICE_DATA.values()));
   }
 
   @Override public Place getPlaceDetail(String placeName) {

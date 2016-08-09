@@ -23,7 +23,6 @@
  */
 package com.esri.android.nearbyplaces.data;
 
-import android.content.Context;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.filter.FilterItem;
 
@@ -35,7 +34,7 @@ import java.util.List;
  */
 public class CategoryKeeper {
     private static CategoryKeeper instance = null;
-    private ArrayList<FilterItem> categories = new ArrayList<>();
+    private final ArrayList<FilterItem> categories = new ArrayList<>();
 
     private CategoryKeeper(){
       categories.add(new FilterItem("Bar", R.drawable.ic_local_bar_black_24dp, true));
@@ -49,10 +48,26 @@ public class CategoryKeeper {
       if (instance == null){
         instance = new CategoryKeeper();
       }
-      return  instance;
+      return instance;
     }
 
     public ArrayList<FilterItem> getCategories(){
       return categories;
+    }
+
+    public List<String> getSelectedTypes(){
+        List<String> selectedTypes = new ArrayList<>();
+        for (FilterItem item : categories){
+            if (!item.getSelected()){
+                // Because places with food are sub-categorized by
+                // food type, add them to the filter list.
+                if (item.getTitle().equalsIgnoreCase("Food")){
+                    selectedTypes.addAll(CategoryHelper.foodTypes);
+                }else {
+                    selectedTypes.add(item.getTitle());
+                }
+            }
+        }
+        return selectedTypes;
     }
 }

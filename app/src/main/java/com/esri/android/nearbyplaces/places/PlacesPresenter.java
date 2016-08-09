@@ -27,8 +27,6 @@ package com.esri.android.nearbyplaces.places;
 import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
-import com.esri.android.nearbyplaces.map.MapContract;
-import com.esri.android.nearbyplaces.mapplace.MapPlaceContract;
 
 import java.util.List;
 
@@ -61,4 +59,5 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   @Override public void setPlacesNearby(List<Place> places) {
     mPlacesView.showNearbyPlaces(places);
   }
+
 }

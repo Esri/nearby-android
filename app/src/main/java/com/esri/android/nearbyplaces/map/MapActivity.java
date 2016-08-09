@@ -41,7 +41,9 @@ import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
+import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 
@@ -50,7 +52,7 @@ import java.util.List;
 /**
  * Created by sand8529 on 7/27/16.
  */
-public class MapActivity extends AppCompatActivity implements PlaceListener {
+public class MapActivity extends AppCompatActivity implements PlaceListener, FilterContract.FilterView {
 
   private BottomSheetBehavior bottomSheetBehavior;
   private FrameLayout mBottomSheet;
@@ -72,7 +74,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener {
 
     AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.map_appbar);
 
-    // Sets the outline of the shadow to the background color
+    // Sets the outline of the toolbar shadow to the background color
     // of the layout (transparent, in this case)
     appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
 
@@ -103,7 +105,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener {
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu items for use in the action bar
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.map_menu, menu);
+    inflater.inflate(menu.map_menu, menu);
     return super.onCreateOptionsMenu(menu);
   }
   @Override
@@ -125,6 +127,8 @@ public class MapActivity extends AppCompatActivity implements PlaceListener {
              }
              if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.filter))){
                FilterDialogFragment dialogFragment = new FilterDialogFragment();
+               FilterPresenter filterPresenter = new FilterPresenter();
+               dialogFragment.setPresenter(filterPresenter);
                dialogFragment.show(getFragmentManager(),"dialog_fragment");
 
              }
@@ -134,7 +138,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener {
   }
 
   private void showList(){
-    Intent intent = new Intent(MapActivity.this, PlacesActivity.class);
+    Intent intent = new Intent(this, PlacesActivity.class);
 
     startActivity(intent);
   }
@@ -238,5 +242,16 @@ public class MapActivity extends AppCompatActivity implements PlaceListener {
       routeItem.setVisible(true);
     }
     return super.onPrepareOptionsMenu(menu);
+  }
+
+  /**
+   * When user presses 'Apply' button in filter dialong,
+   * re-filter results.
+   * @param applyFilter - boolean
+   */
+  @Override public void onFilterDialogClose(boolean applyFilter) {
+    if (applyFilter){
+      mMapPresenter.start();
+    }
   }
 }

@@ -25,16 +25,16 @@ package com.esri.android.nearbyplaces.data;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.esri.android.nearbyplaces.data.PlacesServiceApi.PlacesServiceCallback;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.location.LocationDataSource;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.esri.arcgisruntime.tasks.geocode.LocatorInfo;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 /**
@@ -56,7 +56,7 @@ public class LocationService implements PlacesServiceApi {
     return instance;
   }
 
-  private Map<String,Place> mappedPlaces = new HashMap<>();
+  private final Map<String,Place> mappedPlaces = new HashMap<>();
 
 
   public static void configureService(@NonNull String locatorUrl, @NonNull Runnable doneListener){
@@ -75,40 +75,12 @@ public class LocationService implements PlacesServiceApi {
     String searchText = "";
     provisionOutputAttributes(parameters);
     provisionCategories(parameters);
-    final ListenableFuture<List<GeocodeResult>> results = mLocatorTask.geocodeAsync(searchText, parameters);
+    final ListenableFuture<List<GeocodeResult>> results = mLocatorTask
+        .geocodeAsync(searchText, parameters);
     Log.i(TAG,"Geocode search started...");
-    results.addDoneListener(new Runnable() {
-      @Override public void run() {
-
-        try {
-          List<GeocodeResult> data = results.get();
-          List<Place> places = new ArrayList<Place>();
-          for (GeocodeResult r: data){
-            Map<String,Object> attributes = r.getAttributes();
-            String address = (String) attributes.get("Place_addr");
-            String name = (String) attributes.get("PlaceName");
-            String phone = (String) attributes.get("Phone");
-            String url = (String) attributes.get("URL");
-            String type = (String) attributes.get("Type");
-            Point point = r.getDisplayLocation();
-//            Set<String> keys = attributes.keySet();
-//            for (String k: keys){
-//              Log.i("ATTR", k + " " + attributes.get(k).toString());
-//            }
-
-            Place place = new Place(name, type, point, address, url,phone,null);
-            Log.i("PLACE", place.toString());
-            places.add(place);
-            mappedPlaces.put(name,place);
-          }
-          callback.onLoaded(places);
-
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-    });
+    results.addDoneListener(new GeocodeProcessor(results, callback));
   }
+
 
   @Override public Place getPlaceDetail(String placeName) {
     Place foundPlace = null;
@@ -121,7 +93,7 @@ public class LocationService implements PlacesServiceApi {
   }
 
   @Override public List<Place> getPlacesFromRepo() {
-    return new ArrayList<>(mappedPlaces.values());
+    return filterPlaces(new ArrayList<>(mappedPlaces.values()));
   }
 
   public LocatorInfo getLocatorInfo(){
@@ -145,5 +117,60 @@ public class LocationService implements PlacesServiceApi {
     outputAttributes.clear();
     outputAttributes.add("*");
     return parameters;
+  }
+
+  private List<Place> filterPlaces(List<Place> foundPlaces){
+    List<Place> placesToRemove = new ArrayList<>();
+    CategoryKeeper keeper = CategoryKeeper.getInstance();
+    List<String> selectedTypes = keeper.getSelectedTypes();
+    if (selectedTypes.isEmpty()){
+      return foundPlaces;
+    }else{
+      for (Place p: foundPlaces) {
+        for (String filter : selectedTypes){
+          if (filter.equalsIgnoreCase(p.getType())){
+            placesToRemove.add(p);
+          }
+        }
+      }
+    }
+    if (!placesToRemove.isEmpty()){
+      foundPlaces.removeAll(placesToRemove);
+    }
+    return foundPlaces;
+  }
+
+  private class GeocodeProcessor implements Runnable{
+    private final ListenableFuture<List<GeocodeResult>> mResults;
+    private final PlacesServiceCallback mCallback;
+    public GeocodeProcessor(ListenableFuture<List<GeocodeResult>> results,final PlacesServiceCallback callback ){
+      mCallback = callback;
+      mResults = results;
+    }
+    @Override public void run() {
+
+      try {
+        List<GeocodeResult> data = mResults.get();
+        List<Place> places = new ArrayList<Place>();
+        for (GeocodeResult r: data){
+          Map<String,Object> attributes = r.getAttributes();
+          String address = (String) attributes.get("Place_addr");
+          String name = (String) attributes.get("PlaceName");
+          String phone = (String) attributes.get("Phone");
+          String url = (String) attributes.get("URL");
+          String type = (String) attributes.get("Type");
+          Point point = r.getDisplayLocation();
+
+          Place place = new Place(name, type, point, address, url,phone,null);
+          Log.i("PLACE", place.toString());
+          places.add(place);
+          mappedPlaces.put(name,place);
+
+        }
+        mCallback.onLoaded(filterPlaces(places));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
   }
 }

@@ -1,10 +1,8 @@
 package com.esri.android.nearbyplaces;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
-import com.esri.android.nearbyplaces.data.Injection;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
 import com.esri.android.nearbyplaces.places.PlacesActivity;

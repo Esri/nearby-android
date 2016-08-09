@@ -24,7 +24,6 @@
 package com.esri.android.nearbyplaces.data;
 
 import android.support.annotation.NonNull;
-import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 
 import java.util.List;
 

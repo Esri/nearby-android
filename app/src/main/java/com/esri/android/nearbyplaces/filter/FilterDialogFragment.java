@@ -23,19 +23,17 @@
  */
 package com.esri.android.nearbyplaces.filter;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.*;
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.CategoryKeeper;
-import com.esri.arcgisruntime.mapping.view.MapView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,7 @@ import java.util.List;
 public class FilterDialogFragment extends DialogFragment implements FilterContract.View {
   private FilterContract.Presenter mPresenter;
   private FilterItemAdapter mFilterItemAdapter;
-
+  private FilterContract.FilterView mFilterView;
 
   public FilterDialogFragment(){}
 
@@ -58,13 +56,10 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     getDialog().setTitle(R.string.filter_dialog);
     View view = inflater.inflate(R.layout.place_filter, container,false);
     ListView listView = (ListView) view.findViewById(R.id.filterView);
-    CategoryKeeper keeper = CategoryKeeper.getInstance();
-    ArrayList<FilterItem> localCategories = keeper.getCategories();
-
-    for (FilterItem fi : localCategories){
-      Log.i("ADATPER",fi.getTitle() + " " + fi.getSelected());
-    }
-    mFilterItemAdapter = new FilterItemAdapter(getActivity(), localCategories);
+    List<FilterItem> filters = mPresenter.getFilteredCategories();
+    ArrayList<FilterItem> arrayList = new ArrayList<>();
+    arrayList.addAll(filters);
+    mFilterItemAdapter = new FilterItemAdapter(getActivity(), arrayList);
     listView.setAdapter(mFilterItemAdapter);
 
     // Listen for Cancel/Apply
@@ -77,6 +72,10 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     Button apply = (Button) view.findViewById(R.id.btnApply);
     apply.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
+        Activity activity = getActivity();
+        if (activity instanceof FilterContract.FilterView){
+          ((FilterContract.FilterView) activity).onFilterDialogClose(true);
+        }
         dismiss();
       }
     });
@@ -87,15 +86,14 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
   public void onCreate(Bundle savedBundleState){
     super.onCreate(savedBundleState);
     setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Material_Light_Dialog);
-  }
-
-  @Override public List<FilterItem> getFilteredCategories() {
-    return null;
+    mPresenter.start();
   }
 
   @Override public void setPresenter(FilterContract.Presenter presenter) {
     mPresenter = presenter;
   }
+
+
 
   public class FilterItemAdapter extends ArrayAdapter<FilterItem>{
     public FilterItemAdapter(Context context, ArrayList<FilterItem> items){

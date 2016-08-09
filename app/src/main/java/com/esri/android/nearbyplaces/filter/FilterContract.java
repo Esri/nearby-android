@@ -34,9 +34,12 @@ import java.util.List;
 public interface FilterContract {
   interface View extends BaseView<Presenter> {
 
-    List<FilterItem> getFilteredCategories();
   }
   interface Presenter extends BasePresenter {
-    void applyFilterCategories(List<FilterItem> filterItems);
+    List<FilterItem> getFilteredCategories();
+  }
+
+  interface FilterView{
+    void onFilterDialogClose(boolean applyFilter);
   }
 }

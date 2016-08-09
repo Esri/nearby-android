@@ -26,6 +26,7 @@ package com.esri.android.nearbyplaces.data;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import com.esri.android.nearbyplaces.data.PlacesRepository.LoadPlacesCallback;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.google.common.collect.ImmutableList;
 
