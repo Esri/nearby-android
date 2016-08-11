@@ -31,8 +31,11 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -63,6 +66,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    Log.i("MapActivity", "Start ON CREATE");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.map_layout);
 
@@ -99,13 +103,14 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
     mBottomSheet = (FrameLayout) findViewById(R.id.bottom_card_view);
 
     setUpFragments(savedInstanceState);
+    Log.i("MapActivity", "End ON CREATE");
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu items for use in the action bar
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(menu.map_menu, menu);
+    inflater.inflate(R.menu.map_menu, menu);
     return super.onCreateOptionsMenu(menu);
   }
   @Override
@@ -146,7 +151,9 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
    * Set up fragments
    */
   private void setUpFragments(Bundle savedInstanceState){
-    MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+    FragmentManager fm = getSupportFragmentManager();
+    List<Fragment> fragments =fm.getFragments();
+    MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_container);
 
     if (mapFragment == null){
       mapFragment = MapFragment.newInstance();
@@ -154,6 +161,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
           getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
     }
     mMapPresenter = new MapPresenter(mapFragment);
+    fragments = fm.getFragments();
 
   }
 

@@ -34,6 +34,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.*;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
@@ -63,6 +64,7 @@ public class PlacesActivity extends AppCompatActivity
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
+
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_layout);
 
@@ -82,7 +84,7 @@ public class PlacesActivity extends AppCompatActivity
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu items for use in the action bar
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(menu.menu_main, menu);
+    inflater.inflate(R.menu.menu_main, menu);
     return super.onCreateOptionsMenu(menu);
   }
 

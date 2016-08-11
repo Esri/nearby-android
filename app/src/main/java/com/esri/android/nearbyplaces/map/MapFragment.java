@@ -98,9 +98,10 @@ public class MapFragment extends Fragment implements  MapContract.View {
   @Nullable
   public View onCreateView(LayoutInflater layoutInflater, ViewGroup container,
       Bundle savedInstance){
-
+    Log.i("MapFragment", "Start ON CREATE VIEW");
     View root = layoutInflater.inflate(R.layout.map_fragment, container,false);
     setUpMapView(root);
+    Log.i("MapFragment", "End ON CREATE VIEW");
     return root;
   }
 
@@ -109,7 +110,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
    * @param root View
    */
   private void setUpMapView(View root){
-
+    Log.i("MapFragment", "Start SET UP MAP VIEW");
     mMapView = (MapView) root.findViewById(R.id.map);
     mLocationDisplay = mMapView.getLocationDisplay();
     mLocationDisplay.startAsync();
@@ -130,6 +131,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
+          Log.i("MapFragment", "DRAW COMPLETE");
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
         }
@@ -138,6 +140,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
 
     // Setup OnTouchListener to detect and act on long-press
     mMapView.setOnTouchListener(new MapTouchListener(getActivity().getApplicationContext(), mMapView));
+    Log.i("MapFragment", "End SET UP MAP VIEW");
   }
 
   @Override
