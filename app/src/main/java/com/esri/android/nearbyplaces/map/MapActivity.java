@@ -33,13 +33,16 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
@@ -49,6 +52,7 @@ import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
+import com.esri.arcgisruntime.geometry.Point;
 
 import java.util.List;
 
@@ -66,7 +70,8 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    Log.i("MapActivity", "Start ON CREATE");
+
+    Log.i("MapActivity", "Start_ON_CREATE");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.map_layout);
 
@@ -103,7 +108,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
     mBottomSheet = (FrameLayout) findViewById(R.id.bottom_card_view);
 
     setUpFragments(savedInstanceState);
-    Log.i("MapActivity", "End ON CREATE");
+    Log.i("MapActivity", "End_ON_CREATE");
   }
 
   @Override
@@ -123,6 +128,9 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
   private void setUpToolbar(){
     Toolbar toolbar = (Toolbar) findViewById(R.id.map_toolbar);
     setSupportActionBar(toolbar);
+    toolbar.setTitle("");
+    final ActionBar ab = getSupportActionBar();
+    ab.setDisplayHomeAsUpEnabled(true);
 
     toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
            @Override public boolean onMenuItemClick(MenuItem item) {
@@ -151,17 +159,17 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
    * Set up fragments
    */
   private void setUpFragments(Bundle savedInstanceState){
+
     FragmentManager fm = getSupportFragmentManager();
-    List<Fragment> fragments =fm.getFragments();
     MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_container);
 
-    if (mapFragment == null){
+    if (mapFragment == null) {
       mapFragment = MapFragment.newInstance();
-      ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
     }
+    ActivityUtils.addFragmentToActivity(
+        getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
+
     mMapPresenter = new MapPresenter(mapFragment);
-    fragments = fm.getFragments();
 
   }
 
@@ -202,8 +210,13 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
 
     TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
     txtName.setText(place.getName());
+    String address = place.getAddress();
+    String[] splitStrs = TextUtils.split(address, ",");
+    if (splitStrs.length>0)                                   {
+      address = splitStrs[0];
+    }
     TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress) ;
-    txtAddress.setText(place.getAddress());
+    txtAddress.setText(address);
     TextView txtPhone  = (TextView) mBottomSheet.findViewById(R.id.placePhone) ;
     txtPhone.setText(place.getPhone());
     TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);
@@ -261,5 +274,6 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
     if (applyFilter){
       mMapPresenter.start();
     }
+
   }
 }

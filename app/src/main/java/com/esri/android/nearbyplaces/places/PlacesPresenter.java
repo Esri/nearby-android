@@ -24,9 +24,13 @@
 
 package com.esri.android.nearbyplaces.places;
 
+import android.location.Location;
 import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.data.PlacesServiceApi;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 
 import java.util.List;
 
@@ -39,17 +43,35 @@ public class PlacesPresenter implements PlacesContract.Presenter {
 
 
   private final PlacesContract.View mPlacesView;
+  private Point mCurrentLocation = null;
+
+  private LocationService mLocationService;
+  private final static int MAX_RESULT_COUNT = 10;
+  private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
 
   public PlacesPresenter( @NonNull PlacesContract.View listView){
     mPlacesView = checkNotNull(listView);
     mPlacesView.setPresenter(this);
   }
 
-
+  /**
+   * Place presenter starts by using the device
+   * location as the initial parameter in the
+   * geocode search.
+   */
   @Override public void start() {
-    LocationService locationService = LocationService.getInstance();
-    List<Place> places = locationService.getPlacesFromRepo();
-    setPlacesNearby(places);
+    mLocationService = LocationService.getInstance();
+    List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
+    if (existingPlaces != null && existingPlaces.size()> 0){
+      setPlacesNearby(existingPlaces);
+    }else{
+      LocationService.configureService(GEOCODE_URL,
+          new Runnable() {
+            @Override public void run() {
+              getPlacesNearby();
+            }
+          });
+    }
   }
 
   /**
@@ -58,6 +80,26 @@ public class PlacesPresenter implements PlacesContract.Presenter {
    */
   @Override public void setPlacesNearby(List<Place> places) {
     mPlacesView.showNearbyPlaces(places);
+  }
+
+  @Override public void setLocation(Location location) {
+    mCurrentLocation = new Point(location.getLongitude(), location.getLatitude());
+  }
+
+  @Override public void getPlacesNearby() {
+    if (mCurrentLocation != null) {
+      GeocodeParameters parameters = new GeocodeParameters();
+      parameters.setMaxResults(MAX_RESULT_COUNT);
+      parameters.setPreferredSearchLocation(mCurrentLocation);
+      mLocationService.getPlacesFromService(parameters, new PlacesServiceApi.PlacesServiceCallback() {
+        @Override public void onLoaded(Object places) {
+          List<Place> data = (List) places;
+
+          // Show list of places
+          setPlacesNearby(data);
+        }
+      });
+    }
   }
 
 }

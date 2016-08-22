@@ -13,17 +13,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/placeList_app_bar"
-                android:theme="@style/MyAppBarTheme"
-                android:fitsSystemWindows="false">
+                android:theme="@style/MyAppBarTheme">
 
                 <android.support.v7.widget.Toolbar
                         android:id="@+id/placeList_toolbar"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
+                        android:layout_height="?attr/actionBarSize"
                         android:background="?attr/colorPrimary"
-                        app:layout_scrollFlags="scroll|enterAlways"
-                        android:minHeight="?attr/actionBarSize"
+                        app:layout_scrollFlags="scroll|enterAlways|snap"
                         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
                 </android.support.v7.widget.Toolbar>
@@ -33,7 +30,7 @@
         <FrameLayout android:id="@+id/list_fragment_container"
                      android:layout_width="match_parent"
                      android:layout_height="match_parent"
-                     android:fitsSystemWindows="true">
+                     app:layout_behavior="@string/appbar_scrolling_view_behavior">
         </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

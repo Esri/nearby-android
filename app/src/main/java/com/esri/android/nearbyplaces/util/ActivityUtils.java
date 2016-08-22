@@ -46,7 +46,7 @@ public class ActivityUtils {
     checkNotNull(fragment);
     FragmentTransaction transaction = fragmentManager.beginTransaction();
     transaction.add(frameId, fragment);
-    transaction.addToBackStack(fragmentName);
+   //∂ transaction.addToBackStack(fragmentName); don't need this if we're not adding more than one fragment
     transaction.commit();
   }
 }

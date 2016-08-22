@@ -17,17 +17,17 @@
             android:theme="@style/AppTheme">
 
         <activity
-                android:name=".map.MapActivity"
+                android:name=".places.PlacesActivity"
                 android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".places.PlacesActivity"
-                  android:parentActivityName=".map.MapActivity">
+        <activity android:name=".map.MapActivity"
+                  android:parentActivityName=".places.PlacesActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                       android:value=".map.MapActivity" />
+                       android:value=".places.PlacesActivity" />
         </activity>
 
 
