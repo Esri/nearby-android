@@ -25,6 +25,7 @@
 package com.esri.android.nearbyplaces.places;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -40,6 +41,7 @@ import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.map.MapActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -211,9 +213,13 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
           listener.onItemClick(place);
+          Intent intent = new Intent(getContext(),MapActivity.class);
+          intent.putExtra("PLACE_DETAIL", place.getName());
+          startActivity(intent);
         }
       });
     }
+
   }
 
   public interface OnItemClickListener {

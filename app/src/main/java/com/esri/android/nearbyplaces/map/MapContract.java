@@ -43,7 +43,7 @@ public interface MapContract {
 
     MapView getMapView();
 
-    LocationDisplay getLocationDisplay();
+  //  LocationDisplay getLocationDisplay();
 
     void centerOnPlace(Place p);
 

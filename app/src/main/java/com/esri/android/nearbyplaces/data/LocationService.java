@@ -28,6 +28,8 @@ import android.util.Log;
 
 import com.esri.android.nearbyplaces.data.PlacesServiceApi.PlacesServiceCallback;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Multipoint;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
@@ -150,6 +152,7 @@ public class LocationService implements PlacesServiceApi {
     @Override public void run() {
 
       try {
+        mappedPlaces.clear();
         List<GeocodeResult> data = mResults.get();
         List<Place> places = new ArrayList<Place>();
         for (GeocodeResult r: data){

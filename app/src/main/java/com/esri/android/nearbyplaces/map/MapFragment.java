@@ -40,15 +40,16 @@ import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.SpatialReference;
-import com.esri.arcgisruntime.geometry.SpatialReferences;
+import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
+import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -85,6 +86,8 @@ public class MapFragment extends Fragment implements  MapContract.View {
 
   private long mStartTime;
 
+  private String centeredPlaceName;
+
   private Point mCurrentLocation = null;
 
   public MapFragment(){}
@@ -99,6 +102,8 @@ public class MapFragment extends Fragment implements  MapContract.View {
     super.onCreate(savedInstance);
     // retain this fragment
     setRetainInstance(true);
+
+
 
   }
 
@@ -119,6 +124,10 @@ public class MapFragment extends Fragment implements  MapContract.View {
     setUpMapView(root);
     Log.i("MapFragment", "End_ON_CREATE_VIEW");
 
+    // If any extra data was sent, store it.
+    if (getActivity().getIntent().getSerializableExtra("PLACE_DETAIL") != null){
+      centeredPlaceName = getActivity().getIntent().getStringExtra("PLACE_DETAIL");
+    }
 
     return root;
   }
@@ -157,8 +166,8 @@ public class MapFragment extends Fragment implements  MapContract.View {
       @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
           Log.i("MapFragment", "DRAW_COMPLETE");
-          mLocationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
-          Log.i("MapFragment", "Start_auto_pan_mode");
+        //  mLocationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
+         // Log.i("MapFragment", "Start_auto_pan_mode");
           long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime)/1000;
           Log.i("MapFragment", "Time taken = " + Long.toString(elapsedTime));
           mPresenter.start();
@@ -254,15 +263,38 @@ public class MapFragment extends Fragment implements  MapContract.View {
     mGraphicOverlay.getGraphics().clear();
 
     // Create a graphic for every place
+    // and create a list of points
+    List<Point> points = new ArrayList<>();
     for (Place place : places){
       BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(place)) ;
       final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
       Point graphicPoint = place.getLocation();
       Graphic graphic = new Graphic(graphicPoint, pinSymbol);
+      points.add(graphicPoint);
       mGraphicOverlay.getGraphics().add(graphic);
     }
-  }
+    Envelope env = determineResultEnvelope(points);
+    mMapView.setViewpoint(new Viewpoint(env));
 
+    // If a centered place name is not null,
+    // show detail view
+    if (centeredPlaceName != null){
+      for (Place p: places){
+        if (p.getName().equalsIgnoreCase(centeredPlaceName)){
+          ((MapActivity)getActivity()).showDetail(p);
+          centeredPlaceName = null;
+          break;
+        }
+      }
+    }
+  }
+  private Envelope determineResultEnvelope(List<Point> points){
+
+    Multipoint mp = new Multipoint(points);
+    return GeometryEngine.buffer(mp,0.0007).getExtent();
+
+
+  }
   /**
    * Assign appropriate drawable given place type
    * @param p - Place
@@ -280,9 +312,9 @@ public class MapFragment extends Fragment implements  MapContract.View {
     return mMapView;
   }
 
-  @Override public LocationDisplay getLocationDisplay() {
-    return mLocationDisplay;
-  }
+//  @Override public LocationDisplay getLocationDisplay() {
+//    return mLocationDisplay;
+//  }
 
   /**
    * Center the selected place and change the pin

@@ -107,7 +107,10 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
 
     mBottomSheet = (FrameLayout) findViewById(R.id.bottom_card_view);
 
+
+
     setUpFragments(savedInstanceState);
+
     Log.i("MapActivity", "End_ON_CREATE");
   }
 
@@ -189,7 +192,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
   }
 
   @Override public void onPlacesFound(List<Place> places) {
-    placesFound = places;
+
   }
 
   @Override public void onPlaceSearch() {
