@@ -74,7 +74,13 @@ public class PlaceDetailFragment extends BottomSheetDialogFragment implements Pl
 
   @Override public void showPlaceDetail(Place place) {
     TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress);
-    txtAddress.setText(place.getName() + " " + place.getAddress());
+    String address = place.getName() + " " + place.getAddress();
+    String[] nameAddrArray = address.split(",");
+
+    if (nameAddrArray.length > 0){
+      address = nameAddrArray[0];
+    }
+    txtAddress.setText(address);
     TextView txtPhone  = (TextView) mBottomSheet.findViewById(R.id.placePhone) ;
     txtPhone.setText(place.getPhone());
     TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);

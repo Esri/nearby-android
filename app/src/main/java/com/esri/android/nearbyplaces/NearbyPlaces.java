@@ -33,6 +33,8 @@ import android.content.Context;
 public class NearbyPlaces extends Application {
 
   private static Context mContext;
+  public static final String LATITUDE= "latitude";
+  public static final String LONGITUDE = "longitude";
 
   @Override
   public void onCreate(){

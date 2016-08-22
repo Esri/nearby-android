@@ -27,8 +27,10 @@ package com.esri.android.nearbyplaces.places;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.*;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
@@ -36,6 +38,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.*;
+import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.Place;
@@ -44,15 +47,22 @@ import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 /**
  * Created by sand8529 on 6/16/16.
  */
 public class PlacesActivity extends AppCompatActivity
-    implements ActivityCompat.OnRequestPermissionsResultCallback, PlaceListener, FilterContract.FilterView{
+    implements ActivityCompat.OnRequestPermissionsResultCallback, PlaceListener, FilterContract.FilterView,
+    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
   private static final String TAG = PlacesActivity.class.getSimpleName();
   private static final int PERMISSION_REQUEST_LOCATION = 0;
@@ -60,11 +70,12 @@ public class PlacesActivity extends AppCompatActivity
   private CoordinatorLayout mMainLayout;
   private PlacesPresenter mPlacePresenter;
   private ArrayList<String> mCurrentFilters;
+  private GoogleApiClient mGoogleApiClient;
+  private Location mLastLocation;
 
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
-
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_layout);
 
@@ -78,6 +89,14 @@ public class PlacesActivity extends AppCompatActivity
     // request location permission
     requestLocationPermission();
 
+    // Create an instance of GoogleAPIClient.
+    if (mGoogleApiClient == null) {
+      mGoogleApiClient = new GoogleApiClient.Builder(this)
+          .addConnectionCallbacks(this)
+          .addOnConnectionFailedListener(this)
+          .addApi(LocationServices.API)
+          .build();
+    }
   }
 
   @Override
@@ -102,9 +121,7 @@ public class PlacesActivity extends AppCompatActivity
    private void setUpToolbar(){
      Toolbar toolbar = (Toolbar) findViewById(R.id.placeList_toolbar);
      setSupportActionBar(toolbar);
-     toolbar.setTitle("");
-     final ActionBar ab = getSupportActionBar();
-     ab.setDisplayHomeAsUpEnabled(true);
+
 
      toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
        @Override public boolean onMenuItemClick(MenuItem item) {
@@ -230,5 +247,32 @@ public class PlacesActivity extends AppCompatActivity
     if (applyFilter){
       mPlacePresenter.start();
     }
+  }
+
+  @Override public void onConnected(@Nullable Bundle bundle) {
+    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+        mGoogleApiClient);
+    if (mLastLocation != null){
+      Log.i(TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
+      mPlacePresenter.setLocation(mLastLocation);
+      mPlacePresenter.start();
+    }
+  }
+
+  @Override public void onConnectionSuspended(int i) {
+
+  }
+  @Override protected void onStart() {
+    mGoogleApiClient.connect();
+    super.onStart();
+  }
+
+  @Override  protected void onStop() {
+    mGoogleApiClient.disconnect();
+    super.onStop();
+  }
+
+  @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
   }
 }

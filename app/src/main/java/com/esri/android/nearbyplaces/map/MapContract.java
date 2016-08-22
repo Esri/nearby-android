@@ -47,6 +47,8 @@ public interface MapContract {
 
     void centerOnPlace(Place p);
 
+    void setCurrentLocation(Point location);
+
   }
 
   interface Presenter extends BasePresenter{

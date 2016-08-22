@@ -81,6 +81,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="URL"
+                android:autoLink="web"
                 android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
                 android:textColor="@android:color/primary_text_light"
                 android:alpha=".87" android:paddingLeft="16dp"/>

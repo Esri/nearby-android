@@ -34,18 +34,22 @@ import android.util.Log;
 import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -79,6 +83,10 @@ public class MapFragment extends Fragment implements  MapContract.View {
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
+  private long mStartTime;
+
+  private Point mCurrentLocation = null;
+
   public MapFragment(){}
 
   public static MapFragment newInstance(){
@@ -98,10 +106,20 @@ public class MapFragment extends Fragment implements  MapContract.View {
   @Nullable
   public View onCreateView(LayoutInflater layoutInflater, ViewGroup container,
       Bundle savedInstance){
-    Log.i("MapFragment", "Start ON CREATE VIEW");
+    mStartTime = Calendar.getInstance().getTimeInMillis();
+    if (getArguments() != null){
+      Bundle arguments = getArguments();
+      double latitdue = arguments.getDouble(NearbyPlaces.LATITUDE);
+      double longitude = arguments.getDouble(NearbyPlaces.LONGITUDE);
+      Point location = new Point(longitude, latitdue, SpatialReferences.getWebMercator());
+      mCurrentLocation = location;
+    }
+    Log.i("MapFragment", "Start_ON_CREATE_VIEW");
     View root = layoutInflater.inflate(R.layout.map_fragment, container,false);
     setUpMapView(root);
-    Log.i("MapFragment", "End ON CREATE VIEW");
+    Log.i("MapFragment", "End_ON_CREATE_VIEW");
+
+
     return root;
   }
 
@@ -110,37 +128,49 @@ public class MapFragment extends Fragment implements  MapContract.View {
    * @param root View
    */
   private void setUpMapView(View root){
-    Log.i("MapFragment", "Start SET UP MAP VIEW");
+    Log.i("MapFragment", "Start_SET_UP_MAP_VIEW");
+
     mMapView = (MapView) root.findViewById(R.id.map);
-    mLocationDisplay = mMapView.getLocationDisplay();
-    mLocationDisplay.startAsync();
-
-
-    mLocationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
+    Log.i("MapFragment", "Find_map_view");
 
     Basemap basemap = new Basemap(new ArcGISVectorTiledLayer(
         getResources().getString(R.string.navigation_url)));
+    Log.i("MapFragment", "Basemap_created");
 
     ArcGISMap map = new ArcGISMap(basemap);
     mMapView.setMap(map);
+    Log.i("MapFragment", "Map_attached_to_map_view");
 
     // Add graphics overlay for map markers
     mGraphicOverlay  = new GraphicsOverlay();
     mMapView.getGraphicsOverlays().add(mGraphicOverlay);
+    Log.i("MapFragment", "Graphics_overlay_added");
+
+    mLocationDisplay = mMapView.getLocationDisplay();
+    Log.i("MapFragment", "Get_location_display");
+
+    mLocationDisplay.startAsync();
+    Log.i("MapFragment", "Start_async_loc_display");
+
 
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
-          Log.i("MapFragment", "DRAW COMPLETE");
+          Log.i("MapFragment", "DRAW_COMPLETE");
+          mLocationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
+          Log.i("MapFragment", "Start_auto_pan_mode");
+          long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime)/1000;
+          Log.i("MapFragment", "Time taken = " + Long.toString(elapsedTime));
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
+
         }
       }
     });
 
     // Setup OnTouchListener to detect and act on long-press
     mMapView.setOnTouchListener(new MapTouchListener(getActivity().getApplicationContext(), mMapView));
-    Log.i("MapFragment", "End SET UP MAP VIEW");
+    Log.i("MapFragment", "End_SET_UP_MAP_VIEW");
   }
 
   @Override
@@ -192,7 +222,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
       mLocationDisplay.startAsync();
     }
     Log.i(TAG, "Map fragment onResume " + "and location display is " + mLocationDisplay.isStarted());
-  //  mPresenter.start();
+//  //  mPresenter.start();
   }
 
   @Override
@@ -231,9 +261,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
       Graphic graphic = new Graphic(graphicPoint, pinSymbol);
       mGraphicOverlay.getGraphics().add(graphic);
     }
-
   }
-
 
   /**
    * Assign appropriate drawable given place type
@@ -297,6 +325,10 @@ public class MapFragment extends Fragment implements  MapContract.View {
     // the graphic if another place
     // is centered.
     mCenteredPlace = p;
+  }
+
+  @Override public void setCurrentLocation(Point location) {
+    mMapView.setViewpointCenterAsync(location);
   }
 
   /**
