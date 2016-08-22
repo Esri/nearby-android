@@ -46,7 +46,7 @@ public class PlacesPresenterTest {
     // inject the mocks in the test the initMocks method needs to be called.
     MockitoAnnotations.initMocks(this);
     mapPlaceContract = new MapPlaceMediator();
-    mPlacesPresenter = new PlacesPresenter( mPlacesView, mapPlaceContract);
+    mPlacesPresenter = new PlacesPresenter( mPlacesView);
 
     // The presenter won't update the view unless it's active.
 

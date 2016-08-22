@@ -41,7 +41,7 @@ public class MapPresenterTest {
     // inject the mocks in the test the initMocks method needs to be called.
     MockitoAnnotations.initMocks(this);
     mapPlaceContract = new MapPlaceMediator();
-    mMapPresenter = new MapPresenter(mMapView, mapPlaceContract);
+    mMapPresenter = new MapPresenter(mMapView);
 
     PLACES = Lists.newArrayList(
         new Place("Powells Books",null,null,null,null,null,null),
