@@ -30,7 +30,17 @@
                        android:value=".places.PlacesActivity" />
         </activity>
 
-
+        <!-- Defines an intent receiver for OAuth2 -->
+        <activity android:name ="com.esri.arcgisruntime.security.DefaultOAuthIntentReceiver"
+                  android:label="DefaultOAuthIntentReceiver"
+                  android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="nearby-places-auth" android:host="auth"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

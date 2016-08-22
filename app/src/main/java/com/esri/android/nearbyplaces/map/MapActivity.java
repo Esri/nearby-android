@@ -24,6 +24,7 @@
 
 package com.esri.android.nearbyplaces.map;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -42,19 +43,32 @@ import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import com.esri.android.nearbyplaces.BuildConfig;
 import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
+import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.security.AuthenticationManager;
+import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
+import com.esri.arcgisruntime.security.OAuthConfiguration;
+import com.esri.arcgisruntime.tasks.route.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by sand8529 on 7/27/16.
@@ -62,11 +76,14 @@ import java.util.List;
 public class MapActivity extends AppCompatActivity implements PlaceListener, FilterContract.FilterView {
 
   private BottomSheetBehavior bottomSheetBehavior;
+  private static final String TAG = MapActivity.class.getSimpleName();
   private FrameLayout mBottomSheet;
   private CoordinatorLayout mMapLayout;
   private boolean mShowSnackbar = false;
   private MapPresenter mMapPresenter;
   private List placesFound;
+  private Place selectedPlace;
+  private RouteTask mRouteTask;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +127,17 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
 
 
     setUpFragments(savedInstanceState);
+    try{
+      OAuthConfiguration oauthConfig = new OAuthConfiguration(
+          "https://www.arcgis.com", BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
+      Log.i("LocationService", oauthConfig.getClientId());
+    //  AuthenticationManager.addOAuthConfiguration(oauthConfig);
+      DefaultAuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
+      AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
+    }catch(Exception e){
+      Log.e("MapActivity", e.getMessage());
+    }
+
 
     Log.i("MapActivity", "End_ON_CREATE");
   }
@@ -134,7 +162,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
     toolbar.setTitle("");
     final ActionBar ab = getSupportActionBar();
     ab.setDisplayHomeAsUpEnabled(true);
-
+    final Activity a = this;
     toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
            @Override public boolean onMenuItemClick(MenuItem item) {
              if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.list_view))){
@@ -147,6 +175,15 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
                dialogFragment.setPresenter(filterPresenter);
                dialogFragment.show(getFragmentManager(),"dialog_fragment");
 
+             }
+             if (item.getTitle().toString().equalsIgnoreCase("Route")){
+               MapView mapView = (MapView) findViewById(R.id.map);
+
+               LocationService locationService = LocationService.getInstance();
+               final Point start = locationService.getCurrentLocation();
+               mRouteTask= new RouteTask(getString(R.string.routingservice_url));
+               mRouteTask.addDoneLoadingListener(new RouteSolver(start,selectedPlace.getLocation()));
+               mRouteTask.loadAsync();
              }
              return false;
            }
@@ -203,6 +240,7 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
    * @param place
    */
   @Override public void showDetail(Place place) {
+    selectedPlace = place;
     // Get the menu item and show the map
     //invalidateOptionsMenu();
 
@@ -278,5 +316,86 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
       mMapPresenter.start();
     }
 
+  }
+  /**
+   * A helper class for solving routes
+   */
+  private class RouteSolver implements Runnable{
+    private final Stop origin;
+
+    private final Stop destination;
+
+    public RouteSolver(Point start, Point end){
+      origin = new Stop(start);
+      destination = new Stop(end);
+    }
+    @Override
+    public void run (){
+      LoadStatus status = mRouteTask.getLoadStatus();
+      Log.i(TAG, "Route task is " + status.name());
+
+      // Has the route task loaded successfully?
+      if (status == LoadStatus.FAILED_TO_LOAD) {
+        Log.i(TAG, mRouteTask.getLoadError().getMessage());
+
+
+        // We may want to try reloading it  --> mRouteTask.retryLoadAsync();
+
+      } else {
+				/*
+				Observable<Future> obs = Observab.just(Future)
+				obs.map(future -> future.get())
+				.map(data --> buildFuture(data))  data is what is returned from the future.get
+				.map(future2 -> future2.get())     future2 is the second future called with the data
+				 */
+        final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
+            .generateDefaultParametersAsync();
+        // Add a done listener that uses the returned route parameters
+        // to build up a specific request for the route we need
+        routeTaskFuture.addDoneListener(new Runnable() {
+
+          @Override
+          public void run() {
+            try {
+              RouteParameters routeParameters = routeTaskFuture.get();
+              // Add a stop for origin and destination
+              routeParameters.getStops().add(origin);
+              routeParameters.getStops().add(destination);
+              Log.i(TAG, "Origin x/y = " + origin.getGeometry().getX()+ ", " + origin.getGeometry().getY());
+              Log.i(TAG, "Destination x/y= " + destination.getGeometry().getX() + ", " + destination.getGeometry().getY());
+              // We want the task to return driving directions and routes
+              routeParameters.setReturnDirections(true);
+              routeParameters.setDirectionsDistanceTextUnits(
+                  DirectionDistanceTextUnits.IMPERIAL);
+              routeParameters.setOutputSpatialReference(SpatialReferences.getWebMercator());
+
+              final ListenableFuture<RouteResult> routeResFuture = mRouteTask
+                  .solveAsync(routeParameters);
+              routeResFuture.addDoneListener(new Runnable() {
+                @Override
+                public void run() {
+                  try {
+                    RouteResult routeResult = routeResFuture.get();
+                    // Show route results
+                    if (routeResult != null){
+                      Log.i(TAG, "Got a result");
+                    }else{
+                      Log.i(TAG, "NO RESULT FROM ROUTING");
+                    }
+
+
+
+                  } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                  }
+                }
+              });
+            } catch (Exception e1){
+              Log.e(TAG,e1.getMessage() );
+            }
+          }
+        });
+      }
+    }
   }
 }

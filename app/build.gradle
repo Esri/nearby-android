@@ -10,6 +10,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "CLIENT_ID" , CLIENT_ID
+        buildConfigField "String", "OAUTH_REDIRECT_ID" , OAUTH_REDIRECT_ID
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }

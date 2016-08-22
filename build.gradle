@@ -17,7 +17,7 @@ allprojects {
         jcenter()
         // Add the Esri public Bintray Maven repository
         maven {
-            url 'https://esri.bintray.com/arcgis'
+            url 'http://android:8080/artifactory/arcgis'
         }
     }
 }
@@ -43,6 +43,6 @@ ext {
     runnerVersion = '0.4.1'
     rulesVersion = '0.4.1'
     espressoVersion = '2.2.1'
-    runtimeVersion = '100.0.0-beta-3'
+    runtimeVersion = '100.0.0-1411'
     googleLocationServicesVersion = '9.4.0'
 }

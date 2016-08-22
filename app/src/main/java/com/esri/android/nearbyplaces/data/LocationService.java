@@ -23,20 +23,34 @@
  */
 package com.esri.android.nearbyplaces.data;
 
+import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import android.widget.Toast;
+import com.esri.android.nearbyplaces.BuildConfig;
+import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi.PlacesServiceCallback;
+import com.esri.android.nearbyplaces.map.MapFragment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Multipoint;
 import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.loadable.LoadStatus;
+import com.esri.arcgisruntime.security.AuthenticationManager;
+import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
+import com.esri.arcgisruntime.security.OAuthConfiguration;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.esri.arcgisruntime.tasks.geocode.LocatorInfo;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
+import com.esri.arcgisruntime.tasks.route.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 /**
@@ -47,6 +61,7 @@ public class LocationService implements PlacesServiceApi {
   private final static String TAG = LocationService.class.getSimpleName();
   private static LocatorTask mLocatorTask;
   private static LocationService instance = null;
+  private Point mCurrentLocation;
 
 
   protected LocationService(){}
@@ -142,6 +157,80 @@ public class LocationService implements PlacesServiceApi {
     return foundPlaces;
   }
 
+  public void getRoute(Activity activity,  final Point stop, final SpatialReference spatialReference){
+    try {
+
+      final RouteTask routeTask = new RouteTask(activity.getString(R.string.routingservice_url));
+      routeTask.addDoneLoadingListener(new Runnable() {
+        @Override public void run() {
+          LoadStatus loadStatus = routeTask.getLoadStatus();
+          Log.i("LocationService", "Route done loading...with load status " + loadStatus.name());
+          final ListenableFuture<RouteParameters> routeTaskFuture = routeTask
+              .generateDefaultParametersAsync();
+          // Add a done listener that uses the returned route parameters
+          // to build up a specific request for the route we need
+          routeTaskFuture.addDoneListener(new Runnable() {
+
+            @Override
+            public void run() {
+              try {
+                final Point start = mCurrentLocation;
+                RouteParameters routeParameters = routeTaskFuture.get();
+                // Add a stop for origin and destination
+                routeParameters.getStops().add(new Stop(start));
+                routeParameters.getStops().add(new Stop(stop));
+                // We want the task to return driving directions and routes
+                routeParameters.setReturnDirections(true);
+                routeParameters.setReturnRoutes(true);
+                routeParameters.setDirectionsDistanceTextUnits(
+                    DirectionDistanceTextUnits.IMPERIAL);
+                routeParameters.setOutputSpatialReference(spatialReference);
+
+                final ListenableFuture<RouteResult> routeResFuture = routeTask
+                    .solveAsync(routeParameters);
+
+                routeResFuture.addDoneListener(new Runnable() {
+                  @Override
+                  public void run() {
+                    try {
+                      RouteResult routeResult = routeResFuture.get();
+                      if (routeResult != null){
+                        Log.i("LocationService", "Got a route");
+                      }else{
+                        Log.i("LocationService", "No route returned");
+                      }
+
+                    } catch (Exception e) {
+                      e.printStackTrace();
+
+                    }
+                  }
+                });
+                routeTask.loadAsync();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              } catch (ExecutionException e) {
+                e.printStackTrace();
+              }
+            }
+          });
+
+        }
+      });
+      routeTask.loadAsync();
+    } catch (Exception exception) {
+      Log.e("LocationService", exception.getLocalizedMessage());
+
+    }
+  }
+
+  public void setCurrentLocation(Location currentLocation) {
+    mCurrentLocation =  new Point(currentLocation.getLongitude(), currentLocation.getLatitude());
+  }
+  public Point getCurrentLocation(){
+    return mCurrentLocation;
+  }
+
   private class GeocodeProcessor implements Runnable{
     private final ListenableFuture<List<GeocodeResult>> mResults;
     private final PlacesServiceCallback mCallback;
@@ -176,4 +265,5 @@ public class LocationService implements PlacesServiceApi {
       }
     }
   }
+
 }

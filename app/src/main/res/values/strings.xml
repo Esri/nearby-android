@@ -19,4 +19,6 @@
     <!-- Toast and dialog message -->
     <string name="no_places_found">No places found</string>
     <string name="filter_dialog">Filter Places</string>
+
+    <string name="routingservice_url">https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/</string>
 </resources>

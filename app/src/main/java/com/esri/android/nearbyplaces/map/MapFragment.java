@@ -102,9 +102,6 @@ public class MapFragment extends Fragment implements  MapContract.View {
     super.onCreate(savedInstance);
     // retain this fragment
     setRetainInstance(true);
-
-
-
   }
 
   @Override
@@ -165,7 +162,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
-          Log.i("MapFragment", "DRAW_COMPLETE");
+          Log.i("MapFragment", "DRAW_COMPLETE, spatial reference " + mMapView.getSpatialReference().getWKText());
         //  mLocationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
          // Log.i("MapFragment", "Start_auto_pan_mode");
           long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime)/1000;

@@ -41,6 +41,7 @@ import android.view.*;
 import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
+import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
@@ -255,6 +256,8 @@ public class PlacesActivity extends AppCompatActivity
     if (mLastLocation != null){
       Log.i(TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
       mPlacePresenter.setLocation(mLastLocation);
+      LocationService locationService = LocationService.getInstance();
+      locationService.setCurrentLocation(mLastLocation);
       mPlacePresenter.start();
     }
   }
