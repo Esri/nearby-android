@@ -338,16 +338,8 @@ public class MapActivity extends AppCompatActivity implements PlaceListener, Fil
       if (status == LoadStatus.FAILED_TO_LOAD) {
         Log.i(TAG, mRouteTask.getLoadError().getMessage());
 
-
-        // We may want to try reloading it  --> mRouteTask.retryLoadAsync();
-
       } else {
-				/*
-				Observable<Future> obs = Observab.just(Future)
-				obs.map(future -> future.get())
-				.map(data --> buildFuture(data))  data is what is returned from the future.get
-				.map(future2 -> future2.get())     future2 is the second future called with the data
-				 */
+
         final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
             .generateDefaultParametersAsync();
         // Add a done listener that uses the returned route parameters

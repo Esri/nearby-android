@@ -31,16 +31,18 @@ public class FilterItem {
   private String mTitle;
   private int mIconId;
   private boolean mSelected;
+  private int mSelectedIconId;
 
   public FilterItem (String title, int icon){
     mTitle = title;
     mIconId = icon;
     mSelected = false;
   }
-  public FilterItem (String title, int icon, boolean s){
+  public FilterItem (String title, int icon, boolean s, int selectedIcon){
     mTitle = title;
     mIconId = icon;
     mSelected = s;
+    mSelectedIconId = selectedIcon;
   }
   public FilterItem(){}
 
@@ -63,4 +65,12 @@ public class FilterItem {
   public boolean getSelected() { return mSelected ;}
 
   public void setSelected(boolean selected){ mSelected = selected; }
+
+  public int getSelectedIconId() {
+    return mSelectedIconId;
+  }
+
+  public void setSelectedIconId(int mSelectedIconId) {
+    this.mSelectedIconId = mSelectedIconId;
+  }
 }

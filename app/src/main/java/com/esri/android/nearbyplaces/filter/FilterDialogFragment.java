@@ -26,8 +26,14 @@ package com.esri.android.nearbyplaces.filter;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,42 +105,55 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     public FilterItemAdapter(Context context, ArrayList<FilterItem> items){
       super(context,0, items);
     }
+
+    private class ViewHolder {
+      Button btn;
+      TextView txtName;
+    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+      ViewHolder holder = null;
+
       // Get the data item for this position
-      FilterItem item = getItem(position);
+      final FilterItem item = getItem(position);
       // Check if an existing view is being reused, otherwise inflate the view
       if (convertView == null) {
         convertView = LayoutInflater.from(getActivity()).inflate(R.layout.filter_view, parent, false);
+        holder = new ViewHolder();
+        holder.btn = (Button) convertView.findViewById(R.id.categoryBtn);
+        holder.txtName =  (TextView) convertView.findViewById(R.id.categoryName);
+        convertView.setTag(holder);
+      }else{
+        holder = (ViewHolder) convertView.getTag();
       }
       // Lookup view for data population
-      TextView category = (TextView) convertView.findViewById(R.id.categoryName);
-      final Button btn = (Button) convertView.findViewById(R.id.categoryBtn);
+      holder.txtName.setText(item.getTitle());
+
       if (!item.getSelected()){
-        btn.setAlpha(0.5f);
+        holder.btn.setBackgroundResource(item.getIconId());
+        holder.btn.setAlpha(0.5f);
       }else{
-        btn.setAlpha(1.0f);
+        holder.btn.setBackgroundResource(item.getSelectedIconId());
+        holder.btn.setAlpha(1.0f);
       }
-      // Populate the data into the template view using the data object
-      category.setText(item.getTitle());
-      btn.setBackground(ResourcesCompat.getDrawable(getResources(),item.getIconId(),null));
+
       final int myPosition = position;
+      final ViewHolder clickHolder = holder;
       // Attach listener that toggles selected state of category
       convertView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          AlphaAnimation lighten = new AlphaAnimation(1.0f, 0.5f);
-          lighten.setDuration(1000);
-          lighten.setFillAfter(true);
-          AlphaAnimation darken = new AlphaAnimation(0.5f, 1.0f);
-          darken.setDuration(1000);
-          darken.setFillAfter(true);
+          Drawable bm1 =  ResourcesCompat.getDrawable(getResources(),item.getIconId(),null);
+          Drawable bm2 =  ResourcesCompat.getDrawable(getResources(),item.getSelectedIconId(),null);
           FilterItem clickedItem = getItem(myPosition);
           if (clickedItem.getSelected()){
             clickedItem.setSelected(false);
-            btn.startAnimation(lighten);
+            clickHolder.btn.setBackgroundResource(item.getIconId());
+            clickHolder.btn.setAlpha(0.5f);
+
           }else{
             clickedItem.setSelected(true);
-            btn.startAnimation(darken);
+            clickHolder.btn.setBackgroundResource(item.getSelectedIconId());
+            clickHolder.btn.setAlpha(1.0f);
           }
         }
       });
