@@ -30,6 +30,7 @@ import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
+import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class MapPresenter implements MapContract.Presenter {
   private LocationService mLocationService;
   private final static int MAX_RESULT_COUNT = 10;
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+  private Place mCenteredPlace;
 
   public MapPresenter(@NonNull MapContract.View mapView ){
     mMapView = checkNotNull(mapView, "map view cannot be null");
@@ -75,7 +77,8 @@ public class MapPresenter implements MapContract.Presenter {
   }
 
   @Override public void centerOnPlace(Place p) {
-    mMapView.centerOnPlace(p);
+    mCenteredPlace = p;
+    mMapView.centerOnPlace(mCenteredPlace);
   }
 
   @Override public Place findPlaceForPoint(Point p) {
@@ -89,6 +92,22 @@ public class MapPresenter implements MapContract.Presenter {
     }
     return foundPlace;
   }
+
+  @Override public void getRoute() {
+    if (mCenteredPlace !=  null && mLocationService.getCurrentLocation() != null){
+      mLocationService.getRouteFromService(mLocationService.getCurrentLocation(), mCenteredPlace.getLocation(),
+          new PlacesServiceApi.RouteServiceCallback() {
+            @Override public void onRouteReturned(RouteResult result) {
+              mMapView.showRoute(result, mLocationService.getCurrentLocation(),mCenteredPlace.getLocation());
+            }
+          });
+    }
+  }
+
+  @Override public void setRoute(RouteResult routeResult, Point start, Point end) {
+    mMapView.showRoute(routeResult, start, end);
+  }
+
   /**
    * The entry point for this class starts
    * by loading the gecoding service.

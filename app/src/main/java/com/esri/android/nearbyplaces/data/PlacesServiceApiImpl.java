@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi.PlacesServiceCallback;
+import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 
 import java.util.ArrayList;
@@ -42,6 +43,10 @@ public class PlacesServiceApiImpl implements  PlacesServiceApi{
 
   private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
   private static final ArrayMap<String,Place> PLACES_SERVICE_DATA = PlacesServiceApiEndpoint.loadPersistedPlaces();
+
+  @Override public void getRouteFromService(Point start, Point end, RouteServiceCallback callback) {
+
+  }
 
   @Override public void getPlacesFromService(final @NonNull GeocodeParameters parameters, final @NonNull PlacesServiceCallback callback) {
 
@@ -61,8 +66,10 @@ public class PlacesServiceApiImpl implements  PlacesServiceApi{
     return null;
   }
 
+
   @Override public List<Place> getPlacesFromRepo() {
     return null;
   }
+
 
 }

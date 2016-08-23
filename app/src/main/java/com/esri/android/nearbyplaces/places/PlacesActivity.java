@@ -66,11 +66,7 @@ public class PlacesActivity extends AppCompatActivity
 
   private static final String TAG = PlacesActivity.class.getSimpleName();
   private static final int PERMISSION_REQUEST_LOCATION = 0;
-  private static final String CURRENT_FILTERS = "current_filters";
   private CoordinatorLayout mMainLayout;
-
-
-
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -102,7 +98,6 @@ public class PlacesActivity extends AppCompatActivity
    private void setUpToolbar(){
      Toolbar toolbar = (Toolbar) findViewById(R.id.placeList_toolbar);
      setSupportActionBar(toolbar);
-
 
      toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
        @Override public boolean onMenuItemClick(MenuItem item) {

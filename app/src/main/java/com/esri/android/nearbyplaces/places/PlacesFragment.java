@@ -95,7 +95,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,  Fi
     }
   }
 
-
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,7 +108,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,  Fi
 
     return mPlacesView;
   }
-
 
   @Override
   public void onResume() {

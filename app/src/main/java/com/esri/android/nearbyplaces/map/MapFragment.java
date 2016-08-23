@@ -24,6 +24,7 @@
 package com.esri.android.nearbyplaces.map;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -55,6 +56,9 @@ import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.tasks.route.Route;
+import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -74,7 +78,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private LocationDisplay mLocationDisplay;
 
-  private GraphicsOverlay mGraphicOverlay;
+  private GraphicsOverlay mGraphicOverlay, mRouteOverlay;
 
 
   private boolean initialLocationLoaded =false;
@@ -113,6 +117,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // retain this fragment
     setRetainInstance(true);
 
+    setHasOptionsMenu(true);/// allows invalidateOptionsMenu to work
     mMapLayout = (CoordinatorLayout) getActivity().findViewById(R.id.map_coordinator_layout);
 
     //Set up behavior for the bottom sheet
@@ -246,6 +251,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         .setAction("SEARCH", new View.OnClickListener() {
           @Override
           public void onClick(View view) {
+            if (mRouteOverlay != null){
+              mRouteOverlay.getGraphics().clear();
+            }
+
             mPresenter.findPlacesNearby();
           }
         });
@@ -446,8 +455,38 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mCenteredPlace = p;
   }
 
-  @Override public void setCurrentLocation(Point location) {
-    mMapView.setViewpointCenterAsync(location);
+  @Override public void showRoute(RouteResult routeResult, Point startPoint, Point endPoint) {
+    Route route;
+    try {
+      route = routeResult.getRoutes().get(0);
+      if (route.getTotalLength() == 0.0) {
+        throw new Exception("Can not find the Route");
+      }
+    } catch (Exception e) {
+      Toast.makeText(getActivity(),
+          "We are sorry, we couldn't find the route. Please make "
+              + "sure the Source and Destination are different or are connected by road",
+          Toast.LENGTH_LONG).show();
+      Log.e(TAG, e.getMessage());
+      return;
+    }
+
+    if (mRouteOverlay == null) {
+      mRouteOverlay = new GraphicsOverlay();
+    }else{
+      mRouteOverlay.getGraphics().clear();
+    }
+    // Create polyline graphic of the full route
+    SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 4);
+    Graphic routeGraphic = new Graphic(route.getRouteGeometry(), lineSymbol);
+
+    // Add the route graphic to the route layer
+    mRouteOverlay.getGraphics().add(routeGraphic);
+    mMapView.getGraphicsOverlays().add(mRouteOverlay);
+
+    // Zoom to the extent of the entire route with a padding
+    Geometry shape = routeGraphic.getGeometry();
+    mMapView.setViewpointGeometryWithPaddingAsync(shape, 400);
   }
 
   /**

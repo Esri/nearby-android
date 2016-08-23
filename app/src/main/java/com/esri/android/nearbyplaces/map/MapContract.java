@@ -27,8 +27,8 @@ import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public interface MapContract {
 
     void centerOnPlace(Place p);
 
-    void setCurrentLocation(Point location);
+    void showRoute(RouteResult routeResult, Point start, Point end);
 
   }
 
@@ -58,5 +58,9 @@ public interface MapContract {
     void centerOnPlace(Place p);
 
     Place findPlaceForPoint(Point p);
+
+    void getRoute();
+
+    void setRoute(RouteResult routeResult, Point start, Point end);
   }
 }

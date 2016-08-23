@@ -76,12 +76,7 @@ import java.util.concurrent.ExecutionException;
 public class MapActivity extends AppCompatActivity {
 
   private static final String TAG = MapActivity.class.getSimpleName();
-
-  private CoordinatorLayout mMapLayout;
   private MapPresenter mMapPresenter;
-  private List placesFound;
-  private Place selectedPlace;
-  private RouteTask mRouteTask;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +85,8 @@ public class MapActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.map_layout);
 
-
-
     // Set up the toolbar
     setUpToolbar();
-
 
     AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.map_appbar);
 
@@ -102,23 +94,24 @@ public class MapActivity extends AppCompatActivity {
     // of the layout (transparent, in this case)
     appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
 
-
-
-
     setUpFragments(savedInstanceState);
+
+    setUpAuth();
+
+    Log.i("MapActivity", "End_ON_CREATE");
+  }
+
+  private void setUpAuth(){
     try{
       OAuthConfiguration oauthConfig = new OAuthConfiguration(
           "https://www.arcgis.com", BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
       Log.i("LocationService", oauthConfig.getClientId());
-    //  AuthenticationManager.addOAuthConfiguration(oauthConfig);
+      //  AuthenticationManager.addOAuthConfiguration(oauthConfig);
       DefaultAuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
     }catch(Exception e){
       Log.e("MapActivity", e.getMessage());
     }
-
-
-    Log.i("MapActivity", "End_ON_CREATE");
   }
 
   @Override
@@ -151,12 +144,7 @@ public class MapActivity extends AppCompatActivity {
              }
              if (item.getTitle().toString().equalsIgnoreCase("Route")){
                MapView mapView = (MapView) findViewById(R.id.map);
-
-               LocationService locationService = LocationService.getInstance();
-               final Point start = locationService.getCurrentLocation();
-               mRouteTask= new RouteTask(getString(R.string.routingservice_url));
-               mRouteTask.addDoneLoadingListener(new RouteSolver(start,selectedPlace.getLocation()));
-               mRouteTask.loadAsync();
+               mMapPresenter.getRoute();
              }
              return false;
            }
@@ -183,79 +171,5 @@ public class MapActivity extends AppCompatActivity {
 
     mMapPresenter = new MapPresenter(mapFragment);
 
-  }
-
-  /**
-   * A helper class for solving routes
-   */
-  private class RouteSolver implements Runnable{
-    private final Stop origin;
-
-    private final Stop destination;
-
-    public RouteSolver(Point start, Point end){
-      origin = new Stop(start);
-      destination = new Stop(end);
-    }
-    @Override
-    public void run (){
-      LoadStatus status = mRouteTask.getLoadStatus();
-      Log.i(TAG, "Route task is " + status.name());
-
-      // Has the route task loaded successfully?
-      if (status == LoadStatus.FAILED_TO_LOAD) {
-        Log.i(TAG, mRouteTask.getLoadError().getMessage());
-
-      } else {
-
-        final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
-            .generateDefaultParametersAsync();
-        // Add a done listener that uses the returned route parameters
-        // to build up a specific request for the route we need
-        routeTaskFuture.addDoneListener(new Runnable() {
-
-          @Override
-          public void run() {
-            try {
-              RouteParameters routeParameters = routeTaskFuture.get();
-              // Add a stop for origin and destination
-              routeParameters.getStops().add(origin);
-              routeParameters.getStops().add(destination);
-              Log.i(TAG, "Origin x/y = " + origin.getGeometry().getX()+ ", " + origin.getGeometry().getY());
-              Log.i(TAG, "Destination x/y= " + destination.getGeometry().getX() + ", " + destination.getGeometry().getY());
-              // We want the task to return driving directions and routes
-              routeParameters.setReturnDirections(true);
-              routeParameters.setDirectionsDistanceTextUnits(
-                  DirectionDistanceTextUnits.IMPERIAL);
-              routeParameters.setOutputSpatialReference(SpatialReferences.getWebMercator());
-
-              final ListenableFuture<RouteResult> routeResFuture = mRouteTask
-                  .solveAsync(routeParameters);
-              routeResFuture.addDoneListener(new Runnable() {
-                @Override
-                public void run() {
-                  try {
-                    RouteResult routeResult = routeResFuture.get();
-                    // Show route results
-                    if (routeResult != null){
-                      Log.i(TAG, "Got a result");
-                    }else{
-                      Log.i(TAG, "NO RESULT FROM ROUTING");
-                    }
-
-
-
-                  } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
-                  }
-                }
-              });
-            } catch (Exception e1){
-              Log.e(TAG,e1.getMessage() );
-            }
-          }
-        });
-      }
-    }
   }
 }

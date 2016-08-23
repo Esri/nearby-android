@@ -34,11 +34,9 @@ import com.esri.android.nearbyplaces.BuildConfig;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi.PlacesServiceCallback;
 import com.esri.android.nearbyplaces.map.MapFragment;
+import com.esri.android.nearbyplaces.map.MapPresenter;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.Multipoint;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.security.AuthenticationManager;
 import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
@@ -62,7 +60,7 @@ public class LocationService implements PlacesServiceApi {
   private static LocatorTask mLocatorTask;
   private static LocationService instance = null;
   private Point mCurrentLocation;
-
+  private RouteTask mRouteTask;
 
   protected LocationService(){}
 
@@ -84,6 +82,14 @@ public class LocationService implements PlacesServiceApi {
       mLocatorTask.addDoneLoadingListener(doneListener);
       mLocatorTask.loadAsync();
     }
+  }
+
+  @Override public void getRouteFromService(Point start, Point end, RouteServiceCallback callback) {
+    if (mRouteTask == null){
+      mRouteTask = new RouteTask("https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/");
+    }
+    mRouteTask.addDoneLoadingListener(new RouteSolver(mCurrentLocation,end, callback));
+    mRouteTask.loadAsync();
   }
 
   @Override public void getPlacesFromService(@NonNull GeocodeParameters parameters,@NonNull final PlacesServiceCallback callback)  {
@@ -112,6 +118,7 @@ public class LocationService implements PlacesServiceApi {
   @Override public List<Place> getPlacesFromRepo() {
     return filterPlaces(new ArrayList<>(mappedPlaces.values()));
   }
+
 
   public LocatorInfo getLocatorInfo(){
     return mLocatorTask.getLocatorInfo();
@@ -157,73 +164,6 @@ public class LocationService implements PlacesServiceApi {
     return foundPlaces;
   }
 
-  public void getRoute(Activity activity,  final Point stop, final SpatialReference spatialReference){
-    try {
-
-      final RouteTask routeTask = new RouteTask(activity.getString(R.string.routingservice_url));
-      routeTask.addDoneLoadingListener(new Runnable() {
-        @Override public void run() {
-          LoadStatus loadStatus = routeTask.getLoadStatus();
-          Log.i("LocationService", "Route done loading...with load status " + loadStatus.name());
-          final ListenableFuture<RouteParameters> routeTaskFuture = routeTask
-              .generateDefaultParametersAsync();
-          // Add a done listener that uses the returned route parameters
-          // to build up a specific request for the route we need
-          routeTaskFuture.addDoneListener(new Runnable() {
-
-            @Override
-            public void run() {
-              try {
-                final Point start = mCurrentLocation;
-                RouteParameters routeParameters = routeTaskFuture.get();
-                // Add a stop for origin and destination
-                routeParameters.getStops().add(new Stop(start));
-                routeParameters.getStops().add(new Stop(stop));
-                // We want the task to return driving directions and routes
-                routeParameters.setReturnDirections(true);
-                routeParameters.setReturnRoutes(true);
-                routeParameters.setDirectionsDistanceTextUnits(
-                    DirectionDistanceTextUnits.IMPERIAL);
-                routeParameters.setOutputSpatialReference(spatialReference);
-
-                final ListenableFuture<RouteResult> routeResFuture = routeTask
-                    .solveAsync(routeParameters);
-
-                routeResFuture.addDoneListener(new Runnable() {
-                  @Override
-                  public void run() {
-                    try {
-                      RouteResult routeResult = routeResFuture.get();
-                      if (routeResult != null){
-                        Log.i("LocationService", "Got a route");
-                      }else{
-                        Log.i("LocationService", "No route returned");
-                      }
-
-                    } catch (Exception e) {
-                      e.printStackTrace();
-
-                    }
-                  }
-                });
-                routeTask.loadAsync();
-              } catch (InterruptedException e) {
-                e.printStackTrace();
-              } catch (ExecutionException e) {
-                e.printStackTrace();
-              }
-            }
-          });
-
-        }
-      });
-      routeTask.loadAsync();
-    } catch (Exception exception) {
-      Log.e("LocationService", exception.getLocalizedMessage());
-
-    }
-  }
-
   public void setCurrentLocation(Location currentLocation) {
     mCurrentLocation =  new Point(currentLocation.getLongitude(), currentLocation.getLatitude());
   }
@@ -262,6 +202,82 @@ public class LocationService implements PlacesServiceApi {
         mCallback.onLoaded(filterPlaces(places));
       } catch (Exception e) {
         e.printStackTrace();
+      }
+    }
+  }
+  /**
+   * A helper class for solving routes
+   */
+  private class RouteSolver implements Runnable{
+    private final Stop origin;
+    private final RouteServiceCallback mCallback;
+    private final Stop destination;
+
+    public RouteSolver(Point start, Point end,RouteServiceCallback callback ){
+      origin = new Stop(start);
+      destination = new Stop(end);
+      mCallback = callback;
+    }
+    @Override
+    public void run (){
+      LoadStatus status = mRouteTask.getLoadStatus();
+      Log.i(TAG, "Route task is " + status.name());
+
+      // Has the route task loaded successfully?
+      if (status == LoadStatus.FAILED_TO_LOAD) {
+        Log.i(TAG, mRouteTask.getLoadError().getMessage());
+
+      } else {
+
+        final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
+            .generateDefaultParametersAsync();
+        // Add a done listener that uses the returned route parameters
+        // to build up a specific request for the route we need
+        routeTaskFuture.addDoneListener(new Runnable() {
+
+          @Override
+          public void run() {
+            try {
+              RouteParameters routeParameters = routeTaskFuture.get();
+              // Add a stop for origin and destination
+              routeParameters.getStops().add(origin);
+              routeParameters.getStops().add(destination);
+              Log.i(TAG, "Origin x/y = " + origin.getGeometry().getX()+ ", " + origin.getGeometry().getY());
+              Log.i(TAG, "Destination x/y= " + destination.getGeometry().getX() + ", " + destination.getGeometry().getY());
+              // We want the task to return driving directions and routes
+              routeParameters.setReturnDirections(true);
+              routeParameters.setDirectionsDistanceTextUnits(
+                  DirectionDistanceTextUnits.IMPERIAL);
+              routeParameters.setOutputSpatialReference(SpatialReferences.getWebMercator());
+
+              final ListenableFuture<RouteResult> routeResFuture = mRouteTask
+                  .solveAsync(routeParameters);
+              routeResFuture.addDoneListener(new Runnable() {
+                @Override
+                public void run() {
+                  try {
+                    RouteResult routeResult = routeResFuture.get();
+                    // Show route results
+                    if (routeResult != null){
+                      Log.i(TAG, "Got a result");
+                      mCallback.onRouteReturned(routeResult);
+
+                    }else{
+                      Log.i(TAG, "NO RESULT FROM ROUTING");
+                    }
+
+
+
+                  } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                  }
+                }
+              });
+            } catch (Exception e1){
+              Log.e(TAG,e1.getMessage() );
+            }
+          }
+        });
       }
     }
   }
