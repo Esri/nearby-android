@@ -27,6 +27,7 @@ package com.esri.android.nearbyplaces.places;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,8 +41,13 @@ import android.widget.*;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
+import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.map.MapActivity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +55,8 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class PlacesFragment extends Fragment implements PlacesContract.View{
+public class PlacesFragment extends Fragment implements PlacesContract.View,  FilterContract.FilterView,
+    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
   private PlacesContract.Presenter mPresenter;
 
@@ -57,11 +64,10 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
 
   private RecyclerView mPlacesView;
 
-  private PlaceListener mCallback;
-
-  private OnItemClickListener mPlaceItemListener;
-
   private static final String TAG = PlacesFragment.class.getSimpleName();
+
+  private GoogleApiClient mGoogleApiClient;
+  private Location mLastLocation;
 
   public PlacesFragment(){
 
@@ -76,16 +82,19 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
     // retain this fragment
     setRetainInstance(true);
     List<Place> placeList = new ArrayList<>();
-    mPlaceItemListener = new OnItemClickListener() {
-      @Override public void onItemClick(Place p ) {
-        Log.i(TAG, "Place clicked " + p);
-        mCallback.showDetail(p);
-      }
-    };
 
-    mPlaceAdapter = new PlacesAdapter(getContext(), R.id.placesContainer,placeList, mPlaceItemListener);
+    mPlaceAdapter = new PlacesAdapter(getContext(), R.id.placesContainer,placeList);
 
+    // Create an instance of GoogleAPIClient.
+    if (mGoogleApiClient == null) {
+      mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+          .addConnectionCallbacks(this)
+          .addOnConnectionFailedListener(this)
+          .addApi(LocationServices.API)
+          .build();
+    }
   }
+
 
   @Nullable
   @Override
@@ -100,18 +109,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
 
     return mPlacesView;
   }
-  @Override
-  public void onAttach(Context context) {
-    super.onAttach(context);
-    // This makes sure that the container activity has implemented
-    // the callback interface. If not, it throws an exception
-    try {
-      mCallback = (PlaceListener) context;
-    } catch (ClassCastException e) {
-      throw new ClassCastException(context
-          + " must implement PlacesListener");
-    }
-  }
+
 
   @Override
   public void onResume() {
@@ -127,23 +125,12 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
   @Override public void showNearbyPlaces(List<Place> places) {
     mPlaceAdapter.setPlaces(places);
     mPlaceAdapter.notifyDataSetChanged();
-    mCallback.onPlacesFound(places);
   }
 
   @Override public void showProgressIndicator(final boolean active) {
     if (getView() == null){
       return;
     }
-
-    final SwipeRefreshLayout srl = (SwipeRefreshLayout) getView().findViewById(R.id.refresh_layout);
-
-    // Make sure setRefreshing() is called after the layout is done with everything else.
-    srl.post(new Runnable() {
-      @Override
-      public void run() {
-        srl.setRefreshing(active);
-      }
-    });
   }
 
   @Override public boolean isActive() {
@@ -158,9 +145,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
   public  class PlacesAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private List<Place> mPlaces = Collections.emptyList();
-    private final OnItemClickListener listener;
-    public PlacesAdapter(Context context, int resource, List<Place> places, OnItemClickListener listener){
-          this.listener = listener;
+    public PlacesAdapter(Context context, int resource, List<Place> places){
           mPlaces = places;
     }
 
@@ -183,7 +168,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
       holder.address.setText(place.getAddress());
       Drawable drawable = assignIcon(position);
       holder.icon.setImageDrawable(drawable);
-      holder.bind(place, listener);
+      holder.bind(place);
     }
 
     @Override public int getItemCount() {
@@ -196,7 +181,40 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
     }
   }
 
+  @Override public void onFilterDialogClose(boolean applyFilter) {
+    if (applyFilter){
+      mPresenter.start();
+    }
+  }
 
+  @Override public void onConnected(@Nullable Bundle bundle) {
+    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+        mGoogleApiClient);
+    if (mLastLocation != null){
+      Log.i(TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
+      mPresenter.setLocation(mLastLocation);
+      LocationService locationService = LocationService.getInstance();
+      locationService.setCurrentLocation(mLastLocation);
+      mPresenter.start();
+    }
+  }
+
+  @Override public void onConnectionSuspended(int i) {
+
+  }
+  @Override public void onStart() {
+    mGoogleApiClient.connect();
+    super.onStart();
+  }
+
+  @Override  public void onStop() {
+    mGoogleApiClient.disconnect();
+    super.onStop();
+  }
+
+  @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+  }
   public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
     public TextView placeName;
@@ -209,10 +227,9 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
       address = (TextView) itemView.findViewById(R.id.placeAddress);
       icon = (ImageView) itemView.findViewById(R.id.placeTypeIcon);
     }
-    public void bind(final Place place, final OnItemClickListener listener){
+    public void bind(final Place place){
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          listener.onItemClick(place);
           Intent intent = new Intent(getContext(),MapActivity.class);
           intent.putExtra("PLACE_DETAIL", place.getName());
           startActivity(intent);
@@ -220,9 +237,5 @@ public class PlacesFragment extends Fragment implements PlacesContract.View{
       });
     }
 
-  }
-
-  public interface OnItemClickListener {
-    void onItemClick(Place place);
   }
 }

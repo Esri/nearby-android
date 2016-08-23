@@ -32,8 +32,6 @@ import java.util.List;
  * Created by sand8529 on 7/12/16.
  */
 public interface PlaceListener {
-  void onPlacesFound(List<Place> places);
-  void onPlaceSearch();
   void showDetail(Place place);
   void onMapScroll();
 }

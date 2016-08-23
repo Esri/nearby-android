@@ -25,20 +25,28 @@ package com.esri.android.nearbyplaces.map;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
@@ -47,7 +55,6 @@ import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
-import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,11 +64,11 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by sand8529 on 6/24/16.
  */
-public class MapFragment extends Fragment implements  MapContract.View {
+public class MapFragment extends Fragment implements  MapContract.View, PlaceListener, FilterContract.FilterView {
 
   private MapContract.Presenter mPresenter;
 
-  private FrameLayout mMapLayout;
+  private CoordinatorLayout mMapLayout;
 
   private MapView mMapView;
 
@@ -78,8 +85,6 @@ public class MapFragment extends Fragment implements  MapContract.View {
 
   private Place mCenteredPlace = null;
 
-  private PlaceListener mCallback;
-
   private NavigationCompletedListener mNavigationCompletedListener;
 
   private final static String TAG = MapFragment.class.getSimpleName();
@@ -88,7 +93,12 @@ public class MapFragment extends Fragment implements  MapContract.View {
 
   private String centeredPlaceName;
 
-  private Point mCurrentLocation = null;
+
+  private BottomSheetBehavior bottomSheetBehavior;
+
+  private FrameLayout mBottomSheet;
+
+  private boolean mShowSnackbar = false;
 
   public MapFragment(){}
 
@@ -102,6 +112,11 @@ public class MapFragment extends Fragment implements  MapContract.View {
     super.onCreate(savedInstance);
     // retain this fragment
     setRetainInstance(true);
+
+    mMapLayout = (CoordinatorLayout) getActivity().findViewById(R.id.map_coordinator_layout);
+
+    //Set up behavior for the bottom sheet
+    setUpBottomSheet();
   }
 
   @Override
@@ -109,13 +124,6 @@ public class MapFragment extends Fragment implements  MapContract.View {
   public View onCreateView(LayoutInflater layoutInflater, ViewGroup container,
       Bundle savedInstance){
     mStartTime = Calendar.getInstance().getTimeInMillis();
-    if (getArguments() != null){
-      Bundle arguments = getArguments();
-      double latitdue = arguments.getDouble(NearbyPlaces.LATITUDE);
-      double longitude = arguments.getDouble(NearbyPlaces.LONGITUDE);
-      Point location = new Point(longitude, latitdue, SpatialReferences.getWebMercator());
-      mCurrentLocation = location;
-    }
     Log.i("MapFragment", "Start_ON_CREATE_VIEW");
     View root = layoutInflater.inflate(R.layout.map_fragment, container,false);
     setUpMapView(root);
@@ -179,23 +187,70 @@ public class MapFragment extends Fragment implements  MapContract.View {
     Log.i("MapFragment", "End_SET_UP_MAP_VIEW");
   }
 
+  private void setUpBottomSheet(){
+    bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
+
+    bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+      @Override
+      public void onStateChanged(View bottomSheet, int newState) {
+        getActivity().invalidateOptionsMenu();
+        if (newState == BottomSheetBehavior.STATE_COLLAPSED && mShowSnackbar) {
+          showSearchSnackbar();
+          mShowSnackbar = false;
+        }
+      }
+
+      @Override
+      public void onSlide(View bottomSheet, float slideOffset) {
+      }
+    });
+
+    mBottomSheet = (FrameLayout) getActivity().findViewById(R.id.bottom_card_view);
+  }
+
+
+  /**
+   * Set the menu options based on
+   * the bottom sheet state
+   *
+   */
   @Override
-  public void onAttach(Context context) {
-    super.onAttach(context);
-    // This makes sure that the container activity has implemented
-    // the callback interface. If not, it throws an exception
-    try {
-      mCallback = (PlaceListener) context;
-    } catch (ClassCastException e) {
-      throw new ClassCastException(context
-          + " must implement PlacesListener");
+  public void onPrepareOptionsMenu(Menu menu){
+    MenuItem listItem = menu.findItem(R.id.list_action);
+    MenuItem routeItem = menu.findItem(R.id.route_action);
+    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+      listItem.setVisible(true);
+      routeItem.setVisible(false);
+    }else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+      listItem.setVisible(false);
+      routeItem.setVisible(true);
     }
   }
 
-  @Override
-  public void onSaveInstanceState(Bundle savedInstanceState) {
-    // Always call the superclass so it can save the view hierarchy state
-    super.onSaveInstanceState(savedInstanceState);
+  /**
+   * When user presses 'Apply' button in filter dialong,
+   * re-filter results.
+   * @param applyFilter - boolean
+   */
+  @Override public void onFilterDialogClose(boolean applyFilter) {
+    if (applyFilter){
+      mPresenter.start();
+    }
+  }
+
+  private void showSearchSnackbar(){
+    // Show snackbar prompting user about
+    // scanning for new locations
+    Snackbar snackbar = Snackbar
+        .make(mMapLayout, "Search for places?", Snackbar.LENGTH_LONG)
+        .setAction("SEARCH", new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            mPresenter.findPlacesNearby();
+          }
+        });
+
+    snackbar.show();
   }
   /**
    * Attach the viewpoint change listener
@@ -205,7 +260,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
   private void setNavigationCompletedListener(){
     mNavigationCompletedListener = new NavigationCompletedListener() {
       @Override public void navigationCompleted(NavigationCompletedEvent navigationCompletedEvent) {
-          mCallback.onMapScroll();
+          onMapScroll();
       }
     };
     mMapView.addNavigationCompletedListener(mNavigationCompletedListener);
@@ -270,7 +325,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
       points.add(graphicPoint);
       mGraphicOverlay.getGraphics().add(graphic);
     }
-    Envelope env = determineResultEnvelope(points);
+    Envelope env = getResultEnveope(points);
     mMapView.setViewpoint(new Viewpoint(env));
 
     // If a centered place name is not null,
@@ -278,19 +333,57 @@ public class MapFragment extends Fragment implements  MapContract.View {
     if (centeredPlaceName != null){
       for (Place p: places){
         if (p.getName().equalsIgnoreCase(centeredPlaceName)){
-          ((MapActivity)getActivity()).showDetail(p);
+          showDetail(p);
           centeredPlaceName = null;
           break;
         }
       }
     }
   }
-  private Envelope determineResultEnvelope(List<Point> points){
+  /**
+   * @param place
+   */
+  @Override public void showDetail(Place place) {
+    TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
+    txtName.setText(place.getName());
+    String address = place.getAddress();
+    String[] splitStrs = TextUtils.split(address, ",");
+    if (splitStrs.length>0)                                   {
+      address = splitStrs[0];
+    }
+    TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress) ;
+    txtAddress.setText(address);
+    TextView txtPhone  = (TextView) mBottomSheet.findViewById(R.id.placePhone) ;
+    txtPhone.setText(place.getPhone());
+    TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);
+    txtUrl.setText(place.getURL());
+    TextView txtType = (TextView) mBottomSheet.findViewById(R.id.placeType) ;
+    txtType.setText(place.getType());
 
+    // Assign the appropriate icon
+    Drawable d =   CategoryHelper.getDrawableForPlace(place, getActivity()) ;
+    ImageView icon = (ImageView) getActivity().findViewById(R.id.TypeIcon);
+    icon.setImageDrawable(d);
+    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+    // Center map on selected place
+    mPresenter.centerOnPlace(place);
+    mShowSnackbar = false;
+  }
+
+  @Override public void onMapScroll() {
+    //Dismiss bottom sheet
+    mShowSnackbar = true;
+    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){ // show snackbar prompting for re-doing search
+      showSearchSnackbar();
+    }else{
+      bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+  }
+  private Envelope getResultEnveope(List<Point> points){
     Multipoint mp = new Multipoint(points);
     return GeometryEngine.buffer(mp,0.0007).getExtent();
-
-
   }
   /**
    * Assign appropriate drawable given place type
@@ -309,9 +402,6 @@ public class MapFragment extends Fragment implements  MapContract.View {
     return mMapView;
   }
 
-//  @Override public LocationDisplay getLocationDisplay() {
-//    return mLocationDisplay;
-//  }
 
   /**
    * Center the selected place and change the pin
@@ -371,7 +461,7 @@ public class MapFragment extends Fragment implements  MapContract.View {
   /**
    * Given a map point, find the associated Place
    */
-  private Place findPlaceForPoint(Point p){
+  private Place getPlaceForPoint(Point p){
     Place foundPlace = mPresenter.findPlaceForPoint(p);
     return foundPlace;
   }
@@ -408,9 +498,9 @@ public class MapFragment extends Fragment implements  MapContract.View {
             int identifyResultSize = graphic.size();
             if (identifyResultSize > 0){
               Graphic foundGraphic = graphic.get(0);
-              Place foundPlace = findPlaceForPoint((Point)foundGraphic.getGeometry());
+              Place foundPlace = getPlaceForPoint((Point)foundGraphic.getGeometry());
               if (foundPlace != null){
-                mCallback.showDetail(foundPlace);
+                showDetail(foundPlace);
               }
             }
           } catch (InterruptedException | ExecutionException ie) {

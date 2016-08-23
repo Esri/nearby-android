@@ -62,17 +62,14 @@ import java.util.List;
  * Created by sand8529 on 6/16/16.
  */
 public class PlacesActivity extends AppCompatActivity
-    implements ActivityCompat.OnRequestPermissionsResultCallback, PlaceListener, FilterContract.FilterView,
-    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    implements ActivityCompat.OnRequestPermissionsResultCallback {
 
   private static final String TAG = PlacesActivity.class.getSimpleName();
   private static final int PERMISSION_REQUEST_LOCATION = 0;
   private static final String CURRENT_FILTERS = "current_filters";
   private CoordinatorLayout mMainLayout;
-  private PlacesPresenter mPlacePresenter;
-  private ArrayList<String> mCurrentFilters;
-  private GoogleApiClient mGoogleApiClient;
-  private Location mLastLocation;
+
+
 
 
   @Override
@@ -89,15 +86,6 @@ public class PlacesActivity extends AppCompatActivity
 
     // request location permission
     requestLocationPermission();
-
-    // Create an instance of GoogleAPIClient.
-    if (mGoogleApiClient == null) {
-      mGoogleApiClient = new GoogleApiClient.Builder(this)
-          .addConnectionCallbacks(this)
-          .addOnConnectionFailedListener(this)
-          .addApi(LocationServices.API)
-          .build();
-    }
   }
 
   @Override
@@ -108,14 +96,6 @@ public class PlacesActivity extends AppCompatActivity
     return super.onCreateOptionsMenu(menu);
   }
 
-  @Override
-  public void onSaveInstanceState(Bundle savedInstanceState) {
-    // Save the user's current filters
-    savedInstanceState.putStringArrayList(CURRENT_FILTERS, mCurrentFilters);
-
-    // Always call the superclass so it can save the view hierarchy state
-    super.onSaveInstanceState(savedInstanceState);
-  }
   /**
    * Set up toolbar
    */
@@ -160,9 +140,7 @@ public class PlacesActivity extends AppCompatActivity
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), placesFragment, R.id.list_fragment_container, "list fragment");
     }
-
-    mPlacePresenter = new PlacesPresenter (placesFragment);
-
+    PlacesPresenter presenter = new PlacesPresenter(placesFragment);
   }
 
   /**
@@ -225,57 +203,5 @@ public class PlacesActivity extends AppCompatActivity
         Snackbar.make(mMainLayout, "Location permission request was denied.", Snackbar.LENGTH_SHORT).show();
       }
     }
-  }
-
-
-  @Override public void onPlacesFound(List<Place> places) {
-
-  }
-
-  @Override public void onPlaceSearch() {
-
-  }
-
-  @Override public void showDetail(Place place) {
-
-  }
-
-  @Override public void onMapScroll() {
-
-  }
-
-  @Override public void onFilterDialogClose(boolean applyFilter) {
-    if (applyFilter){
-      mPlacePresenter.start();
-    }
-  }
-
-  @Override public void onConnected(@Nullable Bundle bundle) {
-    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-        mGoogleApiClient);
-    if (mLastLocation != null){
-      Log.i(TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
-      mPlacePresenter.setLocation(mLastLocation);
-      LocationService locationService = LocationService.getInstance();
-      locationService.setCurrentLocation(mLastLocation);
-      mPlacePresenter.start();
-    }
-  }
-
-  @Override public void onConnectionSuspended(int i) {
-
-  }
-  @Override protected void onStart() {
-    mGoogleApiClient.connect();
-    super.onStart();
-  }
-
-  @Override  protected void onStop() {
-    mGoogleApiClient.disconnect();
-    super.onStop();
-  }
-
-  @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
   }
 }
