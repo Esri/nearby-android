@@ -23,34 +23,42 @@
  */
 package com.esri.android.nearbyplaces.map;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.filter.FilterContract;
+import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
+import com.esri.android.nearbyplaces.filter.FilterPresenter;
+import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
+import com.esri.arcgisruntime.layers.LegendInfo;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
@@ -68,7 +76,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by sand8529 on 6/24/16.
  */
-public class MapFragment extends Fragment implements  MapContract.View, PlaceListener, FilterContract.FilterView {
+public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
   private MapContract.Presenter mPresenter;
 
@@ -104,6 +112,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private boolean mShowSnackbar = false;
 
+  private boolean mRoutingState = false;
+
   public MapFragment(){}
 
   public static MapFragment newInstance(){
@@ -116,6 +126,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     super.onCreate(savedInstance);
     // retain this fragment
     setRetainInstance(true);
+
+    // Set up the toolbar
+    setUpToolbar();
+
+    // Set toolbar to transparent on start of activity
+    setToolbarTransparent();
 
     setHasOptionsMenu(true);/// allows invalidateOptionsMenu to work
     mMapLayout = (CoordinatorLayout) getActivity().findViewById(R.id.map_coordinator_layout);
@@ -142,6 +158,91 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     return root;
   }
 
+  @Override
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    // Inflate the menu items for use in the action bar
+    inflater.inflate(R.menu.map_menu, menu);
+  }
+
+  /**
+   * When activity first starts, the action bar
+   * shows the back arrow for navigating back
+   * to parent activity.  Menu item click listener
+   * responds in one of the following ways:
+   * 1) navigating back to list of places,
+   * 2) showing the filter UI
+   * 3) showing the route to selected place in map
+   */
+  private void setUpToolbar(){
+    Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.map_toolbar);
+    ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+    toolbar.setTitle("");
+    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+    ab.setDisplayHomeAsUpEnabled(true);
+
+    ab.setHomeAsUpIndicator(0); // Use default home icon
+    // Menu items change depending on presence/absence of bottom sheet
+    toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+      @Override public boolean onMenuItemClick(MenuItem item) {
+        if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.list_view))){
+          // Show the list of places
+          showList();
+        }
+        if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.filter))){
+          FilterDialogFragment dialogFragment = new FilterDialogFragment();
+          FilterPresenter filterPresenter = new FilterPresenter();
+          dialogFragment.setPresenter(filterPresenter);
+          dialogFragment.show(getActivity().getFragmentManager(),"dialog_fragment");
+
+        }
+        if (item.getTitle().toString().equalsIgnoreCase("Route")){
+          //Hide menu filter and route menu items
+          mRoutingState = true;
+          setUpRoutingToolbar(centeredPlaceName);
+          getActivity().invalidateOptionsMenu();
+          mPresenter.getRoute();
+
+        }
+        return false;
+      }
+    });
+  }
+  private void showList(){
+    Intent intent = new Intent(getActivity(), PlacesActivity.class);
+    startActivity(intent);
+  }
+  private void setToolbarTransparent(){
+    // Sets the outline of the toolbar shadow to the background color
+    // of the layout (transparent, in this case)
+    AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
+    appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+  }
+
+  /**
+   *
+   */
+  private void setUpRoutingToolbar(String placeName){
+    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+    ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+    LayoutInflater mInflater = LayoutInflater.from(getActivity());
+    View v = mInflater.inflate(R.layout.app_bar_layout, null);
+    TextView tv = (TextView) v.findViewById(R.id.route_bar_title);
+    Log.i(TAG, placeName);
+    tv.setText(placeName);
+    tv.setTextSize(30);
+    ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
+
+    ab.setCustomView(v, layout);
+    ab.setDisplayShowCustomEnabled(true);
+    ab.setDisplayHomeAsUpEnabled(true);
+    ab.setHomeAsUpIndicator(R.drawable.ic_clear_white_24px);
+
+    Drawable drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.route_appbar_background, null);
+    ab.setBackgroundDrawable(drawable);
+
+    AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
+
+  }
   /**
    * Add the map to the view and set up location display
    * @param root View
@@ -175,14 +276,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
-          Log.i("MapFragment", "DRAW_COMPLETE, spatial reference " + mMapView.getSpatialReference().getWKText());
-        //  mLocationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
-         // Log.i("MapFragment", "Start_auto_pan_mode");
-          long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime)/1000;
-          Log.i("MapFragment", "Time taken = " + Long.toString(elapsedTime));
+          long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime);
+          Log.i("MapFragment", "***Time taken*** = " + Long.toString(elapsedTime));
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
-
         }
       }
     });
@@ -223,25 +320,32 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public void onPrepareOptionsMenu(Menu menu){
     MenuItem listItem = menu.findItem(R.id.list_action);
     MenuItem routeItem = menu.findItem(R.id.route_action);
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+    MenuItem directionItem = menu.findItem(R.id.walking_directions);
+    MenuItem filterItem = menu.findItem(R.id.filter_in_map);
+
+    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED  && !mRoutingState){
+      Log.i("MapFragment", "Routing state false & bottom sheet collapsed, showing list & filter icons...");
       listItem.setVisible(true);
+      filterItem.setVisible(true);
       routeItem.setVisible(false);
-    }else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+    }else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED && !mRoutingState){
+      Log.i("MapFragment", "Routing state false & bottom sheet expanded, showing route & filter icons...");
       listItem.setVisible(false);
+      filterItem.setVisible(true);
       routeItem.setVisible(true);
+    }
+    if (mRoutingState){
+      Log.i("MapFragment", "Routing state true, setting menu items to invisible");
+      listItem.setVisible(false);
+      filterItem.setVisible(false);
+      routeItem.setVisible(false);
+      directionItem.setVisible(true);
+    }else{
+      directionItem.setVisible(false);
     }
   }
 
-  /**
-   * When user presses 'Apply' button in filter dialong,
-   * re-filter results.
-   * @param applyFilter - boolean
-   */
-  @Override public void onFilterDialogClose(boolean applyFilter) {
-    if (applyFilter){
-      mPresenter.start();
-    }
-  }
+
 
   private void showSearchSnackbar(){
     // Show snackbar prompting user about
@@ -291,8 +395,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    if (!mLocationDisplay.isStarted()){
       mLocationDisplay.startAsync();
     }
-    Log.i(TAG, "Map fragment onResume " + "and location display is " + mLocationDisplay.isStarted());
-//  //  mPresenter.start();
   }
 
   @Override
@@ -302,8 +404,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    if (mLocationDisplay.isStarted()){
       mLocationDisplay.stop();
     }
-    Log.i(TAG, "Map fragment onPause " + "and location display is " + mLocationDisplay.isStarted());
-
   }
 
   /**
@@ -378,6 +478,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Center map on selected place
     mPresenter.centerOnPlace(place);
     mShowSnackbar = false;
+    centeredPlaceName = place.getName();
   }
 
   @Override public void onMapScroll() {
@@ -548,8 +649,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         }
 
       });
-
-
       return true;
     }
   }

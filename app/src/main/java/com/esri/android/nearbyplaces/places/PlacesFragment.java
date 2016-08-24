@@ -55,7 +55,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class PlacesFragment extends Fragment implements PlacesContract.View,  FilterContract.FilterView,
+public class PlacesFragment extends Fragment implements PlacesContract.View,
     GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
   private PlacesContract.Presenter mPresenter;
@@ -179,11 +179,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,  Fi
     }
   }
 
-  @Override public void onFilterDialogClose(boolean applyFilter) {
-    if (applyFilter){
-      mPresenter.start();
-    }
-  }
 
   @Override public void onConnected(@Nullable Bundle bundle) {
     mLastLocation = LocationServices.FusedLocationApi.getLastLocation(

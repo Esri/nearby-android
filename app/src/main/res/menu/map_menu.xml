@@ -18,4 +18,10 @@
           android:icon="@drawable/ic_filter_list_white_24px"
           android:orderInCategory="100"
           app:showAsAction="always"/>
+    <item android:id="@+id/walking_directions"
+          android:title="Directions"
+          android:orderInCategory="200"
+          android:visible="false"
+          android:icon="@drawable/ic_directions_walk_black_24px"
+          app:showAsAction="always"/>
 </menu>

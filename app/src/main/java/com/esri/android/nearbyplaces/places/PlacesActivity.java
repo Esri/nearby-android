@@ -61,12 +61,13 @@ import java.util.List;
 /**
  * Created by sand8529 on 6/16/16.
  */
-public class PlacesActivity extends AppCompatActivity
-    implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
+    ActivityCompat.OnRequestPermissionsResultCallback {
 
   private static final String TAG = PlacesActivity.class.getSimpleName();
   private static final int PERMISSION_REQUEST_LOCATION = 0;
   private CoordinatorLayout mMainLayout;
+  private PlacesPresenter mPresenter;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,11 @@ public class PlacesActivity extends AppCompatActivity
        }
      });
    }
-
+  @Override public void onFilterDialogClose(boolean applyFilter) {
+    if (applyFilter){
+      mPresenter.start();
+    }
+  }
   private void showMap(MenuItem item){
     Intent intent = new Intent(this, MapActivity.class);
     startActivity(intent);
@@ -135,7 +140,7 @@ public class PlacesActivity extends AppCompatActivity
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), placesFragment, R.id.list_fragment_container, "list fragment");
     }
-    PlacesPresenter presenter = new PlacesPresenter(placesFragment);
+    mPresenter = new PlacesPresenter(placesFragment);
   }
 
   /**

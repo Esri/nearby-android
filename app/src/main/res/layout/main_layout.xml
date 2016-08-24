@@ -23,8 +23,8 @@
                         app:layout_scrollFlags="scroll|enterAlways|snap"
                         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-                </android.support.v7.widget.Toolbar>
 
+                </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
         <FrameLayout android:id="@+id/list_fragment_container"

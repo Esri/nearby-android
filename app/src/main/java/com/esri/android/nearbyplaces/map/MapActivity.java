@@ -34,16 +34,14 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.esri.android.nearbyplaces.BuildConfig;
 import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
@@ -73,7 +71,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by sand8529 on 7/27/16.
  */
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements FilterContract.FilterView {
 
   private static final String TAG = MapActivity.class.getSimpleName();
   private MapPresenter mMapPresenter;
@@ -84,15 +82,6 @@ public class MapActivity extends AppCompatActivity {
     Log.i("MapActivity", "Start_ON_CREATE");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.map_layout);
-
-    // Set up the toolbar
-    setUpToolbar();
-
-    AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.map_appbar);
-
-    // Sets the outline of the toolbar shadow to the background color
-    // of the layout (transparent, in this case)
-    appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
 
     setUpFragments(savedInstanceState);
 
@@ -113,48 +102,18 @@ public class MapActivity extends AppCompatActivity {
       Log.e("MapActivity", e.getMessage());
     }
   }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu items for use in the action bar
-    MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.map_menu, menu);
-    return super.onCreateOptionsMenu(menu);
+  /**
+   * When user presses 'Apply' button in filter dialong,
+   * re-filter results.
+   * @param applyFilter - boolean
+   */
+  @Override public void onFilterDialogClose(boolean applyFilter) {
+    if (applyFilter){
+      mMapPresenter.start();
+    }
   }
 
-  private void setUpToolbar(){
-    Toolbar toolbar = (Toolbar) findViewById(R.id.map_toolbar);
-    setSupportActionBar(toolbar);
-    toolbar.setTitle("");
-    final ActionBar ab = getSupportActionBar();
-    ab.setDisplayHomeAsUpEnabled(true);
-    final Activity a = this;
-    toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-           @Override public boolean onMenuItemClick(MenuItem item) {
-             if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.list_view))){
-               // Show the list of places
-              showList();
-             }
-             if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.filter))){
-               FilterDialogFragment dialogFragment = new FilterDialogFragment();
-               FilterPresenter filterPresenter = new FilterPresenter();
-               dialogFragment.setPresenter(filterPresenter);
-               dialogFragment.show(getFragmentManager(),"dialog_fragment");
 
-             }
-             if (item.getTitle().toString().equalsIgnoreCase("Route")){
-               MapView mapView = (MapView) findViewById(R.id.map);
-               mMapPresenter.getRoute();
-             }
-             return false;
-           }
-         });
-  }
-
-  private void showList(){
-    Intent intent = new Intent(this, PlacesActivity.class);
-    startActivity(intent);
-  }
   /**
    * Set up fragments
    */
