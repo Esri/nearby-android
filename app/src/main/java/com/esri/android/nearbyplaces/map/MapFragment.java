@@ -23,7 +23,6 @@
  */
 package com.esri.android.nearbyplaces.map;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -38,7 +37,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -46,25 +44,24 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.esri.android.nearbyplaces.NearbyPlaces;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
-import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
+import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
-import com.esri.arcgisruntime.layers.LegendInfo;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.tasks.route.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.route.Route;
 import com.esri.arcgisruntime.tasks.route.RouteResult;
 
@@ -113,6 +110,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private boolean mShowSnackbar = false;
 
   private boolean mRoutingState = false;
+
+  private List<DirectionManeuver> mRouteDirections;
 
   public MapFragment(){}
 
@@ -195,11 +194,31 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
           dialogFragment.show(getActivity().getFragmentManager(),"dialog_fragment");
 
         }
-        if (item.getTitle().toString().equalsIgnoreCase("Route")){
-          //Hide menu filter and route menu items
-          mRoutingState = true;
-          setUpRoutingToolbar(centeredPlaceName);
-          getActivity().invalidateOptionsMenu();
+          if (item.getTitle().toString().equalsIgnoreCase("Route")){
+            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            final View routeHeaderView = inflater.inflate(R.layout.route_header,null);
+            TextView tv = (TextView) routeHeaderView.findViewById(R.id.route_bar_title);
+            tv.setText(mCenteredPlace.getName());
+            ImageView btnClose = (ImageView) routeHeaderView.findViewById(R.id.btnClose);
+            ImageView btnDirections = (ImageView) routeHeaderView.findViewById(R.id.btnDirections);
+            final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+            ab.hide();
+            mMapView.addView(routeHeaderView, layout);
+            btnClose.setOnClickListener(new View.OnClickListener() {
+              @Override public void onClick(View v) {
+                mMapView.removeView(routeHeaderView);
+                ab.show();
+              }
+            });
+            btnDirections.setOnClickListener(new View.OnClickListener() {
+              @Override public void onClick(View v) {
+                // show directions fragment
+                RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
+                routeDirectionsFragment.show(getActivity().getFragmentManager(),"route_directions_fragment");
+                routeDirectionsFragment.setRoutingDirections(mRouteDirections);
+              }
+            });
           mPresenter.getRoute();
 
         }
@@ -219,31 +238,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   /**
-   *
-   */
-  private void setUpRoutingToolbar(String placeName){
-    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
-    ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-    LayoutInflater mInflater = LayoutInflater.from(getActivity());
-    View v = mInflater.inflate(R.layout.app_bar_layout, null);
-    TextView tv = (TextView) v.findViewById(R.id.route_bar_title);
-    Log.i(TAG, placeName);
-    tv.setText(placeName);
-    tv.setTextSize(30);
-    ActionBar.LayoutParams layout = new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
-
-    ab.setCustomView(v, layout);
-    ab.setDisplayShowCustomEnabled(true);
-    ab.setDisplayHomeAsUpEnabled(true);
-    ab.setHomeAsUpIndicator(R.drawable.ic_clear_white_24px);
-
-    Drawable drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.route_appbar_background, null);
-    ab.setBackgroundDrawable(drawable);
-
-    AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
-
-  }
-  /**
    * Add the map to the view and set up location display
    * @param root View
    */
@@ -253,8 +247,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView = (MapView) root.findViewById(R.id.map);
     Log.i("MapFragment", "Find_map_view");
 
-    Basemap basemap = new Basemap(new ArcGISVectorTiledLayer(
-        getResources().getString(R.string.navigation_url)));
+//    Basemap basemap = new Basemap(new ArcGISVectorTiledLayer(
+//        getResources().getString(R.string.navigation_url)));
+    Basemap basemap = Basemap.createStreets();
     Log.i("MapFragment", "Basemap_created");
 
     ArcGISMap map = new ArcGISMap(basemap);
@@ -588,6 +583,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Zoom to the extent of the entire route with a padding
     Geometry shape = routeGraphic.getGeometry();
     mMapView.setViewpointGeometryWithPaddingAsync(shape, 400);
+
+    // Get routing directions
+    mRouteDirections = route.getDirectionManeuvers();
   }
 
   /**

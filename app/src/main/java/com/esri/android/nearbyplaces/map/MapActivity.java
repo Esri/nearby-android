@@ -124,9 +124,10 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
 
     if (mapFragment == null) {
       mapFragment = MapFragment.newInstance();
+      ActivityUtils.addFragmentToActivity(
+          getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
     }
-    ActivityUtils.addFragmentToActivity(
-        getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
+
 
     mMapPresenter = new MapPresenter(mapFragment);
 

@@ -54,9 +54,6 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
 
   public FilterDialogFragment(){}
 
-  public static FilterDialogFragment newInstance(){
-    return new FilterDialogFragment();
-  }
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     getDialog().setTitle(R.string.filter_dialog);
@@ -98,7 +95,6 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
   @Override public void setPresenter(FilterContract.Presenter presenter) {
     mPresenter = presenter;
   }
-
 
 
   public class FilterItemAdapter extends ArrayAdapter<FilterItem>{

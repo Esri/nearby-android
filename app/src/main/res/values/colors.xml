@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorText">#FFFFFF</color>
     <drawable name="touchFeedback">#CFD8DC</drawable>
+    <color name="lineColor">#12000000</color>
 </resources>
