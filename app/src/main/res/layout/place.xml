@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="?android:attr/listPreferredItemHeight"
-              android:background="@drawable/touch_feedback"
-              android:orientation="horizontal"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
-              android:paddingBottom="@dimen/list_item_padding"
-              android:paddingTop="@dimen/list_item_padding">
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:background="@drawable/touch_feedback"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingBottom="@dimen/list_item_padding"
+                android:paddingTop="@dimen/list_item_padding">
     <ImageView
             android:id="@+id/placeTypeIcon"
             android:layout_width="wrap_content"
@@ -20,7 +20,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/placeTypeIcon"
-            android:layout_toRightOf="@+id/placeTypeIcon" android:orientation="vertical">
+            android:layout_toRightOf="@+id/placeTypeIcon"
+            android:orientation="vertical"
+            android:id="@+id/layoutNameAddress">
         <TextView
                 android:id="@+id/placeName"
                 android:layout_width="match_parent"
@@ -39,6 +41,27 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" android:layout_below="@+id/placeName"/>
 
     </android.support.v7.widget.LinearLayoutCompat>
+    <LinearLayout android:layout_width="wrap_content"
+                  android:orientation="vertical"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentRight="true">
+        <TextView
+                android:layout_toRightOf="@id/layoutNameAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeBearing" android:text="N"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:layout_gravity="right"/>
+        <TextView
+                android:id="@+id/placeDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="address"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" android:layout_below="@+id/layoutNameAddress"/>
+    </LinearLayout>
+
 
 
 </RelativeLayout>

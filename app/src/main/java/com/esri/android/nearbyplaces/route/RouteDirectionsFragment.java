@@ -144,8 +144,10 @@ public class RouteDirectionsFragment extends DialogFragment {
         case STOP :
           id = R.drawable.route_pin_end;
           break;
+        case DEPART:
+          id = R.drawable.route_pin_start;
+          break;
         case HIGHWAY_EXIT :
-        case DEPART :
         case TRIP_ITEM :
         case PEDESTRIAN_RAMP :
         case ELEVATOR :

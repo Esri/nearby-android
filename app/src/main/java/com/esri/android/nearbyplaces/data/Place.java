@@ -44,10 +44,12 @@ public final class Place {
   @Nullable
   private final String mPhone;
   @Nullable
-  private final String mBearing;
+  private  String mBearing;
+  @Nullable
+  private  String mDistance;
 
   public Place(String name, @Nullable String type, @Nullable Point location, @Nullable String address, @Nullable String URL, @Nullable String phone,
-      @Nullable String bearing) {
+      @Nullable String bearing, @Nullable String distance) {
     mName = name;
     mType = type;
     mLocation = location;
@@ -55,6 +57,7 @@ public final class Place {
     mURL = URL;
     mPhone = phone;
     mBearing = bearing;
+    mDistance = distance;
   }
 
   public String getName() {
@@ -85,6 +88,15 @@ public final class Place {
     return mBearing;
   }
 
+  @Nullable public String getDistance() { return  mDistance; }
+
+  public void setBearing(String bearing){
+    mBearing = bearing;
+  }
+
+  public void setDistance(String d){
+    mDistance =d;
+  }
   @Override public String toString() {
     return "Place{" +
         "mName='" + mName + '\'' +
@@ -94,6 +106,7 @@ public final class Place {
         ", mURL='" + mURL + '\'' +
         ", mPhone='" + mPhone + '\'' +
         ", mBearing='" + mBearing + '\'' +
+        ", mDistanc='" + mDistance + '\'' +
         '}';
   }
 }

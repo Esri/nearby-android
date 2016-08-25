@@ -36,12 +36,12 @@ public final class PlacesServiceApiEndpoint {
 
   static {
     DATA = new ArrayMap(2);
-    addPlace("Powell's Books", "bookstore", new Point(45.521658, -122.7035132), "1055 W Burnside Portland, OR 97209",null, "(503) 228-4651", "NE");
-    addPlace("Portland Japanese Garden", "garden", new Point(45.5188089, -122.7101633 ), "611 SW Kingston Ave, Portland, OR 97205", "japanesegarden.com","(503) 223-1321", "W");
+    addPlace("Powell's Books", "bookstore", new Point(45.521658, -122.7035132), "1055 W Burnside Portland, OR 97209",null, "(503) 228-4651");
+    addPlace("Portland Japanese Garden", "garden", new Point(45.5188089, -122.7101633 ), "611 SW Kingston Ave, Portland, OR 97205", "japanesegarden.com","(503) 223-1321");
   }
 
-  private static void addPlace(String placeName, String type, Point location, String address, String URL, String phone, String bearing){
-    Place newPlace = new Place(placeName, type, location, address, URL, phone, bearing );
+  private static void addPlace(String placeName, String type, Point location, String address, String URL, String phone){
+    Place newPlace = new Place(placeName, type, location, address, URL, phone,null,null);
     DATA.put(newPlace.getName(), newPlace);
   }
 

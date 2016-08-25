@@ -193,7 +193,8 @@ public class LocationService implements PlacesServiceApi {
           String type = (String) attributes.get("Type");
           Point point = r.getDisplayLocation();
 
-          Place place = new Place(name, type, point, address, url,phone,null);
+          Place place = new Place(name, type, point, address, url,phone,null,null);
+          setBearingAndDistanceForPlace(place);
           Log.i("PLACE", place.toString());
           places.add(place);
           mappedPlaces.put(name,place);
@@ -204,6 +205,38 @@ public class LocationService implements PlacesServiceApi {
         e.printStackTrace();
       }
     }
+  }
+  private void setBearingAndDistanceForPlace(Place place){
+    String bearing =  null;
+    if (mCurrentLocation != null && place.getLocation() != null){
+      LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);
+      AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
+      Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), place.getLocation().getSpatialReference() );
+      GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
+      double distance = result.getDistance();
+      place.setDistance(Math.round(distance)+"m");
+      Log.i(TAG, "Azimuth 1 = " + result.getAzimuth1() + " units , converted = " +  result.getAzimuth1()%360 + " " + result.getAzimuthUnit().getName());
+      double degrees = result.getAzimuth1();
+      if (degrees > -22.5  && degrees <= 22.5){
+        bearing = "N";
+      }else if (degrees > 22.5 && degrees <= 67.5){
+        bearing = "NE";
+      }else if (degrees > 67.5 && degrees <= 112.5){
+        bearing = "E";
+      }else if (degrees > 112.5 && degrees <= 157.5){
+        bearing = "SE";
+      }else if (degrees > 157.5 && degrees <= -157.5){
+        bearing = "S";
+      }else if (degrees > -157.5 && degrees <= -112.5){
+        bearing = "SW";
+      }else if (degrees > -112.5 && degrees <= -67.5){
+        bearing = "W";
+      }else if (degrees > -67.5 && degrees <= -22.5){
+        bearing = "NW";
+      }
+
+    }
+    place.setBearing(bearing);
   }
   /**
    * A helper class for solving routes

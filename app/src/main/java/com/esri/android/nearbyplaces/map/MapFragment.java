@@ -200,6 +200,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
             final View routeHeaderView = inflater.inflate(R.layout.route_header,null);
             TextView tv = (TextView) routeHeaderView.findViewById(R.id.route_bar_title);
             tv.setText(mCenteredPlace.getName());
+            tv.setTextColor(Color.WHITE);
             ImageView btnClose = (ImageView) routeHeaderView.findViewById(R.id.btnClose);
             ImageView btnDirections = (ImageView) routeHeaderView.findViewById(R.id.btnDirections);
             final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();

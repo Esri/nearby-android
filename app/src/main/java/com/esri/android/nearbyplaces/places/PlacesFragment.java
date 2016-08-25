@@ -112,9 +112,11 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   @Override
   public void onResume() {
     super.onResume();
-//    mPresenter.start();
-
+    if (mPresenter != null){
+      mPresenter.start();
+    }
   }
+
   @Override
   public void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
@@ -166,6 +168,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       holder.address.setText(place.getAddress());
       Drawable drawable = assignIcon(position);
       holder.icon.setImageDrawable(drawable);
+      holder.bearing.setText(place.getBearing());
+      holder.distance.setText(place.getDistance());
       holder.bind(place);
     }
 
@@ -213,12 +217,16 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     public TextView placeName;
     public TextView address;
     public ImageView icon;
+    public TextView bearing;
+    public TextView distance;
 
     public RecyclerViewHolder(View itemView) {
       super(itemView);
       placeName = (TextView) itemView.findViewById(R.id.placeName);
       address = (TextView) itemView.findViewById(R.id.placeAddress);
       icon = (ImageView) itemView.findViewById(R.id.placeTypeIcon);
+      bearing = (TextView) itemView.findViewById(R.id.placeBearing);
+      distance = (TextView) itemView.findViewById(R.id.placeDistance);
     }
     public void bind(final Place place){
       itemView.setOnClickListener(new View.OnClickListener() {
