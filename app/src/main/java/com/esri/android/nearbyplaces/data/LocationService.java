@@ -61,12 +61,15 @@ public class LocationService implements PlacesServiceApi {
   private static LocationService instance = null;
   private Point mCurrentLocation;
   private RouteTask mRouteTask;
+  private Activity mActivity;
 
-  protected LocationService(){}
+  protected LocationService(Activity a){
+    mActivity = a;
+  }
 
-  public static LocationService getInstance(){
+  public static LocationService getInstance(Activity activity){
     if (instance == null){
-      instance = new LocationService();
+      instance = new LocationService(activity);
     }
     return instance;
   }
@@ -193,7 +196,7 @@ public class LocationService implements PlacesServiceApi {
           String type = (String) attributes.get("Type");
           Point point = r.getDisplayLocation();
 
-          Place place = new Place(name, type, point, address, url,phone,null,null);
+          Place place = new Place(name, type, point, address, url,phone,null,0);
           setBearingAndDistanceForPlace(place);
           Log.i("PLACE", place.toString());
           places.add(place);
@@ -214,8 +217,7 @@ public class LocationService implements PlacesServiceApi {
       Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), place.getLocation().getSpatialReference() );
       GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
       double distance = result.getDistance();
-      place.setDistance(Math.round(distance)+"m");
-      Log.i(TAG, "Azimuth 1 = " + result.getAzimuth1() + " units , converted = " +  result.getAzimuth1()%360 + " " + result.getAzimuthUnit().getName());
+      place.setDistance(Math.round(distance));
       double degrees = result.getAzimuth1();
       if (degrees > -22.5  && degrees <= 22.5){
         bearing = "N";
@@ -225,7 +227,7 @@ public class LocationService implements PlacesServiceApi {
         bearing = "E";
       }else if (degrees > 112.5 && degrees <= 157.5){
         bearing = "SE";
-      }else if (degrees > 157.5 && degrees <= -157.5){
+      }else if( (degrees > 157.5 ) || (degrees <= -157.5)){
         bearing = "S";
       }else if (degrees > -157.5 && degrees <= -112.5){
         bearing = "SW";
@@ -234,9 +236,30 @@ public class LocationService implements PlacesServiceApi {
       }else if (degrees > -67.5 && degrees <= -22.5){
         bearing = "NW";
       }
+      if (bearing==null){
+        Log.i(TAG, "Can't find bearing for " + degrees);
+      }
 
     }
     place.setBearing(bearing);
+  }
+
+  /**
+   * Return the extent of the search results with a small buffer
+   * @return Envelope
+   */
+  public Envelope getResultEnveope(){
+    Envelope envelope = null;
+    List<Place> places = getPlacesFromRepo();
+    if (!places.isEmpty()){
+      List<Point> points = new ArrayList<>();
+      for (Place place : places){
+        points.add(place.getLocation());
+      }
+      Multipoint mp = new Multipoint(points);
+      envelope = GeometryEngine.buffer(mp, 0.0007).getExtent();
+    }
+    return envelope;
   }
   /**
    * A helper class for solving routes
@@ -254,14 +277,17 @@ public class LocationService implements PlacesServiceApi {
     @Override
     public void run (){
       LoadStatus status = mRouteTask.getLoadStatus();
-      Log.i(TAG, "Route task is " + status.name());
 
       // Has the route task loaded successfully?
       if (status == LoadStatus.FAILED_TO_LOAD) {
         Log.i(TAG, mRouteTask.getLoadError().getMessage());
+        Log.i(TAG, "CAUSE = " + mRouteTask.getLoadError().getCause().getMessage());
 
       } else {
-
+//        List<TravelMode> travelModes =  mRouteTask.getRouteTaskInfo().getTravelModes();
+//        for (TravelMode travelMode : travelModes){
+//          Log.i(TAG, "Name = " + travelMode.getName()+ " Desc= " + travelMode.getDescription()+ " Type= "+ travelMode.getType());
+//        }
         final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
             .generateDefaultParametersAsync();
         // Add a done listener that uses the returned route parameters
@@ -271,12 +297,14 @@ public class LocationService implements PlacesServiceApi {
           @Override
           public void run() {
             try {
-              RouteParameters routeParameters = routeTaskFuture.get();
+              final RouteParameters routeParameters = routeTaskFuture.get();
+              final TravelMode mode = routeParameters.getTravelMode();
+              mode.setType("WALK");
+              mode.setName("Walking Time");
               // Add a stop for origin and destination
+              routeParameters.setTravelMode(mode);
               routeParameters.getStops().add(origin);
               routeParameters.getStops().add(destination);
-              Log.i(TAG, "Origin x/y = " + origin.getGeometry().getX()+ ", " + origin.getGeometry().getY());
-              Log.i(TAG, "Destination x/y= " + destination.getGeometry().getX() + ", " + destination.getGeometry().getY());
               // We want the task to return driving directions and routes
               routeParameters.setReturnDirections(true);
               routeParameters.setDirectionsDistanceTextUnits(
@@ -290,16 +318,14 @@ public class LocationService implements PlacesServiceApi {
                 public void run() {
                   try {
                     RouteResult routeResult = routeResFuture.get();
+                    Log.i(TAG, routeParameters.getTravelMode().getName());
                     // Show route results
                     if (routeResult != null){
-                      Log.i(TAG, "Got a result");
                       mCallback.onRouteReturned(routeResult);
 
                     }else{
                       Log.i(TAG, "NO RESULT FROM ROUTING");
                     }
-
-
 
                   } catch (Exception e) {
                     Log.e(TAG, e.getMessage());

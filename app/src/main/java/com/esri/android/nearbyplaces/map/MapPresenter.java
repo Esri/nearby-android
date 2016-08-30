@@ -24,7 +24,9 @@
 
 package com.esri.android.nearbyplaces.map;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
@@ -42,6 +44,7 @@ public class MapPresenter implements MapContract.Presenter {
 
   private final static String TAG = MapPresenter.class.getSimpleName();
   private Point mLocation;
+  private Activity mActivity;
 
   private final MapContract.View mMapView;
   private LocationService mLocationService;
@@ -108,12 +111,16 @@ public class MapPresenter implements MapContract.Presenter {
     mMapView.showRoute(routeResult, start, end);
   }
 
+  @Override public Envelope getExtentForNearbyPlaces() {
+    return mLocationService != null ? mLocationService.getResultEnveope(): null;
+  }
+
   /**
    * The entry point for this class starts
    * by loading the gecoding service.
    */
   @Override public void start() {
-    mLocationService = LocationService.getInstance();
+    mLocationService = LocationService.getInstance(mActivity);
     List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
     if (existingPlaces != null && existingPlaces.size()> 0){
       mMapView.showNearbyPlaces(existingPlaces);
@@ -126,6 +133,10 @@ public class MapPresenter implements MapContract.Presenter {
           });
     }
 
+  }
+
+  @Override public void setContext(Activity a) {
+    mActivity = a;
   }
 
 }

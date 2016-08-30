@@ -24,10 +24,13 @@
 
 package com.esri.android.nearbyplaces;
 
+import android.app.Activity;
+
 /**
  * Created by sand8529 on 6/16/16.
  */
 public interface BasePresenter {
 
   void start();
+  void setContext(Activity a);
 }

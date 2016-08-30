@@ -142,7 +142,7 @@ public class RouteDirectionsFragment extends DialogFragment {
           id = R.drawable.ic_routing_left_left;
           break;
         case STOP :
-          id = R.drawable.route_pin_end;
+          id = R.drawable.end_route_pin;
           break;
         case DEPART:
           id = R.drawable.route_pin_start;

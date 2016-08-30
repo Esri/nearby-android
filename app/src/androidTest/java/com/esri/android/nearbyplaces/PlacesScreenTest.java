@@ -47,6 +47,6 @@ public class PlacesScreenTest {
 
   }
   private Place createPlace(String placeName){
-    return new Place(placeName,null,null,null,null,null,null);
+    return new Place(placeName,null,null,null,null,null,null,null);
   }
 }

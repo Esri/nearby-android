@@ -26,6 +26,7 @@ package com.esri.android.nearbyplaces.map;
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.tasks.route.RouteResult;
@@ -62,5 +63,7 @@ public interface MapContract {
     void getRoute();
 
     void setRoute(RouteResult routeResult, Point start, Point end);
+
+    Envelope getExtentForNearbyPlaces();
   }
 }

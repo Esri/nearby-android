@@ -24,6 +24,7 @@
 
 package com.esri.android.nearbyplaces.placeDetail;
 
+import android.app.Activity;
 import com.esri.android.nearbyplaces.data.Place;
 
 /**
@@ -46,6 +47,10 @@ public class PlaceDetailPresenter implements PlaceDetailContract.Presenter {
   }
 
   @Override public void start() {
+
+  }
+
+  @Override public void setContext(Activity a) {
 
   }
 }

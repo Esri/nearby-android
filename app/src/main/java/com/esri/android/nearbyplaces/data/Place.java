@@ -29,7 +29,7 @@ import com.esri.arcgisruntime.geometry.Point;
 /**
  * Created by sand8529 on 6/16/16.
  */
-public final class Place {
+public final class Place implements Comparable<Place> {
 
   private final String mName;
 
@@ -46,10 +46,10 @@ public final class Place {
   @Nullable
   private  String mBearing;
   @Nullable
-  private  String mDistance;
+  private  long mDistance;
 
   public Place(String name, @Nullable String type, @Nullable Point location, @Nullable String address, @Nullable String URL, @Nullable String phone,
-      @Nullable String bearing, @Nullable String distance) {
+      @Nullable String bearing, @Nullable long distance) {
     mName = name;
     mType = type;
     mLocation = location;
@@ -88,13 +88,13 @@ public final class Place {
     return mBearing;
   }
 
-  @Nullable public String getDistance() { return  mDistance; }
+  @Nullable public long getDistance() { return  mDistance; }
 
   public void setBearing(String bearing){
     mBearing = bearing;
   }
 
-  public void setDistance(String d){
+  public void setDistance(long d){
     mDistance =d;
   }
   @Override public String toString() {
@@ -106,7 +106,18 @@ public final class Place {
         ", mURL='" + mURL + '\'' +
         ", mPhone='" + mPhone + '\'' +
         ", mBearing='" + mBearing + '\'' +
-        ", mDistanc='" + mDistance + '\'' +
+        ", mDistance='" + mDistance + '\'' +
         '}';
+  }
+
+  @Override public int compareTo(Place anotherPlace) {
+    int result = 0;
+    if (this.getDistance() > anotherPlace.getDistance()){
+      result = 1;
+    }
+    if (this.getDistance() < anotherPlace.getDistance()){
+      result = -1;
+    }
+    return  result;
   }
 }

@@ -28,6 +28,7 @@ import android.location.Location;
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.arcgisruntime.geometry.Envelope;
 
 import java.util.List;
 
@@ -54,6 +55,8 @@ public interface PlacesContract {
     void setLocation(Location location);
 
     void getPlacesNearby();
+
+    Envelope getExtentForNearbyPlaces();
 
   }
 }

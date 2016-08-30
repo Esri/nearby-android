@@ -23,6 +23,7 @@
  */
 package com.esri.android.nearbyplaces.filter;
 
+import android.app.Activity;
 import com.esri.android.nearbyplaces.data.CategoryKeeper;
 
 import java.util.ArrayList;
@@ -44,5 +45,9 @@ public class FilterPresenter implements FilterContract.Presenter{
   @Override public void start() {
     CategoryKeeper keeper = CategoryKeeper.getInstance();
     mFilters = keeper.getCategories();
+  }
+
+  @Override public void setContext(Activity a) {
+
   }
 }

@@ -24,11 +24,13 @@
 
 package com.esri.android.nearbyplaces.places;
 
+import android.app.Activity;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 
@@ -44,6 +46,7 @@ public class PlacesPresenter implements PlacesContract.Presenter {
 
   private final PlacesContract.View mPlacesView;
   private Point mCurrentLocation = null;
+  private Activity activity;
 
   private LocationService mLocationService;
   private final static int MAX_RESULT_COUNT = 10;
@@ -60,7 +63,7 @@ public class PlacesPresenter implements PlacesContract.Presenter {
    * geocode search.
    */
   @Override public void start() {
-    mLocationService = LocationService.getInstance();
+    mLocationService = LocationService.getInstance(activity);
     List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
     if (existingPlaces != null && existingPlaces.size()> 0){
       setPlacesNearby(existingPlaces);
@@ -72,6 +75,10 @@ public class PlacesPresenter implements PlacesContract.Presenter {
             }
           });
     }
+  }
+
+  @Override public void setContext(Activity a) {
+    activity = a;
   }
 
   /**
@@ -100,6 +107,10 @@ public class PlacesPresenter implements PlacesContract.Presenter {
         }
       });
     }
+  }
+
+  @Override public Envelope getExtentForNearbyPlaces() {
+    return mLocationService != null ? mLocationService.getResultEnveope(): null;
   }
 
 }

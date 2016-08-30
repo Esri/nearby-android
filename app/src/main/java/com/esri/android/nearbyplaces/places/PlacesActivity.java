@@ -25,6 +25,7 @@
 package com.esri.android.nearbyplaces.places;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -48,6 +49,7 @@ import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -122,8 +124,23 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       mPresenter.start();
     }
   }
+  public static Intent createMapIntent(Activity a, Envelope envelope){
+    Intent intent = new Intent(a, MapActivity.class);
+    // Get the extent of search results so map
+    // can set viewpoint
+
+    if (envelope != null){
+      intent.putExtra("MIN_X", envelope.getXMin());
+      intent.putExtra("MIN_Y", envelope.getYMin());
+      intent.putExtra("MAX_X", envelope.getXMax());
+      intent.putExtra("MAX_Y", envelope.getYMax());
+      intent.putExtra("SR", envelope.getSpatialReference().getWKText());
+    }
+    return  intent;
+  }
   private void showMap(MenuItem item){
-    Intent intent = new Intent(this, MapActivity.class);
+    Envelope envelope = mPresenter.getExtentForNearbyPlaces();
+    Intent intent = createMapIntent(this, envelope);
     startActivity(intent);
   }
 

@@ -79,7 +79,6 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
   @Override
   protected void onCreate(Bundle savedInstanceState) {
 
-    Log.i("MapActivity", "Start_ON_CREATE");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.map_layout);
 
@@ -87,15 +86,13 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
 
     setUpAuth();
 
-    Log.i("MapActivity", "End_ON_CREATE");
   }
 
   private void setUpAuth(){
     try{
-      OAuthConfiguration oauthConfig = new OAuthConfiguration(
-          "https://www.arcgis.com", BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
-      Log.i("LocationService", oauthConfig.getClientId());
-      //  AuthenticationManager.addOAuthConfiguration(oauthConfig);
+//      OAuthConfiguration oauthConfig = new OAuthConfiguration(
+//          "https://www.arcgis.com", BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
+     // AuthenticationManager.addOAuthConfiguration(oauthConfig);
       DefaultAuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
     }catch(Exception e){

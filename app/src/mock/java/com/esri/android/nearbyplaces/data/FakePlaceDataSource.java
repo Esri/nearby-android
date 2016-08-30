@@ -34,6 +34,6 @@ public class FakePlaceDataSource implements PlacesRepository {
   }
 
   @Override public Place getPlaceDetail(String placeName) {
-    return new Place("Powell's Books", "bookstore", new Point(45.521658, -122.7035132), "1055 W Burnside Portland, OR 97209",null, "(503) 228-4651", "NE",null);
+    return new Place("Powell's Books", "bookstore", new Point(45.521658, -122.7035132), "1055 W Burnside Portland, OR 97209",null, "(503) 228-4651", "NE",0);
   }
 }

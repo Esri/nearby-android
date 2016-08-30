@@ -45,6 +45,7 @@ import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.map.MapActivity;
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -123,6 +124,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override public void showNearbyPlaces(List<Place> places) {
+    Collections.sort(places);
     mPlaceAdapter.setPlaces(places);
     mPlaceAdapter.notifyDataSetChanged();
   }
@@ -169,7 +171,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       Drawable drawable = assignIcon(position);
       holder.icon.setImageDrawable(drawable);
       holder.bearing.setText(place.getBearing());
-      holder.distance.setText(place.getDistance());
+      holder.distance.setText(place.getDistance() + "m");
       holder.bind(place);
     }
 
@@ -190,7 +192,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     if (mLastLocation != null){
       Log.i(TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
       mPresenter.setLocation(mLastLocation);
-      LocationService locationService = LocationService.getInstance();
+      LocationService locationService = LocationService.getInstance(getActivity());
       locationService.setCurrentLocation(mLastLocation);
       mPresenter.start();
     }
@@ -231,7 +233,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     public void bind(final Place place){
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          Intent intent = new Intent(getContext(),MapActivity.class);
+          Envelope envelope = mPresenter.getExtentForNearbyPlaces();
+          Intent intent = PlacesActivity.createMapIntent(getActivity(),envelope);
           intent.putExtra("PLACE_DETAIL", place.getName());
           startActivity(intent);
         }
