@@ -10,6 +10,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        // Enabling multidex support.
+        multiDexEnabled true
+
         buildConfigField "String", "CLIENT_ID" , CLIENT_ID
         buildConfigField "String", "OAUTH_REDIRECT_ID" , OAUTH_REDIRECT_ID
 
