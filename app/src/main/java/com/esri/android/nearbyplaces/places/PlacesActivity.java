@@ -197,10 +197,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
-      if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        // We're good to go
-
-      } else {
+      if (grantResults.length != 1 ) {
         // Permission request was denied.
         Snackbar.make(mMainLayout, "Location permission request was denied.", Snackbar.LENGTH_SHORT).show();
       }

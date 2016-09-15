@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,7 +88,7 @@ public class RouteDirectionsFragment extends DialogFragment {
       TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
       textView.setText(direction.getDirectionText());
       textView = (TextView) v.findViewById(R.id.directions_length_textview);
-      String lengthString = String.format("%.1f mi", direction.getLength());
+      String lengthString = String.format("%.1f meters", direction.getLength());
       textView.setText(lengthString);
       return v;
     }
@@ -180,7 +181,7 @@ public class RouteDirectionsFragment extends DialogFragment {
           return null;
       }
       try {
-        return context.getResources().getDrawable(id);
+        return ResourcesCompat.getDrawable(getActivity().getResources(),id,null);
       } catch (Resources.NotFoundException e) {
         Log.w(TAG, "No drawable found for" + maneuver.name());
         return null;

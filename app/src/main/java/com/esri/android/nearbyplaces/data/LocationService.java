@@ -24,9 +24,11 @@
 package com.esri.android.nearbyplaces.data;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.loadable.LoadStatus;
@@ -271,12 +273,8 @@ public class LocationService implements PlacesServiceApi {
       if (status == LoadStatus.FAILED_TO_LOAD) {
         Log.i(TAG, mRouteTask.getLoadError().getMessage());
         Log.i(TAG, "CAUSE = " + mRouteTask.getLoadError().getCause().getMessage());
-
+        Toast.makeText(mActivity,"There was a problem getting the route",Toast.LENGTH_SHORT).show();
       } else {
-//        List<TravelMode> travelModes =  mRouteTask.getRouteTaskInfo().getTravelModes();
-//        for (TravelMode travelMode : travelModes){
-//          Log.i(TAG, "Name = " + travelMode.getName()+ " Desc= " + travelMode.getDescription()+ " Type= "+ travelMode.getType());
-//        }
         final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
             .generateDefaultParametersAsync();
         // Add a done listener that uses the returned route parameters

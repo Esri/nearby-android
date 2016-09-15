@@ -116,7 +116,7 @@ public class CategoryHelper {
    */
   public static Integer getPinForPlace(Place p){
     String category = CategoryHelper.getCategoryForFoodType(p.getType());
-    Integer d = null;
+    Integer d;
     switch (category){
       case "Pizza":
         d =  R.drawable.pizza_pin;
@@ -140,7 +140,7 @@ public class CategoryHelper {
   }
   public static Integer getPinForCenterPlace(Place p){
     String category = CategoryHelper.getCategoryForFoodType(p.getType());
-    Integer d = null;
+    Integer d;
     switch (category){
       case "Pizza":
         d =  R.drawable.blue_pizza_pin;
@@ -166,7 +166,7 @@ public class CategoryHelper {
 
     String placeType = p.getType();
     String category =  CategoryHelper.getCategoryForFoodType(placeType);
-    Drawable d = null;
+    Drawable d;
     switch (category){
       case "Pizza":
         d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_local_pizza_black_24dp,null);

@@ -102,7 +102,7 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-      ViewHolder holder = null;
+      ViewHolder holder;
 
       // Get the data item for this position
       final FilterItem item = getItem(position);
@@ -132,8 +132,6 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
       // Attach listener that toggles selected state of category
       convertView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          Drawable bm1 =  ResourcesCompat.getDrawable(getResources(),item.getIconId(),null);
-          Drawable bm2 =  ResourcesCompat.getDrawable(getResources(),item.getSelectedIconId(),null);
           FilterItem clickedItem = getItem(myPosition);
           if (clickedItem.getSelected()){
             clickedItem.setSelected(false);

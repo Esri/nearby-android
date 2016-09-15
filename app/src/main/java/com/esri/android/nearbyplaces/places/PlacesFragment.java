@@ -128,10 +128,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     mPlaceAdapter.notifyDataSetChanged();
   }
 
+  // TODO: Implement support for progress indicators
   @Override public void showProgressIndicator(final boolean active) {
-    if (getView() == null){
-      return;
-    }
   }
 
   @Override public boolean isActive() {
