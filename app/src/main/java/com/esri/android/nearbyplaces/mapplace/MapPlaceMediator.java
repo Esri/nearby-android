@@ -26,9 +26,7 @@ package com.esri.android.nearbyplaces.mapplace;
 import com.esri.android.nearbyplaces.map.MapContract;
 import com.esri.android.nearbyplaces.places.PlacesContract;
 
-/**
- * Created by sand8529 on 7/6/16.
- */
+
 public class MapPlaceMediator implements MapPlaceContract {
 
   private PlacesContract.Presenter mPlacePresenter;

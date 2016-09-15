@@ -28,9 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import com.esri.android.nearbyplaces.R;
 
-/**
- * Created by sand8529 on 7/13/16.
- */
+
 public class PlaceDetailActivity extends AppCompatActivity {
   @Override
   public void onCreate(Bundle savedInstanceState){

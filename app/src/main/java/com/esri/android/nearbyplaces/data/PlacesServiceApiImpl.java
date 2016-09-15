@@ -26,7 +26,6 @@ package com.esri.android.nearbyplaces.data;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
-import com.esri.android.nearbyplaces.data.PlacesServiceApi.PlacesServiceCallback;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 

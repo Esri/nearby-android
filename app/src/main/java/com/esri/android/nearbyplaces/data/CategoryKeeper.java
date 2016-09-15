@@ -29,9 +29,6 @@ import com.esri.android.nearbyplaces.filter.FilterItem;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by sand8529 on 7/28/16.
- */
 public class CategoryKeeper {
     private static CategoryKeeper instance = null;
     private final ArrayList<FilterItem> categories = new ArrayList<>();

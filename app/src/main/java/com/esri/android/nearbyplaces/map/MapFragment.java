@@ -25,11 +25,9 @@ package com.esri.android.nearbyplaces.map;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,27 +54,24 @@ import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.*;
-import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.symbology.Symbol;
 import com.esri.arcgisruntime.tasks.route.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.route.Route;
 import com.esri.arcgisruntime.tasks.route.RouteResult;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by sand8529 on 6/24/16.
- */
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
   private MapContract.Presenter mPresenter;

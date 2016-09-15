@@ -33,9 +33,6 @@ import com.esri.arcgisruntime.geometry.Envelope;
 import java.util.List;
 
 
-/**
- * Created by sand8529 on 6/16/16.
- */
 public interface PlacesContract {
 
   interface View extends BaseView<Presenter> {

@@ -27,9 +27,7 @@ package com.esri.android.nearbyplaces.placeDetail;
 import android.app.Activity;
 import com.esri.android.nearbyplaces.data.Place;
 
-/**
- * Created by sand8529 on 7/19/16.
- */
+
 public class PlaceDetailPresenter implements PlaceDetailContract.Presenter {
 
   private final PlaceDetailContract.View mView;

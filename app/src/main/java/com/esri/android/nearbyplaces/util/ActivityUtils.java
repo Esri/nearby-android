@@ -31,9 +31,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * Created by sand8529 on 6/16/16.
- */
+
 public class ActivityUtils {
   /**
    * The {@code fragment} is added to the container view with id {@code frameId}. The operation is

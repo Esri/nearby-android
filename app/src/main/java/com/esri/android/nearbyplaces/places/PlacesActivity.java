@@ -28,41 +28,26 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.*;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.*;
-import com.esri.android.nearbyplaces.NearbyPlaces;
-import com.esri.android.nearbyplaces.PlaceListener;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.LocationService;
-import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.geometry.Envelope;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
-
-/**
- * Created by sand8529 on 6/16/16.
- */
 public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
     ActivityCompat.OnRequestPermissionsResultCallback {
 

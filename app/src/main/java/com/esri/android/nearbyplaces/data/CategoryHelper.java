@@ -28,13 +28,9 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import com.esri.android.nearbyplaces.R;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by sand8529 on 7/7/16.
- */
 public class CategoryHelper {
   static final List<String> foodTypes = Arrays.asList(
         "African Food",

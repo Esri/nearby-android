@@ -38,9 +38,6 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * Created by sand8529 on 6/16/16.
- */
 public class PlacesPresenter implements PlacesContract.Presenter {
 
 

@@ -29,9 +29,6 @@ import com.esri.android.nearbyplaces.data.CategoryKeeper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by sand8529 on 7/28/16.
- */
 public class FilterPresenter implements FilterContract.Presenter{
   private ArrayList<FilterItem> mFilters = new ArrayList<>();
 

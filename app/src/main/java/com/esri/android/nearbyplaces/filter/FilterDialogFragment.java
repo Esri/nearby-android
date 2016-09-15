@@ -26,27 +26,21 @@ package com.esri.android.nearbyplaces.filter;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 import com.esri.android.nearbyplaces.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by sand8529 on 7/28/16.
- */
 public class FilterDialogFragment extends DialogFragment implements FilterContract.View {
   private FilterContract.Presenter mPresenter;
   private FilterItemAdapter mFilterItemAdapter;

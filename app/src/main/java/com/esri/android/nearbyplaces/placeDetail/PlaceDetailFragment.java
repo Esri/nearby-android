@@ -39,9 +39,7 @@ import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
 
-/**
- * Created by sand8529 on 7/12/16.
- */
+
 public class PlaceDetailFragment extends BottomSheetDialogFragment implements PlaceDetailContract.View {
 
   private PlaceDetailContract.Presenter mPresenter;

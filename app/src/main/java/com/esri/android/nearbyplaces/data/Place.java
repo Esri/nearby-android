@@ -26,9 +26,6 @@ package com.esri.android.nearbyplaces.data;
 import android.support.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
-/**
- * Created by sand8529 on 6/16/16.
- */
 public final class Place implements Comparable<Place> {
 
   private final String mName;
