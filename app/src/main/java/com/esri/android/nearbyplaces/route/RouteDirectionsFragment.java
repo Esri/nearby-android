@@ -40,11 +40,12 @@ import com.esri.android.nearbyplaces.R;
 import com.esri.arcgisruntime.tasks.route.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.route.DirectionManeuverType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RouteDirectionsFragment extends DialogFragment {
 
-  private List<DirectionManeuver> mDirectionManeuvers;
+  private List<DirectionManeuver> mDirectionManeuvers = new ArrayList<>();
   private final static String TAG = RouteDirectionsFragment.class.getSimpleName();
 
   @Override
