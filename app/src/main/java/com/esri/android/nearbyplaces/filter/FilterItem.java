@@ -23,9 +23,6 @@
  */
 package com.esri.android.nearbyplaces.filter;
 
-/**
- * Created by sand8529 on 7/28/16.
- */
 public class FilterItem {
 
   private String mTitle;

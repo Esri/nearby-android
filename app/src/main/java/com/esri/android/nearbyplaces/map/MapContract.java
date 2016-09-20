@@ -33,9 +33,6 @@ import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.List;
 
-/**
- * Created by sand8529 on 6/24/16.
- */
 public interface MapContract {
 
   interface View extends BaseView<Presenter>{

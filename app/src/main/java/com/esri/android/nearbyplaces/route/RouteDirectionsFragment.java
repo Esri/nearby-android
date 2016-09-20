@@ -1,30 +1,52 @@
+/* Copyright 2016 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * For additional information, contact:
+ * Environmental Systems Research Institute, Inc.
+ * Attn: Contracts Dept
+ * 380 New York Street
+ * Redlands, California, USA 92373
+ *
+ * email: contracts@esri.com
+ *
+ */
 package com.esri.android.nearbyplaces.route;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.arcgisruntime.tasks.route.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.route.DirectionManeuverType;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by sand8529 on 8/25/16.
- */
 public class RouteDirectionsFragment extends DialogFragment {
 
-  private List<DirectionManeuver> mDirectionManeuvers;
+  private List<DirectionManeuver> mDirectionManeuvers = new ArrayList<>();
   private final static String TAG = RouteDirectionsFragment.class.getSimpleName();
 
   @Override
@@ -66,7 +88,7 @@ public class RouteDirectionsFragment extends DialogFragment {
       TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
       textView.setText(direction.getDirectionText());
       textView = (TextView) v.findViewById(R.id.directions_length_textview);
-      String lengthString = String.format("%.1f mi", direction.getLength());
+      String lengthString = String.format("%.1f meters", direction.getLength());
       textView.setText(lengthString);
       return v;
     }
@@ -159,7 +181,7 @@ public class RouteDirectionsFragment extends DialogFragment {
           return null;
       }
       try {
-        return context.getResources().getDrawable(id);
+        return ResourcesCompat.getDrawable(getActivity().getResources(),id,null);
       } catch (Resources.NotFoundException e) {
         Log.w(TAG, "No drawable found for" + maneuver.name());
         return null;

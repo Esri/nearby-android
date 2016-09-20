@@ -4,11 +4,11 @@
                                                                     android:id="@+id/refresh_layout"
                                                                     android:layout_height="wrap_content">
 
-<RelativeLayout
-        android:id="@+id/placesContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+            android:id="@+id/placesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
         <LinearLayout
                 android:id="@+id/placesLinearLayout"
                 android:layout_width="match_parent"
@@ -31,6 +31,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
         </LinearLayout>
-</RelativeLayout>
+    </RelativeLayout>
 
 </com.esri.android.nearbyplaces.places.ScrollChildSwipeRefreshLayout>

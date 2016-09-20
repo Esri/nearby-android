@@ -5,20 +5,12 @@
     <string name="route_view">Route</string>
     <string name="filter">Filter</string>
     <!-- Service URLs -->
-    <string name="geocode_service_url">http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer</string>
-    <string name="navigation_url">http://www.arcgis.com/sharing/rest/content/items/00cd8e843bae49b3a040423e5d65416b/resources/styles/root.json</string>
 
 
     <!-- Search categories for geocoding -->
-    <string name="bookstore">Bookstore</string>
-    <string name="food">Food</string>
-    <string name="hotel">Hotel</string>
-    <string name="pizza">Pizza</string>
-    <string name="bar_or_pub">Bar or Pub</string>
 
     <!-- Toast and dialog message -->
     <string name="no_places_found">No places found</string>
     <string name="filter_dialog">Filter Places</string>
 
-    <string name="routingservice_url">https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/</string>
 </resources>

@@ -32,19 +32,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
-import com.esri.android.nearbyplaces.PlaceListener;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
-import com.esri.android.nearbyplaces.filter.FilterContract;
-import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -129,10 +128,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     mPlaceAdapter.notifyDataSetChanged();
   }
 
+  // TODO: Implement support for progress indicators
   @Override public void showProgressIndicator(final boolean active) {
-    if (getView() == null){
-      return;
-    }
   }
 
   @Override public boolean isActive() {

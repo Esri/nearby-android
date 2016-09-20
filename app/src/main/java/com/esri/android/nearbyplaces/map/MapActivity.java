@@ -24,53 +24,16 @@
 
 package com.esri.android.nearbyplaces.map;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
-import com.esri.android.nearbyplaces.BuildConfig;
-import com.esri.android.nearbyplaces.NearbyPlaces;
-import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.CategoryHelper;
-import com.esri.android.nearbyplaces.data.LocationService;
-import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.filter.FilterContract;
-import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
-import com.esri.android.nearbyplaces.filter.FilterPresenter;
-import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
-import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.SpatialReference;
-import com.esri.arcgisruntime.geometry.SpatialReferences;
-import com.esri.arcgisruntime.loadable.LoadStatus;
-import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.security.AuthenticationManager;
 import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
-import com.esri.arcgisruntime.security.OAuthConfiguration;
-import com.esri.arcgisruntime.tasks.route.*;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-/**
- * Created by sand8529 on 7/27/16.
- */
 public class MapActivity extends AppCompatActivity implements FilterContract.FilterView {
 
   private static final String TAG = MapActivity.class.getSimpleName();

@@ -24,36 +24,27 @@
 package com.esri.android.nearbyplaces.data;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.AlertDialog;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import android.widget.Toast;
-import com.esri.android.nearbyplaces.BuildConfig;
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.PlacesServiceApi.PlacesServiceCallback;
-import com.esri.android.nearbyplaces.map.MapFragment;
-import com.esri.android.nearbyplaces.map.MapPresenter;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.loadable.LoadStatus;
-import com.esri.arcgisruntime.security.AuthenticationManager;
-import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
-import com.esri.arcgisruntime.security.OAuthConfiguration;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.esri.arcgisruntime.tasks.geocode.LocatorInfo;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 import com.esri.arcgisruntime.tasks.route.*;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-/**
- * Created by sand8529 on 7/5/16.
- */
+
 public class LocationService implements PlacesServiceApi {
 
   private final static String TAG = LocationService.class.getSimpleName();
@@ -282,12 +273,8 @@ public class LocationService implements PlacesServiceApi {
       if (status == LoadStatus.FAILED_TO_LOAD) {
         Log.i(TAG, mRouteTask.getLoadError().getMessage());
         Log.i(TAG, "CAUSE = " + mRouteTask.getLoadError().getCause().getMessage());
-
+        Toast.makeText(mActivity,"There was a problem getting the route",Toast.LENGTH_SHORT).show();
       } else {
-//        List<TravelMode> travelModes =  mRouteTask.getRouteTaskInfo().getTravelModes();
-//        for (TravelMode travelMode : travelModes){
-//          Log.i(TAG, "Name = " + travelMode.getName()+ " Desc= " + travelMode.getDescription()+ " Type= "+ travelMode.getType());
-//        }
         final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
             .generateDefaultParametersAsync();
         // Add a done listener that uses the returned route parameters

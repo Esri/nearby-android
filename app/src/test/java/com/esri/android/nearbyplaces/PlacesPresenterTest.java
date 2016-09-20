@@ -53,9 +53,9 @@ public class PlacesPresenterTest {
     when(mPlacesView.isActive()).thenReturn(true);
 
     PLACES = Lists.newArrayList(
-        new Place("Powells Books",null,null,null,null,null,null,null),
-        new Place("Stumptown Coffee", null,null,null,null,null,null,null),
-        new Place("Mt. Hood", null,null,null,null,null,null,null)
+        new Place("Powells Books",null,null,null,null,null,null,0),
+        new Place("Stumptown Coffee", null,null,null,null,null,null,0),
+        new Place("Mt. Hood", null,null,null,null,null,null,0)
     );
   }
   @Test

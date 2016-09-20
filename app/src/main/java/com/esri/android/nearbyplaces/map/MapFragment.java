@@ -25,11 +25,9 @@ package com.esri.android.nearbyplaces.map;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,27 +54,24 @@ import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.*;
-import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Geometry;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.symbology.Symbol;
 import com.esri.arcgisruntime.tasks.route.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.route.Route;
 import com.esri.arcgisruntime.tasks.route.RouteResult;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by sand8529 on 6/24/16.
- */
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
   private MapContract.Presenter mPresenter;
@@ -254,19 +249,27 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       }
     });
   }
+
+  /**
+   * Switch to the list view of the places
+   */
   private void showList(){
     Intent intent = new Intent(getActivity(), PlacesActivity.class);
     startActivity(intent);
   }
+
+  /**
+   * Sets the outline of the toolbar shadow to the background color
+   * of the layout (transparent, in this case)
+   */
   private void setToolbarTransparent(){
-    // Sets the outline of the toolbar shadow to the background color
-    // of the layout (transparent, in this case)
     AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
     appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
   }
 
   /**
-   * Add the map to the view and set up location display
+   * Add the map to the view and set up location display.
+   * Once the map is drawn, kick off business logic.
    * @param root View
    */
   private void setUpMapView(View root){
@@ -291,7 +294,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     mLocationDisplay.startAsync();
 
-
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
@@ -307,6 +309,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView.setOnTouchListener(new MapTouchListener(getActivity().getApplicationContext(), mMapView));
   }
 
+  /**
+   * Attach display logic to bottom sheet behavior.
+   */
   private void setUpBottomSheet(){
     bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
 
@@ -361,11 +366,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
   }
 
-
-
+  /**
+   * Show snackbar prompting user about
+   * scanning for new locations
+   */
   private void showSearchSnackbar(){
-    // Show snackbar prompting user about
-    // scanning for new locations
     Snackbar snackbar = Snackbar
         .make(mMapLayout, "Search for places?", Snackbar.LENGTH_LONG)
         .setAction("SEARCH", new View.OnClickListener() {
@@ -381,6 +386,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     snackbar.show();
   }
+
   /**
    * Attach the viewpoint change listener
    * so that POIs get updated as map's
@@ -394,6 +400,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     };
     mMapView.addNavigationCompletedListener(mNavigationCompletedListener);
   }
+
 
   private void removeNavigationCompletedListener(){
     if (mNavigationCompletedListener != null){
@@ -459,7 +466,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
   }
   /**
-   * @param place
+   * Populate the place detail contained
+   * within the bottom sheet
+   * @param place - Place item selected by user
    */
   @Override public void showDetail(Place place) {
     TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
@@ -490,8 +499,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     centeredPlaceName = place.getName();
   }
 
+  /**
+   * Dismiss the bottom sheet
+   * when map is scrolled.
+   */
   @Override public void onMapScroll() {
-    //Dismiss bottom sheet
     mShowSnackbar = true;
     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){ // show snackbar prompting for re-doing search
       showSearchSnackbar();
@@ -501,9 +513,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   /**
-   * Assign appropriate drawable given place type
-   * @param p - Place
-   * @return - Drawable
+   * Assign appropriate drawable given place
+   * @param p - the place item to be displayed
+   * @return - the appropriate drawable for the given place
    */
   private int getDrawableForPlace(Place p){
     int d = CategoryHelper.getPinForPlace(p);
@@ -521,7 +533,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   /**
    * Center the selected place and change the pin
    * color to blue.
-   * @param p
+   * @param p - the selected place
    */
   @Override public void centerOnPlace(Place p) {
     // Keep track of centered place since
@@ -560,6 +572,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
   }
 
+  /**
+   * Restore a pin to its default color
+   */
   private void clearCenteredPin(){
     if (mCenteredGraphic != null){
       mCenteredGraphic.setZIndex(0);
@@ -568,10 +583,19 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
   }
 
+  /**
+   * Clear the graphics overlay
+   */
   private void clearPlaceGraphicOverlay(){
       mGraphicOverlay.getGraphics().clear();
   }
 
+  /**
+   * Show the returned route on the map
+   * @param routeResult - RouteResult returned from the routing task
+   * @param beginPoint - the point representing the start of the route
+   * @param endPoint - the point representing the end of the route
+   */
   @Override public void showRoute(RouteResult routeResult, Point beginPoint, Point endPoint) {
     Route route;
     try {
@@ -627,9 +651,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   /**
    * Converts device specific pixels to density independent pixels.
    *
-   * @param context
-   * @param px
-   *            number of device specific pixels
+   * @param context - Activity Context
+   * @param px - number of device specific pixels
    * @return number of density independent pixels
    */
   private float convertPixelsToDp(Context context, float px) {
@@ -637,6 +660,13 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     return px / (metrics.densityDpi / 160f);
   }
 
+  /**
+   * Helper method for creating start/end graphic used
+   * to display the route on the map
+   * @param p - point representing location on the map
+   * @param pin - BitmapDrawable to use for the returned graphic
+   * @return - a graphic representing the point
+   */
   private Graphic generateRoutePoints(Point p, BitmapDrawable pin){
     float offsetY = convertPixelsToDp(getActivity(), pin.getBounds().bottom);
     PictureMarkerSymbol symbol = new PictureMarkerSymbol(pin);
@@ -645,7 +675,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
   /**
    *
-   * @param presenter
+   * @param presenter -  the MapContract.Presenter encapsulating
+   * the business logic for the map.
    */
   @Override public void setPresenter(MapContract.Presenter presenter) {
     mPresenter = presenter;
@@ -653,6 +684,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   /**
    * Given a map point, find the associated Place
+   * @param p - a point representing a geolocation
+   * @return - the place found at that geolocation
    */
   private Place getPlaceForPoint(Point p){
     Place foundPlace = mPresenter.findPlaceForPoint(p);

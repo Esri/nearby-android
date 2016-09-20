@@ -26,20 +26,18 @@ package com.esri.android.nearbyplaces.map;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
-import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-/**
- * Created by sand8529 on 6/24/16.
- */
+
 public class MapPresenter implements MapContract.Presenter {
 
   private final static String TAG = MapPresenter.class.getSimpleName();

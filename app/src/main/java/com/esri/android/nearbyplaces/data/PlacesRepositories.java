@@ -27,9 +27,6 @@ import android.support.annotation.NonNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * Created by sand8529 on 6/22/16.
- */
 public class PlacesRepositories {
 
   private PlacesRepositories(){
