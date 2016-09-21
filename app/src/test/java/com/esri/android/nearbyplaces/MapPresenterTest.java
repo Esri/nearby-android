@@ -27,8 +27,6 @@ import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesRepository;
 import com.esri.android.nearbyplaces.map.MapContract;
 import com.esri.android.nearbyplaces.map.MapPresenter;
-import com.esri.android.nearbyplaces.mapplace.MapPlaceContract;
-import com.esri.android.nearbyplaces.mapplace.MapPlaceMediator;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,8 +47,6 @@ public class MapPresenterTest {
   @Mock
   private MapContract.View mMapView;
 
-  @Mock
-  private MapPlaceContract mapPlaceContract;
 
   @Captor
   private ArgumentCaptor<PlacesRepository.GetPlaceCallback> mPlacesServiceCallbackCaptor;
@@ -60,7 +56,6 @@ public class MapPresenterTest {
     // Mockito has a very convenient way to inject mocks by using the @Mock annotation. To
     // inject the mocks in the test the initMocks method needs to be called.
     MockitoAnnotations.initMocks(this);
-    mapPlaceContract = new MapPlaceMediator();
     mMapPresenter = new MapPresenter(mMapView);
 
     PLACES = Lists.newArrayList(

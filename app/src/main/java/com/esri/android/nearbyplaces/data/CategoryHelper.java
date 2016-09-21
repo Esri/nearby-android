@@ -102,7 +102,7 @@ public class CategoryHelper {
         "Vietnamese Food",
         "Winery");
 
-  public static String getCategoryForFoodType(String type){
+  public static String getCategoryForFoodType(final String type){
     String category = type;
     if (foodTypes.contains(type)){
       category = "Food";
@@ -114,59 +114,59 @@ public class CategoryHelper {
    * @param p - Place
    * @return - Drawable
    */
-  public static Integer getPinForPlace(Place p){
-    String category = CategoryHelper.getCategoryForFoodType(p.getType());
-    Integer d;
+  public static Integer getPinForPlace(final Place p){
+    final String category = CategoryHelper.getCategoryForFoodType(p.getType());
+    final Integer d;
     switch (category){
       case "Pizza":
-        d =  R.drawable.pizza_pin;
+        d = Integer.valueOf(R.drawable.pizza_pin);
         break;
       case "Hotel":
-        d =  R.drawable.hotel_pin;
+        d = Integer.valueOf(R.drawable.hotel_pin);
         break;
       case "Food":
-        d = R.drawable.restaurant_pin;
+        d = Integer.valueOf(R.drawable.restaurant_pin);
         break;
       case "Bar or Pub":
-        d =  R.drawable.bar_pin;
+        d = Integer.valueOf(R.drawable.bar_pin);
         break;
       case "Coffee Shop":
-        d = R.drawable.cafe_pin;
+        d = Integer.valueOf(R.drawable.cafe_pin);
         break;
       default:
-        d = R.drawable.empty_pin;
+        d = Integer.valueOf(R.drawable.empty_pin);
     }
     return d;
   }
-  public static Integer getPinForCenterPlace(Place p){
-    String category = CategoryHelper.getCategoryForFoodType(p.getType());
-    Integer d;
+  public static Integer getPinForCenterPlace(final Place p){
+    final String category = CategoryHelper.getCategoryForFoodType(p.getType());
+    final Integer d;
     switch (category){
       case "Pizza":
-        d =  R.drawable.blue_pizza_pin;
+        d = Integer.valueOf(R.drawable.blue_pizza_pin);
         break;
       case "Hotel":
-        d =  R.drawable.blue_hotel_pin;
+        d = Integer.valueOf(R.drawable.blue_hotel_pin);
         break;
       case "Food":
-        d = R.drawable.blue_rest_pin;
+        d = Integer.valueOf(R.drawable.blue_rest_pin);
         break;
       case "Bar or Pub":
-        d =  R.drawable.blue_bar_pin;
+        d = Integer.valueOf(R.drawable.blue_bar_pin);
         break;
       case "Coffee Shop":
-        d = R.drawable.blue_cafe_pin;
+        d = Integer.valueOf(R.drawable.blue_cafe_pin);
         break;
       default:
-        d = R.drawable.blue_empty_pin;
+        d = Integer.valueOf(R.drawable.blue_empty_pin);
     }
     return d;
   }
-  public static Drawable getDrawableForPlace(Place p, Activity a){
+  public static Drawable getDrawableForPlace(final Place p, final Activity a){
 
-    String placeType = p.getType();
-    String category =  CategoryHelper.getCategoryForFoodType(placeType);
-    Drawable d;
+    final String placeType = p.getType();
+    final String category = CategoryHelper.getCategoryForFoodType(placeType);
+    final Drawable d;
     switch (category){
       case "Pizza":
         d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_local_pizza_black_24dp,null);

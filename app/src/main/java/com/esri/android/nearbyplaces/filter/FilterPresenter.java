@@ -30,21 +30,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FilterPresenter implements FilterContract.Presenter{
-  private ArrayList<FilterItem> mFilters = new ArrayList<>();
-
-
+  private List<FilterItem> mFilters = new ArrayList<>();
 
   @Override
-  public List<FilterItem> getFilteredCategories() {
+  public final List<FilterItem> getFilteredCategories() {
     return mFilters;
   }
 
-  @Override public void start() {
+  @Override public final void start() {
     CategoryKeeper keeper = CategoryKeeper.getInstance();
     mFilters = keeper.getCategories();
   }
 
-  @Override public void setContext(Activity a) {
-
-  }
 }

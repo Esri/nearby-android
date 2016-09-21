@@ -52,15 +52,11 @@ public class LocationService implements PlacesServiceApi {
   private static LocationService instance = null;
   private Point mCurrentLocation;
   private RouteTask mRouteTask;
-  private Activity mActivity;
 
-  protected LocationService(Activity a){
-    mActivity = a;
-  }
 
-  public static LocationService getInstance(Activity activity){
+  public static LocationService getInstance( ){
     if (instance == null){
-      instance = new LocationService(activity);
+      instance = new LocationService();
     }
     return instance;
   }
@@ -273,7 +269,6 @@ public class LocationService implements PlacesServiceApi {
       if (status == LoadStatus.FAILED_TO_LOAD) {
         Log.i(TAG, mRouteTask.getLoadError().getMessage());
         Log.i(TAG, "CAUSE = " + mRouteTask.getLoadError().getCause().getMessage());
-        Toast.makeText(mActivity,"There was a problem getting the route",Toast.LENGTH_SHORT).show();
       } else {
         final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
             .generateDefaultParametersAsync();

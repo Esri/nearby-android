@@ -41,8 +41,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class MapPresenter implements MapContract.Presenter {
 
   private final static String TAG = MapPresenter.class.getSimpleName();
-  private Point mLocation;
-  private Activity mActivity;
 
   private final MapContract.View mMapView;
   private LocationService mLocationService;
@@ -50,7 +48,7 @@ public class MapPresenter implements MapContract.Presenter {
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   private Place mCenteredPlace;
 
-  public MapPresenter(@NonNull MapContract.View mapView ){
+  public MapPresenter(@NonNull final MapContract.View mapView ){
     mMapView = checkNotNull(mapView, "map view cannot be null");
     mMapView.setPresenter(this);
   }
@@ -59,16 +57,16 @@ public class MapPresenter implements MapContract.Presenter {
    * Use the location service to geocode places of interest
    * based on the map's visible area extent.
    */
-  @Override public void findPlacesNearby() {
-    Point g =  mMapView.getMapView().getVisibleArea().getExtent().getCenter();
+  @Override public final void findPlacesNearby() {
+    final Point g =  mMapView.getMapView().getVisibleArea().getExtent().getCenter();
 
     if ( g !=null ){
-      GeocodeParameters parameters = new GeocodeParameters();
+      final GeocodeParameters parameters = new GeocodeParameters();
       parameters.setMaxResults(MAX_RESULT_COUNT);
       parameters.setPreferredSearchLocation(g);
       mLocationService.getPlacesFromService(parameters, new PlacesServiceApi.PlacesServiceCallback() {
-        @Override public void onLoaded(Object places) {
-          List<Place> data = (List) places;
+        @Override public void onLoaded(final Object places) {
+          final List<Place> data = (List) places;
 
           // Create graphics for displaying locations in map
           mMapView.showNearbyPlaces(data);
@@ -77,15 +75,15 @@ public class MapPresenter implements MapContract.Presenter {
     }
   }
 
-  @Override public void centerOnPlace(Place p) {
+  @Override public final void centerOnPlace(final Place p) {
     mCenteredPlace = p;
     mMapView.centerOnPlace(mCenteredPlace);
   }
 
-  @Override public Place findPlaceForPoint(Point p) {
+  @Override public final Place findPlaceForPoint(final Point p) {
     Place foundPlace = null;
-    List<Place> foundPlaces =mLocationService.getPlacesFromRepo();
-    for (Place place : foundPlaces){
+    final List<Place> foundPlaces =mLocationService.getPlacesFromRepo();
+    for (final Place place : foundPlaces){
       if (p.equals(place.getLocation())){
         foundPlace = place;
         break;
@@ -94,33 +92,33 @@ public class MapPresenter implements MapContract.Presenter {
     return foundPlace;
   }
 
-  @Override public void getRoute() {
-    if (mCenteredPlace !=  null && mLocationService.getCurrentLocation() != null){
+  @Override public final void getRoute() {
+    if ((mCenteredPlace != null) && (mLocationService.getCurrentLocation() != null)){
       mLocationService.getRouteFromService(mLocationService.getCurrentLocation(), mCenteredPlace.getLocation(),
           new PlacesServiceApi.RouteServiceCallback() {
-            @Override public void onRouteReturned(RouteResult result) {
+            @Override public void onRouteReturned(final RouteResult result) {
               mMapView.showRoute(result, mLocationService.getCurrentLocation(),mCenteredPlace.getLocation());
             }
           });
     }
   }
 
-  @Override public void setRoute(RouteResult routeResult, Point start, Point end) {
+  @Override public final void setRoute(final RouteResult routeResult, final Point start, final Point end) {
     mMapView.showRoute(routeResult, start, end);
   }
 
-  @Override public Envelope getExtentForNearbyPlaces() {
-    return mLocationService != null ? mLocationService.getResultEnveope(): null;
+  @Override public final Envelope getExtentForNearbyPlaces() {
+    return (mLocationService != null) ? mLocationService.getResultEnveope() : null;
   }
 
   /**
    * The entry point for this class starts
    * by loading the gecoding service.
    */
-  @Override public void start() {
-    mLocationService = LocationService.getInstance(mActivity);
-    List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
-    if (existingPlaces != null && existingPlaces.size()> 0){
+  @Override public final void start() {
+    mLocationService = LocationService.getInstance();
+    final List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
+    if ((existingPlaces != null) && !existingPlaces.isEmpty()){
       mMapView.showNearbyPlaces(existingPlaces);
     }else{
       LocationService.configureService(GEOCODE_URL,
@@ -130,11 +128,6 @@ public class MapPresenter implements MapContract.Presenter {
             }
           });
     }
-
-  }
-
-  @Override public void setContext(Activity a) {
-    mActivity = a;
   }
 
 }

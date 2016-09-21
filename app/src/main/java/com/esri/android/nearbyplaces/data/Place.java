@@ -42,11 +42,10 @@ public final class Place implements Comparable<Place> {
   private final String mPhone;
   @Nullable
   private  String mBearing;
-  @Nullable
   private  long mDistance;
 
   public Place(String name, @Nullable String type, @Nullable Point location, @Nullable String address, @Nullable String URL, @Nullable String phone,
-      @Nullable String bearing, @Nullable long distance) {
+      @Nullable String bearing, long distance) {
     mName = name;
     mType = type;
     mLocation = location;
@@ -85,7 +84,7 @@ public final class Place implements Comparable<Place> {
     return mBearing;
   }
 
-  @Nullable public long getDistance() { return  mDistance; }
+  public long getDistance() { return  mDistance; }
 
   public void setBearing(String bearing){
     mBearing = bearing;

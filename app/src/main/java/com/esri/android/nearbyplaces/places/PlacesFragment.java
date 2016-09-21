@@ -60,7 +60,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   private PlacesContract.Presenter mPresenter;
 
-  private PlacesAdapter mPlaceAdapter;
+  private PlacesFragment.PlacesAdapter mPlaceAdapter;
 
   private RecyclerView mPlacesView;
 
@@ -77,13 +77,13 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   }
   @Override
-  public void onCreate(@NonNull Bundle savedInstanceState){
+  public final void onCreate(@NonNull final Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     // retain this fragment
     setRetainInstance(true);
-    List<Place> placeList = new ArrayList<>();
+    final List<Place> placeList = new ArrayList<>();
 
-    mPlaceAdapter = new PlacesAdapter(getContext(), R.id.placesContainer,placeList);
+    mPlaceAdapter = new PlacesFragment.PlacesAdapter(getContext(), R.id.placesContainer,placeList);
 
     // Create an instance of GoogleAPIClient.
     if (mGoogleApiClient == null) {
@@ -97,8 +97,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   @Nullable
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-      Bundle savedInstance){
+  public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+      final Bundle savedInstance){
 
     mPlacesView= (RecyclerView) inflater.inflate(
         R.layout.places_fragment2, container, false);
@@ -110,7 +110,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override
-  public void onResume() {
+  public final void onResume() {
     super.onResume();
     if (mPresenter != null){
       mPresenter.start();
@@ -118,11 +118,11 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override
-  public void onSaveInstanceState(Bundle outState) {
+  public final void onSaveInstanceState(final Bundle outState) {
     super.onSaveInstanceState(outState);
   }
 
-  @Override public void showNearbyPlaces(List<Place> places) {
+  @Override public final void showNearbyPlaces(final List<Place> places) {
     Collections.sort(places);
     mPlaceAdapter.setPlaces(places);
     mPlaceAdapter.notifyDataSetChanged();
@@ -132,94 +132,95 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   @Override public void showProgressIndicator(final boolean active) {
   }
 
-  @Override public boolean isActive() {
+  @Override public final boolean isActive() {
     return false;
   }
 
-  @Override public void setPresenter(PlacesContract.Presenter presenter) {
+  @Override public final void setPresenter(final PlacesContract.Presenter presenter) {
     mPresenter = checkNotNull(presenter);
   }
 
 
-  public  class PlacesAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
+  public  class PlacesAdapter extends RecyclerView.Adapter<PlacesFragment.RecyclerViewHolder> {
 
     private List<Place> mPlaces = Collections.emptyList();
-    public PlacesAdapter(Context context, int resource, List<Place> places){
+    public PlacesAdapter(final Context context, final int resource, final List<Place> places){
           mPlaces = places;
     }
 
-    public void setPlaces(List<Place> places){
+    public final void setPlaces(final List<Place> places){
       checkNotNull(places);
       mPlaces = places;
       notifyDataSetChanged();
     }
 
-    @Override public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+    @Override public final PlacesFragment.RecyclerViewHolder onCreateViewHolder(final ViewGroup parent,
+        final int viewType) {
+      final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
       final View itemView = inflater.inflate(R.layout.place, parent, false);
-      return new RecyclerViewHolder(itemView);
+      return new PlacesFragment.RecyclerViewHolder(itemView);
     }
 
 
-    @Override public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-      Place place = mPlaces.get(position);
+    @Override public final void onBindViewHolder(final PlacesFragment.RecyclerViewHolder holder, final int position) {
+      final Place place = mPlaces.get(position);
       holder.placeName.setText(place.getName());
       holder.address.setText(place.getAddress());
-      Drawable drawable = assignIcon(position);
+      final Drawable drawable = assignIcon(position);
       holder.icon.setImageDrawable(drawable);
       holder.bearing.setText(place.getBearing());
       holder.distance.setText(place.getDistance() + "m");
       holder.bind(place);
     }
 
-    @Override public int getItemCount() {
+    @Override public final int getItemCount() {
       return mPlaces.size();
     }
 
-    private Drawable assignIcon(int position){
-      Place p = mPlaces.get(position);
+    private Drawable assignIcon(final int position){
+      final Place p = mPlaces.get(position);
       return CategoryHelper.getDrawableForPlace(p, getActivity());
     }
   }
 
 
-  @Override public void onConnected(@Nullable Bundle bundle) {
+  @Override public final void onConnected(@Nullable final Bundle bundle) {
     mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
         mGoogleApiClient);
     if (mLastLocation != null){
-      Log.i(TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
+      Log.i(PlacesFragment.TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + '/' + mLastLocation.getLongitude());
       mPresenter.setLocation(mLastLocation);
-      LocationService locationService = LocationService.getInstance(getActivity());
+      final LocationService locationService = LocationService.getInstance();
       locationService.setCurrentLocation(mLastLocation);
       mPresenter.start();
     }
   }
 
-  @Override public void onConnectionSuspended(int i) {
+  @Override public void onConnectionSuspended(final int i) {
 
   }
-  @Override public void onStart() {
+  @Override public final void onStart() {
     mGoogleApiClient.connect();
     super.onStart();
   }
 
-  @Override  public void onStop() {
+  @Override  public final void onStop() {
     mGoogleApiClient.disconnect();
     super.onStop();
   }
 
-  @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+  @Override public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
 
   }
   public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView placeName;
-    public TextView address;
-    public ImageView icon;
-    public TextView bearing;
-    public TextView distance;
+    public final TextView placeName;
+    public final TextView address;
+    public final ImageView icon;
+    public final TextView bearing;
+    public final TextView distance;
 
-    public RecyclerViewHolder(View itemView) {
+    public RecyclerViewHolder(final View itemView) {
       super(itemView);
       placeName = (TextView) itemView.findViewById(R.id.placeName);
       address = (TextView) itemView.findViewById(R.id.placeAddress);
@@ -227,11 +228,11 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       bearing = (TextView) itemView.findViewById(R.id.placeBearing);
       distance = (TextView) itemView.findViewById(R.id.placeDistance);
     }
-    public void bind(final Place place){
+    public final void bind(final Place place){
       itemView.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          Envelope envelope = mPresenter.getExtentForNearbyPlaces();
-          Intent intent = PlacesActivity.createMapIntent(getActivity(),envelope);
+        @Override public void onClick(final View v) {
+          final Envelope envelope = mPresenter.getExtentForNearbyPlaces();
+          final Intent intent = PlacesActivity.createMapIntent(getActivity(),envelope);
           intent.putExtra("PLACE_DETAIL", place.getName());
           startActivity(intent);
         }

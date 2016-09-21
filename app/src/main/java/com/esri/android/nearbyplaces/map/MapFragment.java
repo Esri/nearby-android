@@ -82,24 +82,24 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private LocationDisplay mLocationDisplay;
 
-  private GraphicsOverlay mGraphicOverlay, mRouteOverlay;
+  private GraphicsOverlay mGraphicOverlay;
+
+  private GraphicsOverlay mRouteOverlay;
 
 
   private boolean initialLocationLoaded =false;
 
-  private boolean mCenteringOnPlace = false;
-
   private Graphic mCenteredGraphic = null;
 
-  private Place mCenteredPlace = null;
+  @Nullable private Place mCenteredPlace = null;
 
-  private NavigationCompletedListener mNavigationCompletedListener;
+  @Nullable private NavigationCompletedListener mNavigationCompletedListener;
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
   private long mStartTime;
 
-  private String centeredPlaceName;
+  @Nullable private String centeredPlaceName;
 
 
   private BottomSheetBehavior bottomSheetBehavior;
@@ -108,7 +108,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private boolean mShowSnackbar = false;
 
-  private boolean mRoutingState = false;
+  private final boolean mRoutingState = false;
 
   private List<DirectionManeuver> mRouteDirections;
 
@@ -121,7 +121,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   @Override
-  public void onCreate(@NonNull Bundle savedInstance){
+  public final void onCreate(@NonNull final Bundle savedInstance){
 
     super.onCreate(savedInstance);
     // retain this fragment
@@ -142,25 +142,25 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   @Override
   @Nullable
-  public View onCreateView(LayoutInflater layoutInflater, ViewGroup container,
-      Bundle savedInstance){
+  public final View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
+      final Bundle savedInstance){
     mStartTime = Calendar.getInstance().getTimeInMillis();
-    View root = layoutInflater.inflate(R.layout.map_fragment, container,false);
+    final View root = layoutInflater.inflate(R.layout.map_fragment, container,false);
 
-    Intent intent = getActivity().getIntent();
+    final Intent intent = getActivity().getIntent();
     // If any extra data was sent, store it.
     if (intent.getSerializableExtra("PLACE_DETAIL") != null){
       centeredPlaceName = getActivity().getIntent().getStringExtra("PLACE_DETAIL");
     }
     if (intent.hasExtra("MIN_X")){
 
-      double minX = intent.getDoubleExtra("MIN_X", 0);
-      double minY = intent.getDoubleExtra("MIN_Y", 0);
-      double maxX = intent.getDoubleExtra("MAX_X", 0);
-      double maxY = intent.getDoubleExtra("MAX_Y", 0);
-      String spatRefStr = intent.getStringExtra("SR");
+      final double minX = intent.getDoubleExtra("MIN_X", 0);
+      final double minY = intent.getDoubleExtra("MIN_Y", 0);
+      final double maxX = intent.getDoubleExtra("MAX_X", 0);
+      final double maxY = intent.getDoubleExtra("MAX_Y", 0);
+      final String spatRefStr = intent.getStringExtra("SR");
       if (spatRefStr != null ){
-        Envelope envelope = new Envelope(minX, minY, maxX, maxY, SpatialReference.create(spatRefStr));
+        final Envelope envelope = new Envelope(minX, minY, maxX, maxY, SpatialReference.create(spatRefStr));
         mViewpoint = new Viewpoint(envelope);
       }
 
@@ -171,7 +171,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+  public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
     // Inflate the menu items for use in the action bar
     inflater.inflate(R.menu.map_menu, menu);
   }
@@ -186,44 +186,52 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * 3) showing the route to selected place in map
    */
   private void setUpToolbar(){
-    Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.map_toolbar);
+    final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.map_toolbar);
     ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
     toolbar.setTitle("");
     final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
-    ab.setDisplayHomeAsUpEnabled(true);
+    if (ab != null){
+      ab.setDisplayHomeAsUpEnabled(true);
+      ab.setHomeAsUpIndicator(0); // Use default home icon
+    }
 
-    ab.setHomeAsUpIndicator(0); // Use default home icon
     // Menu items change depending on presence/absence of bottom sheet
     toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-      @Override public boolean onMenuItemClick(MenuItem item) {
+      @Override public boolean onMenuItemClick(final MenuItem item) {
         if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.list_view))){
           // Show the list of places
           showList();
         }
         if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.filter))){
-          FilterDialogFragment dialogFragment = new FilterDialogFragment();
-          FilterPresenter filterPresenter = new FilterPresenter();
+          final FilterDialogFragment dialogFragment = new FilterDialogFragment();
+          final FilterPresenter filterPresenter = new FilterPresenter();
           dialogFragment.setPresenter(filterPresenter);
           dialogFragment.show(getActivity().getFragmentManager(),"dialog_fragment");
 
         }
           if (item.getTitle().toString().equalsIgnoreCase("Route")){
-            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             final View routeHeaderView = inflater.inflate(R.layout.route_header,null);
-            TextView tv = (TextView) routeHeaderView.findViewById(R.id.route_bar_title);
+            final TextView tv = (TextView) routeHeaderView.findViewById(R.id.route_bar_title);
             tv.setElevation(6f);
-            tv.setText(mCenteredPlace.getName());
+            tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
             tv.setTextColor(Color.WHITE);
-            ImageView btnClose = (ImageView) routeHeaderView.findViewById(R.id.btnClose);
-            ImageView btnDirections = (ImageView) routeHeaderView.findViewById(R.id.btnDirections);
-            final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
-            ab.hide();
+            final ImageView btnClose = (ImageView) routeHeaderView.findViewById(R.id.btnClose);
+            final ImageView btnDirections = (ImageView) routeHeaderView.findViewById(R.id.btnDirections);
+
+            if (ab != null){
+              ab.hide();
+            }
+
             mMapView.addView(routeHeaderView, layout);
             btnClose.setOnClickListener(new View.OnClickListener() {
-              @Override public void onClick(View v) {
+              @Override public void onClick(final View v) {
                 mMapView.removeView(routeHeaderView);
-                ab.show();
+                if (ab != null){
+                  ab.show();
+                }
+
                 // Clear route
                 if (mRouteOverlay != null){
                   mRouteOverlay.getGraphics().clear();
@@ -235,9 +243,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
               }
             });
             btnDirections.setOnClickListener(new View.OnClickListener() {
-              @Override public void onClick(View v) {
+              @Override public void onClick(final View v) {
                 // show directions fragment
-                RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
+                final RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
                 routeDirectionsFragment.show(getActivity().getFragmentManager(),"route_directions_fragment");
                 routeDirectionsFragment.setRoutingDirections(mRouteDirections);
               }
@@ -254,7 +262,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * Switch to the list view of the places
    */
   private void showList(){
-    Intent intent = new Intent(getActivity(), PlacesActivity.class);
+    final Intent intent = new Intent(getActivity(), PlacesActivity.class);
     startActivity(intent);
   }
 
@@ -263,7 +271,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * of the layout (transparent, in this case)
    */
   private void setToolbarTransparent(){
-    AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
+    final AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
     appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
   }
 
@@ -272,12 +280,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * Once the map is drawn, kick off business logic.
    * @param root View
    */
-  private void setUpMapView(View root){
+  private void setUpMapView(final View root){
     mMapView = (MapView) root.findViewById(R.id.map);
 
-    Basemap basemap = Basemap.createStreets();
+    final Basemap basemap = Basemap.createStreets();
 
-    ArcGISMap map = new ArcGISMap(basemap);
+    final ArcGISMap map = new ArcGISMap(basemap);
     mMapView.setMap(map);
     //If a Viewpoint is set immediately after calling setMap,
     // the Viewpoint will be cached, and then applied as soon
@@ -295,9 +303,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mLocationDisplay.startAsync();
 
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
-      @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
+      @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
-          long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime);
+          final long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime);
           Log.i("MapFragment", "Time to DrawStatus.COMPLETED = " + Long.toString(elapsedTime) + " ms");
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
@@ -317,9 +325,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
       @Override
-      public void onStateChanged(View bottomSheet, int newState) {
+      public void onStateChanged(final View bottomSheet, final int newState) {
         getActivity().invalidateOptionsMenu();
-        if (newState == BottomSheetBehavior.STATE_COLLAPSED && mShowSnackbar) {
+        if ((newState == BottomSheetBehavior.STATE_COLLAPSED) && mShowSnackbar) {
           clearCenteredPin();
           showSearchSnackbar();
           mShowSnackbar = false;
@@ -327,7 +335,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       }
 
       @Override
-      public void onSlide(View bottomSheet, float slideOffset) {
+      public void onSlide(final View bottomSheet, final float slideOffset) {
       }
     });
 
@@ -341,17 +349,17 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    *
    */
   @Override
-  public void onPrepareOptionsMenu(Menu menu){
-    MenuItem listItem = menu.findItem(R.id.list_action);
-    MenuItem routeItem = menu.findItem(R.id.route_action);
-    MenuItem directionItem = menu.findItem(R.id.walking_directions);
-    MenuItem filterItem = menu.findItem(R.id.filter_in_map);
+  public final void onPrepareOptionsMenu(final Menu menu){
+    final MenuItem listItem = menu.findItem(R.id.list_action);
+    final MenuItem routeItem = menu.findItem(R.id.route_action);
+    final MenuItem directionItem = menu.findItem(R.id.walking_directions);
+    final MenuItem filterItem = menu.findItem(R.id.filter_in_map);
 
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED  && !mRoutingState){
+    if ((bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) && !mRoutingState){
       listItem.setVisible(true);
       filterItem.setVisible(true);
       routeItem.setVisible(false);
-    }else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED && !mRoutingState){
+    }else if ((bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) && !mRoutingState){
       listItem.setVisible(false);
       filterItem.setVisible(true);
       routeItem.setVisible(true);
@@ -371,11 +379,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * scanning for new locations
    */
   private void showSearchSnackbar(){
-    Snackbar snackbar = Snackbar
+    final Snackbar snackbar = Snackbar
         .make(mMapLayout, "Search for places?", Snackbar.LENGTH_LONG)
         .setAction("SEARCH", new View.OnClickListener() {
           @Override
-          public void onClick(View view) {
+          public void onClick(final View view) {
             if (mRouteOverlay != null){
               mRouteOverlay.getGraphics().clear();
             }
@@ -394,7 +402,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void setNavigationCompletedListener(){
     mNavigationCompletedListener = new NavigationCompletedListener() {
-      @Override public void navigationCompleted(NavigationCompletedEvent navigationCompletedEvent) {
+      @Override public void navigationCompleted(final NavigationCompletedEvent navigationCompletedEvent) {
           onMapScroll();
       }
     };
@@ -410,7 +418,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   @Override
-  public void onResume(){
+  public final void onResume(){
     super.onResume();
     mMapView.resume();
    if (!mLocationDisplay.isStarted()){
@@ -419,7 +427,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   @Override
-  public void onPause(){
+  public final void onPause(){
     super.onPause();
     mMapView.pause();
    if (mLocationDisplay.isStarted()){
@@ -432,7 +440,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * add them to the map as graphics.
    * @param places List of Place items
    */
-  @Override public void showNearbyPlaces(List<Place> places) {
+  @Override public final void showNearbyPlaces(final List<Place> places) {
     if (!initialLocationLoaded){
       setNavigationCompletedListener();
     }
@@ -445,18 +453,18 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mGraphicOverlay.getGraphics().clear();
 
     // Create a graphic for every place
-    for (Place place : places){
-      BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(place)) ;
+    for (final Place place : places){
+      final BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(place)) ;
       final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
-      Point graphicPoint = place.getLocation();
-      Graphic graphic = new Graphic(graphicPoint, pinSymbol);
+      final Point graphicPoint = place.getLocation();
+      final Graphic graphic = new Graphic(graphicPoint, pinSymbol);
       mGraphicOverlay.getGraphics().add(graphic);
     }
 
     // If a centered place name is not null,
     // show detail view
     if (centeredPlaceName != null){
-      for (Place p: places){
+      for (final Place p: places){
         if (p.getName().equalsIgnoreCase(centeredPlaceName)){
           showDetail(p);
           centeredPlaceName = null;
@@ -470,26 +478,26 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * within the bottom sheet
    * @param place - Place item selected by user
    */
-  @Override public void showDetail(Place place) {
-    TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
+  @Override public final void showDetail(final Place place) {
+    final TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
     txtName.setText(place.getName());
     String address = place.getAddress();
-    String[] splitStrs = TextUtils.split(address, ",");
+    final String[] splitStrs = TextUtils.split(address, ",");
     if (splitStrs.length>0)                                   {
       address = splitStrs[0];
     }
-    TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress) ;
+    final TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress) ;
     txtAddress.setText(address);
-    TextView txtPhone  = (TextView) mBottomSheet.findViewById(R.id.placePhone) ;
+    final TextView txtPhone  = (TextView) mBottomSheet.findViewById(R.id.placePhone) ;
     txtPhone.setText(place.getPhone());
-    TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);
+    final TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);
     txtUrl.setText(place.getURL());
-    TextView txtType = (TextView) mBottomSheet.findViewById(R.id.placeType) ;
+    final TextView txtType = (TextView) mBottomSheet.findViewById(R.id.placeType) ;
     txtType.setText(place.getType());
 
     // Assign the appropriate icon
-    Drawable d =   CategoryHelper.getDrawableForPlace(place, getActivity()) ;
-    ImageView icon = (ImageView) getActivity().findViewById(R.id.TypeIcon);
+    final Drawable d =   CategoryHelper.getDrawableForPlace(place, getActivity()) ;
+    final ImageView icon = (ImageView) getActivity().findViewById(R.id.TypeIcon);
     icon.setImageDrawable(d);
     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
@@ -503,7 +511,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * Dismiss the bottom sheet
    * when map is scrolled.
    */
-  @Override public void onMapScroll() {
+  @Override public final void onMapScroll() {
     mShowSnackbar = true;
     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){ // show snackbar prompting for re-doing search
       showSearchSnackbar();
@@ -515,17 +523,16 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   /**
    * Assign appropriate drawable given place
    * @param p - the place item to be displayed
-   * @return - the appropriate drawable for the given place
+   * @return - the appropriate id representing the drawable for the given place
    */
-  private int getDrawableForPlace(Place p){
-    int d = CategoryHelper.getPinForPlace(p);
-    return d;
+  private int getDrawableForPlace(final Place p){
+    return CategoryHelper.getPinForPlace(p);
   }
-  private int getPinForCenterPlace(Place p){
+  private int getPinForCenterPlace(final Place p){
     return CategoryHelper.getPinForCenterPlace(p);
   }
 
-  @Override public MapView getMapView() {
+  @Override public final MapView getMapView() {
     return mMapView;
   }
 
@@ -535,7 +542,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * color to blue.
    * @param p - the selected place
    */
-  @Override public void centerOnPlace(Place p) {
+  @Override public final void centerOnPlace(final Place p) {
+    if (p.getLocation() == null){
+      return;
+    }
     // Keep track of centered place since
     // it will be needed to reset
     // the graphic if another place
@@ -545,8 +555,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Stop listening to navigation changes
     // while place is centered in map.
     removeNavigationCompletedListener();
-    mCenteringOnPlace = true;
-    ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
+    final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
     viewCentered.addDoneListener(new Runnable() {
       @Override public void run() {
         // Once we've centered on a place, listen
@@ -559,12 +568,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Change the pin icon
     clearCenteredPin();
 
-    List<Graphic> graphics = mGraphicOverlay.getGraphics();
-    for (Graphic g : graphics){
+    final List<Graphic> graphics = mGraphicOverlay.getGraphics();
+    for (final Graphic g : graphics){
       if (g.getGeometry().equals(p.getLocation())){
         mCenteredGraphic = g;
         mCenteredGraphic.setZIndex(3);
-        BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getPinForCenterPlace(p)) ;
+        final BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getPinForCenterPlace(p)) ;
         final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
         g.setSymbol(pinSymbol);
         break;
@@ -578,7 +587,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private void clearCenteredPin(){
     if (mCenteredGraphic != null){
       mCenteredGraphic.setZIndex(0);
-      BitmapDrawable oldPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(mCenteredPlace)) ;
+      final BitmapDrawable oldPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(mCenteredPlace)) ;
       mCenteredGraphic.setSymbol(new PictureMarkerSymbol(oldPin));
     }
   }
@@ -596,14 +605,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param beginPoint - the point representing the start of the route
    * @param endPoint - the point representing the end of the route
    */
-  @Override public void showRoute(RouteResult routeResult, Point beginPoint, Point endPoint) {
-    Route route;
+  @Override public final void showRoute(final RouteResult routeResult, final Point beginPoint, final Point endPoint) {
+    final Route route;
     try {
       route = routeResult.getRoutes().get(0);
       if (route.getTotalLength() == 0.0) {
         throw new Exception("Can not find the Route");
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       Toast.makeText(getActivity(),
           "We are sorry, we couldn't find the route. Please make "
               + "sure the Source and Destination are different or are connected by road",
@@ -623,26 +632,26 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       mRouteOverlay.getGraphics().clear();
     }
     // Create polyline graphic of the full route
-    SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 6);
-    Graphic routeGraphic = new Graphic(route.getRouteGeometry(), lineSymbol);
+    final SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 6);
+    final Graphic routeGraphic = new Graphic(route.getRouteGeometry(), lineSymbol);
 
     // Add the route graphic to the route layer
     mRouteOverlay.getGraphics().add(routeGraphic);
     // Add start and end pins
-    BitmapDrawable startPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.route_pin_start) ;
-    BitmapDrawable endPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.end_route_pin) ;
+    final BitmapDrawable startPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.route_pin_start) ;
+    final BitmapDrawable endPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.end_route_pin) ;
     // Current location from Google location services
     // needs a spatial reference before it can be added to map.
-    Point startPoint = new Point(beginPoint.getX(), beginPoint.getY(), endPoint.getSpatialReference());
+    final Point startPoint = new Point(beginPoint.getX(), beginPoint.getY(), endPoint.getSpatialReference());
 
-    Graphic begin = generateRoutePoints(startPoint, startPin);
+    final Graphic begin = generateRoutePoints(startPoint, startPin);
     mRouteOverlay.getGraphics().add(begin);
     mRouteOverlay.getGraphics().add(generateRoutePoints(endPoint,endPin));
     mMapView.getGraphicsOverlays().add(mRouteOverlay);
 
 
     // Zoom to the extent of the entire route with a padding
-    Geometry shape = routeGraphic.getGeometry();
+    final Geometry shape = routeGraphic.getGeometry();
     mMapView.setViewpointGeometryWithPaddingAsync(shape, 400);
 
     // Get routing directions
@@ -655,8 +664,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param px - number of device specific pixels
    * @return number of density independent pixels
    */
-  private float convertPixelsToDp(Context context, float px) {
-    DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+  private float convertPixelsToDp(final Context context, final float px) {
+    final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
     return px / (metrics.densityDpi / 160f);
   }
 
@@ -667,9 +676,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param pin - BitmapDrawable to use for the returned graphic
    * @return - a graphic representing the point
    */
-  private Graphic generateRoutePoints(Point p, BitmapDrawable pin){
-    float offsetY = convertPixelsToDp(getActivity(), pin.getBounds().bottom);
-    PictureMarkerSymbol symbol = new PictureMarkerSymbol(pin);
+  private Graphic generateRoutePoints(final Point p, final BitmapDrawable pin){
+    final float offsetY = convertPixelsToDp(getActivity(), pin.getBounds().bottom);
+    final PictureMarkerSymbol symbol = new PictureMarkerSymbol(pin);
     symbol.setOffsetY(offsetY);
     return new Graphic(p, symbol);
   }
@@ -678,7 +687,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param presenter -  the MapContract.Presenter encapsulating
    * the business logic for the map.
    */
-  @Override public void setPresenter(MapContract.Presenter presenter) {
+  @Override public final void setPresenter(final MapContract.Presenter presenter) {
     mPresenter = presenter;
   }
 
@@ -687,9 +696,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param p - a point representing a geolocation
    * @return - the place found at that geolocation
    */
-  private Place getPlaceForPoint(Point p){
-    Place foundPlace = mPresenter.findPlaceForPoint(p);
-    return foundPlace;
+  private Place getPlaceForPoint(final Point p){
+    return mPresenter.findPlaceForPoint(p);
   }
   private class MapTouchListener extends DefaultMapViewOnTouchListener {
     /**
@@ -700,17 +708,17 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
      *                metrics
      * @param mapView the MapView on which to control touch events
      */
-    public MapTouchListener(Context context, MapView mapView) {
+    public MapTouchListener(final Context context, final MapView mapView) {
       super(context, mapView);
     }
     @Override
-    public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+    public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
       removeNavigationCompletedListener();
-      android.graphics.Point screenPoint = new android.graphics.Point(
+      final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());
       // identify graphics on the graphics overlay
-      final ListenableFuture<List<Graphic>> identifyGraphic = mMapView
+      final ListenableFuture<List<Graphic>> identifyGraphic = super.mMapView
           .identifyGraphicsOverlayAsync(mGraphicOverlay, screenPoint, 10, 2);
 
       identifyGraphic.addDoneListener(new Runnable() {
@@ -718,19 +726,19 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         public void run() {
           try {
             // get the list of graphics returned by identify
-            List<Graphic> graphic = identifyGraphic.get();
+            final List<Graphic> graphic = identifyGraphic.get();
 
             // get size of list in results
-            int identifyResultSize = graphic.size();
+            final int identifyResultSize = graphic.size();
             if (identifyResultSize > 0){
-              Graphic foundGraphic = graphic.get(0);
-              Place foundPlace = getPlaceForPoint((Point)foundGraphic.getGeometry());
+              final Graphic foundGraphic = graphic.get(0);
+              final Place foundPlace = getPlaceForPoint((Point)foundGraphic.getGeometry());
               if (foundPlace != null){
                 showDetail(foundPlace);
               }
             }
           } catch (InterruptedException | ExecutionException ie) {
-            ie.printStackTrace();
+            Log.e(TAG, ie.getMessage());
           }
         }
 
