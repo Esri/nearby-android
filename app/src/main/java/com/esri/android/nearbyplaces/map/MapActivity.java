@@ -31,16 +31,16 @@ import android.util.Log;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
+import com.esri.arcgisruntime.security.AuthenticationChallengeHandler;
 import com.esri.arcgisruntime.security.AuthenticationManager;
 import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
 
 public class MapActivity extends AppCompatActivity implements FilterContract.FilterView {
 
-  private static final String TAG = MapActivity.class.getSimpleName();
   private MapPresenter mMapPresenter;
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected final void onCreate(final Bundle savedInstanceState) {
 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.map_layout);
@@ -56,9 +56,9 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
 //      OAuthConfiguration oauthConfig = new OAuthConfiguration(
 //          "https://www.arcgis.com", BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
      // AuthenticationManager.addOAuthConfiguration(oauthConfig);
-      DefaultAuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
+      final AuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
-    }catch(Exception e){
+    }catch(final Exception e){
       Log.e("MapActivity", e.getMessage());
     }
   }
@@ -67,7 +67,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
    * re-filter results.
    * @param applyFilter - boolean
    */
-  @Override public void onFilterDialogClose(boolean applyFilter) {
+  @Override public final void onFilterDialogClose(final boolean applyFilter) {
     if (applyFilter){
       mMapPresenter.start();
     }
@@ -77,9 +77,9 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
   /**
    * Set up fragments
    */
-  private void setUpFragments(Bundle savedInstanceState){
+  private void setUpFragments(final Bundle savedInstanceState){
 
-    FragmentManager fm = getSupportFragmentManager();
+    final FragmentManager fm = getSupportFragmentManager();
     MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_container);
 
     if (mapFragment == null) {

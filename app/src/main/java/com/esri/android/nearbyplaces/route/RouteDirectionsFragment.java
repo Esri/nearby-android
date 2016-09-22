@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,28 +51,29 @@ public class RouteDirectionsFragment extends DialogFragment {
   private final static String TAG = RouteDirectionsFragment.class.getSimpleName();
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.route_direction_list, container,false);
+  public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+      final Bundle savedInstanceState) {
+    final View view = inflater.inflate(R.layout.route_direction_list, container,false);
 
     // Setup list adapter
-    ListView listView = (ListView) view.findViewById(R.id.directions_list);
+    final ListView listView = (ListView) view.findViewById(R.id.directions_list);
     listView.setAdapter(new DirectionsListAdapter(mDirectionManeuvers));
     return view;
   }
 
-  public void setRoutingDirections(List<DirectionManeuver> directions){
+  public final void setRoutingDirections(final List<DirectionManeuver> directions){
     mDirectionManeuvers = directions;
   }
   /**
    * List adapter for the list of route directions.
    */
   private class DirectionsListAdapter extends ArrayAdapter<DirectionManeuver> {
-    public DirectionsListAdapter(List<DirectionManeuver> directions) {
+    public DirectionsListAdapter(final List<DirectionManeuver> directions) {
       super(getActivity(), 0, directions);
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    @NonNull @Override
+    public final View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
       // Inflate view if we haven't been given one to reuse
       View v = convertView;
       if (convertView == null) {
@@ -79,23 +81,22 @@ public class RouteDirectionsFragment extends DialogFragment {
       }
 
       // Configure the view for this item
-      DirectionManeuver direction = getItem(position);
-      ImageView imageView = (ImageView) v.findViewById(R.id.directions_maneuver_imageview);
-      Drawable drawable = getRoutingIcon(direction.getManeuverType());
+      final DirectionManeuver direction = getItem(position);
+      final ImageView imageView = (ImageView) v.findViewById(R.id.directions_maneuver_imageview);
+      final Drawable drawable = getRoutingIcon(direction != null ? direction.getManeuverType() : null);
       if (drawable != null) {
         imageView.setImageDrawable(drawable);
       }
       TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
       textView.setText(direction.getDirectionText());
       textView = (TextView) v.findViewById(R.id.directions_length_textview);
-      String lengthString = String.format("%.1f meters", direction.getLength());
+      final String lengthString = String.format("%.1f meters", direction.getLength());
       textView.setText(lengthString);
       return v;
     }
 
-    private Drawable getRoutingIcon(DirectionManeuverType maneuver) {
-      Context context = getActivity();
-      int id;
+    private Drawable getRoutingIcon(final DirectionManeuverType maneuver) {
+      final int id;
       switch (maneuver) {
         case STRAIGHT :
           id = R.drawable.ic_routing_straight_arrow;
@@ -177,13 +178,13 @@ public class RouteDirectionsFragment extends DialogFragment {
         case STAIRS :
         case DOOR_PASSAGE :
         default :
-          Log.w(TAG, maneuver.name() + "not supported");
+          Log.w(RouteDirectionsFragment.TAG, maneuver.name() + "not supported");
           return null;
       }
       try {
         return ResourcesCompat.getDrawable(getActivity().getResources(),id,null);
-      } catch (Resources.NotFoundException e) {
-        Log.w(TAG, "No drawable found for" + maneuver.name());
+      } catch (final Resources.NotFoundException e) {
+        Log.w(RouteDirectionsFragment.TAG, "No drawable found for" + maneuver.name());
         return null;
       }
     }

@@ -27,7 +27,6 @@ package com.esri.android.nearbyplaces.places;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -51,13 +50,12 @@ import com.esri.arcgisruntime.geometry.Envelope;
 public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
     ActivityCompat.OnRequestPermissionsResultCallback {
 
-  private static final String TAG = PlacesActivity.class.getSimpleName();
   private static final int PERMISSION_REQUEST_LOCATION = 0;
   private CoordinatorLayout mMainLayout;
   private PlacesPresenter mPresenter;
 
   @Override
-  public void onCreate(Bundle savedInstanceState) {
+  public final void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_layout);
 
@@ -66,16 +64,16 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     // Set up the toolbar.
     setUpToolbar();
 
-    setUpFragments(savedInstanceState);
+    setUpFragments();
 
     // request location permission
     requestLocationPermission();
   }
 
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
+  public final boolean onCreateOptionsMenu(final Menu menu) {
     // Inflate the menu items for use in the action bar
-    MenuInflater inflater = getMenuInflater();
+    final MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_main, menu);
     return super.onCreateOptionsMenu(menu);
   }
@@ -84,18 +82,19 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * Set up toolbar
    */
    private void setUpToolbar(){
-     Toolbar toolbar = (Toolbar) findViewById(R.id.placeList_toolbar);
+     final Toolbar toolbar = (Toolbar) findViewById(R.id.placeList_toolbar);
      setSupportActionBar(toolbar);
 
+     assert toolbar != null;
      toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-       @Override public boolean onMenuItemClick(MenuItem item) {
+       @Override public boolean onMenuItemClick(final MenuItem item) {
          if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.map_view))){
            // Hide the list, show the map
-          showMap(item);
+          showMap();
          }
          if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.filter))){
-           FilterDialogFragment dialogFragment = new FilterDialogFragment();
-           FilterPresenter filterPresenter = new FilterPresenter();
+           final FilterDialogFragment dialogFragment = new FilterDialogFragment();
+           final FilterPresenter filterPresenter = new FilterPresenter();
            dialogFragment.setPresenter(filterPresenter);
            dialogFragment.show(getFragmentManager(),"dialog_fragment");
 
@@ -104,13 +103,13 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
        }
      });
    }
-  @Override public void onFilterDialogClose(boolean applyFilter) {
+  @Override public final void onFilterDialogClose(final boolean applyFilter) {
     if (applyFilter){
       mPresenter.start();
     }
   }
-  public static Intent createMapIntent(Activity a, Envelope envelope){
-    Intent intent = new Intent(a, MapActivity.class);
+  public static Intent createMapIntent(final Activity a, final Envelope envelope){
+    final Intent intent = new Intent(a, MapActivity.class);
     // Get the extent of search results so map
     // can set viewpoint
 
@@ -123,16 +122,16 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
     return  intent;
   }
-  private void showMap(MenuItem item){
-    Envelope envelope = mPresenter.getExtentForNearbyPlaces();
-    Intent intent = createMapIntent(this, envelope);
+  private void showMap(){
+    final Envelope envelope = mPresenter.getExtentForNearbyPlaces();
+    final Intent intent = createMapIntent(this, envelope);
     startActivity(intent);
   }
 
   /**
    * Set up fragments
    */
-  private void setUpFragments(Bundle savedInstanceState){
+  private void setUpFragments(){
 
     PlacesFragment placesFragment = (PlacesFragment) getSupportFragmentManager().findFragmentById(R.id.recycleView) ;
 
@@ -165,7 +164,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       Snackbar.make(mMainLayout, "Location access is required to search for places nearby.", Snackbar.LENGTH_INDEFINITE)
           .setAction("OK", new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
               // Request the permission
               ActivityCompat.requestPermissions(PlacesActivity.this,
                   new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},
@@ -194,7 +193,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    *            either PERMISSION_GRANTED or PERMISSION_DENIED
    */
   @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+  public final void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+      @NonNull final int[] grantResults) {
 
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
       if (grantResults.length != 1 ) {

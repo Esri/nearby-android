@@ -41,8 +41,6 @@ public interface MapContract {
 
     MapView getMapView();
 
-  //  LocationDisplay getLocationDisplay();
-
     void centerOnPlace(Place p);
 
     void showRoute(RouteResult routeResult, Point start, Point end);

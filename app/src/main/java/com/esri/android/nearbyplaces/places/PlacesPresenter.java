@@ -24,7 +24,6 @@
 
 package com.esri.android.nearbyplaces.places;
 
-import android.app.Activity;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
@@ -43,7 +42,6 @@ public class PlacesPresenter implements PlacesContract.Presenter {
 
   private final PlacesContract.View mPlacesView;
   private Point mCurrentLocation = null;
-  private Activity activity;
 
   private LocationService mLocationService;
   private final static int MAX_RESULT_COUNT = 10;
@@ -59,8 +57,8 @@ public class PlacesPresenter implements PlacesContract.Presenter {
    * location as the initial parameter in the
    * geocode search.
    */
-  @Override public void start() {
-    mLocationService = LocationService.getInstance(activity);
+  @Override public final void start() {
+    mLocationService = LocationService.getInstance();
     List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
     if (existingPlaces != null && existingPlaces.size()> 0){
       setPlacesNearby(existingPlaces);
@@ -74,23 +72,20 @@ public class PlacesPresenter implements PlacesContract.Presenter {
     }
   }
 
-  @Override public void setContext(Activity a) {
-    activity = a;
-  }
 
   /**
    * Delegates the display of places to the view
    * @param places List<Place> items
    */
-  @Override public void setPlacesNearby(List<Place> places) {
+  @Override public final void setPlacesNearby(List<Place> places) {
     mPlacesView.showNearbyPlaces(places);
   }
 
-  @Override public void setLocation(Location location) {
+  @Override public final void setLocation(Location location) {
     mCurrentLocation = new Point(location.getLongitude(), location.getLatitude());
   }
 
-  @Override public void getPlacesNearby() {
+  @Override public final void getPlacesNearby() {
     if (mCurrentLocation != null) {
       GeocodeParameters parameters = new GeocodeParameters();
       parameters.setMaxResults(MAX_RESULT_COUNT);
@@ -106,7 +101,7 @@ public class PlacesPresenter implements PlacesContract.Presenter {
     }
   }
 
-  @Override public Envelope getExtentForNearbyPlaces() {
+  @Override public final Envelope getExtentForNearbyPlaces() {
     return mLocationService != null ? mLocationService.getResultEnveope(): null;
   }
 

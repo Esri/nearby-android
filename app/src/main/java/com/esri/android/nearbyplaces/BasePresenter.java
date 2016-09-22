@@ -30,5 +30,4 @@ import android.app.Activity;
 public interface BasePresenter {
 
   void start();
-  void setContext(Activity a);
 }

@@ -30,44 +30,27 @@ public class FilterItem {
   private boolean mSelected;
   private int mSelectedIconId;
 
-  public FilterItem (String title, int icon){
-    mTitle = title;
-    mIconId = icon;
-    mSelected = false;
-  }
-  public FilterItem (String title, int icon, boolean s, int selectedIcon){
+  public FilterItem (final String title, final int icon, final boolean s, final int selectedIcon){
     mTitle = title;
     mIconId = icon;
     mSelected = s;
     mSelectedIconId = selectedIcon;
   }
-  public FilterItem(){}
 
-  public int getIconId() {
+  public final int getIconId() {
     return mIconId;
   }
 
-  public void setIconId(int iconId) {
-    mIconId = iconId;
-  }
-
-  public String getTitle() {
+  public final String getTitle() {
     return mTitle;
   }
 
-  public void setTitle(String mTitle) {
-    this.mTitle = mTitle;
-  }
+  public final boolean getSelected() { return mSelected ;}
 
-  public boolean getSelected() { return mSelected ;}
+  public final void setSelected(final boolean selected){ mSelected = selected; }
 
-  public void setSelected(boolean selected){ mSelected = selected; }
-
-  public int getSelectedIconId() {
+  public final int getSelectedIconId() {
     return mSelectedIconId;
   }
 
-  public void setSelectedIconId(int mSelectedIconId) {
-    this.mSelectedIconId = mSelectedIconId;
-  }
 }
