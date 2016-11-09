@@ -2,7 +2,7 @@
 <com.esri.arcgisruntime.mapping.view.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_width="400dp"
+        android:layout_height="400dp"/>
 
 
