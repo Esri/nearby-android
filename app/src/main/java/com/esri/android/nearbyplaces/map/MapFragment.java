@@ -297,9 +297,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mGraphicOverlay  = new GraphicsOverlay();
     mMapView.getGraphicsOverlays().add(mGraphicOverlay);
 
-    mLocationDisplay = mMapView.getLocationDisplay();
 
-    mLocationDisplay.startAsync();
 
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
@@ -309,6 +307,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
+          mLocationDisplay = mMapView.getLocationDisplay();
+
+          mLocationDisplay.startAsync();
         }
       }
     });
@@ -402,8 +403,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void setDrawCompletedListener(){
     mDrawStatusListener = new DrawStatusChangedListener() {
-      @Override public void drawStatusChanged(final DrawStatusChangedEvent navigationCompletedEvent) {
+      @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
+        if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
           onMapScroll();
+        }
+
       }
     };
     mMapView.addDrawStatusChangedListener(mDrawStatusListener);
@@ -421,18 +425,18 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onResume(){
     super.onResume();
     mMapView.resume();
-   if (!mLocationDisplay.isStarted()){
-      mLocationDisplay.startAsync();
-    }
+//   if (!mLocationDisplay.isStarted()){
+//      mLocationDisplay.startAsync();
+//    }
   }
 
   @Override
   public final void onPause(){
     super.onPause();
     mMapView.pause();
-   if (mLocationDisplay.isStarted()){
-      mLocationDisplay.stop();
-    }
+//   if (mLocationDisplay.isStarted()){
+//      mLocationDisplay.stop();
+//    }
   }
 
   /**
