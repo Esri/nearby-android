@@ -43,6 +43,6 @@ ext {
     runnerVersion = '0.4.1'
     rulesVersion = '0.4.1'
     espressoVersion = '2.2.1'
-    runtimeVersion = '100.0.0-1515'
+    runtimeVersion = '100.0.0-1524'
     googleLocationServicesVersion = '9.4.0'
 }
