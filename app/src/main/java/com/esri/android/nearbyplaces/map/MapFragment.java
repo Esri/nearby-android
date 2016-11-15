@@ -93,7 +93,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   @Nullable private Place mCenteredPlace = null;
 
-  @Nullable private DrawStatusChangedListener mDrawStatusListener;
+  @Nullable private NavigationChangedListener mNavigationChangeListener;
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
@@ -138,6 +138,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     //Set up behavior for the bottom sheet
     setUpBottomSheet();
+
   }
 
   @Override
@@ -316,6 +317,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Setup OnTouchListener to detect and act on long-press
     mMapView.setOnTouchListener(new MapTouchListener(getActivity().getApplicationContext(), mMapView));
+
+
   }
 
   /**
@@ -401,23 +404,22 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * so that POIs get updated as map's
    * visible area is changed.
    */
-  private void setDrawCompletedListener(){
-    mDrawStatusListener = new DrawStatusChangedListener() {
-      @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
-        if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
+  private void setNavigationCompleteListener(){
+    mNavigationChangeListener = new NavigationChangedListener() {
+      @Override public void navigationChanged(NavigationChangedEvent navigationChangedEvent) {
+        if (navigationChangedEvent.isNavigating()) {
           onMapScroll();
         }
-
       }
     };
-    mMapView.addDrawStatusChangedListener(mDrawStatusListener);
+    mMapView.addNavigationChangedListener(mNavigationChangeListener);
   }
 
 
-  private void removeDrawCompletedListener(){
-    if (mDrawStatusListener != null){
-      mMapView.removeDrawStatusChangedListener(mDrawStatusListener);
-      mDrawStatusListener = null;
+  private void removeNavigationChangeListener(){
+    if (mNavigationChangeListener != null){
+      mMapView.removeNavigationChangedListener(mNavigationChangeListener);
+      mNavigationChangeListener = null;
     }
   }
 
@@ -425,18 +427,18 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onResume(){
     super.onResume();
     mMapView.resume();
-//   if (!mLocationDisplay.isStarted()){
-//      mLocationDisplay.startAsync();
-//    }
+   if (mLocationDisplay != null && !mLocationDisplay.isStarted()){
+      mLocationDisplay.startAsync();
+    }
   }
 
   @Override
   public final void onPause(){
     super.onPause();
     mMapView.pause();
-//   if (mLocationDisplay.isStarted()){
-//      mLocationDisplay.stop();
-//    }
+   if (mLocationDisplay != null && mLocationDisplay.isStarted()){
+      mLocationDisplay.stop();
+    }
   }
 
   /**
@@ -446,7 +448,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   @Override public final void showNearbyPlaces(final List<Place> places) {
     if (!initialLocationLoaded){
-      setDrawCompletedListener();
+      setNavigationCompleteListener();
     }
     initialLocationLoaded = true;
     if (places.isEmpty()){
@@ -558,14 +560,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Stop listening to navigation changes
     // while place is centered in map.
-    removeDrawCompletedListener();
+    removeNavigationChangeListener();
     final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
     viewCentered.addDoneListener(new Runnable() {
       @Override public void run() {
         // Once we've centered on a place, listen
         // for changes in viewpoint.
-        if (mDrawStatusListener == null){
-          setDrawCompletedListener();
+        if (mNavigationChangeListener == null){
+          setNavigationCompleteListener();
         }
       }
     });
@@ -717,7 +719,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
-      removeDrawCompletedListener();
+      removeNavigationChangeListener();
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());
