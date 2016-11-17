@@ -41,7 +41,7 @@ public class PlacesPresenter implements PlacesContract.Presenter {
 
 
   private final PlacesContract.View mPlacesView;
-  private Point mCurrentLocation = null;
+  private Point mDeviceLocation = null;
 
   private LocationService mLocationService;
   private final static int MAX_RESULT_COUNT = 10;
@@ -60,13 +60,20 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   @Override public final void start() {
     mLocationService = LocationService.getInstance();
     List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
-    if (existingPlaces != null && existingPlaces.size()> 0){
+    if (existingPlaces != null ){
       setPlacesNearby(existingPlaces);
     }else{
       LocationService.configureService(GEOCODE_URL,
+          // On locator task load success
           new Runnable() {
             @Override public void run() {
               getPlacesNearby();
+            }
+          },
+          // On locator task load error
+          new Runnable() {
+            @Override public void run() {
+              mPlacesView.showMessage("The locator task was unable to load");
             }
           });
     }
@@ -82,14 +89,14 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   }
 
   @Override public final void setLocation(Location location) {
-    mCurrentLocation = new Point(location.getLongitude(), location.getLatitude());
+    mDeviceLocation = new Point(location.getLongitude(), location.getLatitude());
   }
 
   @Override public final void getPlacesNearby() {
-    if (mCurrentLocation != null) {
+    if (mDeviceLocation != null) {
       GeocodeParameters parameters = new GeocodeParameters();
       parameters.setMaxResults(MAX_RESULT_COUNT);
-      parameters.setPreferredSearchLocation(mCurrentLocation);
+      parameters.setPreferredSearchLocation(mDeviceLocation);
       mLocationService.getPlacesFromService(parameters, new PlacesServiceApi.PlacesServiceCallback() {
         @Override public void onLoaded(Object places) {
           List<Place> data = (List) places;

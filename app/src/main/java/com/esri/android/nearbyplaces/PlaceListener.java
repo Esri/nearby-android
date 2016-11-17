@@ -28,5 +28,5 @@ import com.esri.android.nearbyplaces.data.Place;
 
 public interface PlaceListener {
   void showDetail(Place place);
-  void onMapScroll();
+  void onMapViewChange();
 }

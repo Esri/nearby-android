@@ -45,6 +45,8 @@ public interface MapContract {
 
     void showRoute(RouteResult routeResult, Point start, Point end);
 
+    void showMessage(String message);
+
   }
 
   interface Presenter extends BasePresenter{
@@ -59,6 +61,6 @@ public interface MapContract {
 
     void setRoute(RouteResult routeResult, Point start, Point end);
 
-    Envelope getExtentForNearbyPlaces();
+    void setCurrentExtent(Envelope envelope);
   }
 }

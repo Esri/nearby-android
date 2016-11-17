@@ -164,9 +164,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         mViewpoint = new Viewpoint(envelope);
       }
 
-      setUpMapView(root);
-    }
 
+    }
+    setUpMapView(root);
     return root;
   }
 
@@ -305,10 +305,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
+          mMapView.removeDrawStatusChangedListener(this);
           final long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime);
           Log.i("MapFragment", "Time to DrawStatus.COMPLETED = " + Long.toString(elapsedTime) + " ms");
           mPresenter.start();
-          mMapView.removeDrawStatusChangedListener(this);
+
         }
       }
     });
@@ -401,9 +402,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * visible area is changed.
    */
   private void setNavigationCompletedListener(){
+    Log.i("MapFragment", "Adding navigation complete listener");
     mNavigationCompletedListener = new NavigationCompletedListener() {
       @Override public void navigationCompleted(final NavigationCompletedEvent navigationCompletedEvent) {
-          onMapScroll();
+          onMapViewChange();
       }
     };
     mMapView.addNavigationCompletedListener(mNavigationCompletedListener);
@@ -411,6 +413,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
 
   private void removeNavigationCompletedListener(){
+    Log.i("MapFragment", "Removing navigation complete listener");
     if (mNavigationCompletedListener != null){
       mMapView.removeNavigationCompletedListener(mNavigationCompletedListener);
       mNavigationCompletedListener = null;
@@ -420,9 +423,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   @Override
   public final void onResume(){
     super.onResume();
-    mMapView.resume();
-   if (!mLocationDisplay.isStarted()){
-      mLocationDisplay.startAsync();
+    if (mMapView != null){
+      mMapView.resume();
+      if (!mLocationDisplay.isStarted()){
+        mLocationDisplay.startAsync();
+      }
     }
   }
 
@@ -430,9 +435,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onPause(){
     super.onPause();
     mMapView.pause();
-   if (mLocationDisplay.isStarted()){
+    if (mLocationDisplay.isStarted()){
       mLocationDisplay.stop();
     }
+
   }
 
   /**
@@ -441,6 +447,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param places List of Place items
    */
   @Override public final void showNearbyPlaces(final List<Place> places) {
+
+    // Clear out any existing graphics
+    mGraphicOverlay.getGraphics().clear();
+
     if (!initialLocationLoaded){
       setNavigationCompletedListener();
     }
@@ -449,8 +459,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       Toast.makeText(getContext(),getString(R.string.no_places_found),Toast.LENGTH_SHORT).show();
       return;
     }
-    // Clear out any existing graphics
-    mGraphicOverlay.getGraphics().clear();
 
     // Create a graphic for every place
     for (final Place place : places){
@@ -509,15 +517,17 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   /**
    * Dismiss the bottom sheet
-   * when map is scrolled.
+   * when map is scrolled and notify
+   * presenter
    */
-  @Override public final void onMapScroll() {
+  @Override public final void onMapViewChange() {
     mShowSnackbar = true;
     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){ // show snackbar prompting for re-doing search
       showSearchSnackbar();
     }else{
       bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
+    mPresenter.setCurrentExtent(getMapView().getVisibleArea().getExtent());
   }
 
   /**
@@ -657,6 +667,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Get routing directions
     mRouteDirections = route.getDirectionManeuvers();
   }
+
+  @Override public void showMessage(String message) {
+    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  }
+
   /**
    * Converts device specific pixels to density independent pixels.
    *
@@ -713,7 +728,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
-      removeNavigationCompletedListener();
+  //    removeNavigationCompletedListener();
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());

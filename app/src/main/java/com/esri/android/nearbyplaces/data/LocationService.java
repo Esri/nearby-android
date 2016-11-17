@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RunnableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,6 +52,7 @@ public class LocationService implements PlacesServiceApi {
   private static LocatorTask mLocatorTask;
   private static LocationService instance = null;
   private Point mCurrentLocation;
+  private Envelope mCurrentEnvelope;
   private RouteTask mRouteTask;
 
 
@@ -61,15 +63,29 @@ public class LocationService implements PlacesServiceApi {
     return instance;
   }
 
-  private final Map<String,Place> mappedPlaces = new HashMap<>();
+  private Map<String,Place> mappedPlaces;
 
 
-  public static void configureService(@NonNull String locatorUrl, @NonNull Runnable doneListener){
+  public static void configureService(@NonNull String locatorUrl, @NonNull final Runnable onSuccess, @NonNull final
+      Runnable onError){
     checkNotNull(locatorUrl);
-    checkNotNull(doneListener);
+    checkNotNull(onSuccess);
+    checkNotNull(onError);
     if (null == mLocatorTask){
       mLocatorTask = new LocatorTask(locatorUrl);
-      mLocatorTask.addDoneLoadingListener(doneListener);
+      mLocatorTask.addDoneLoadingListener(new Runnable() {
+        @Override public void run() {
+          if (mLocatorTask.getLoadStatus() == LoadStatus.LOADED) {
+            onSuccess.run();
+          }else if (mLocatorTask.getLoadStatus() == LoadStatus.FAILED_TO_LOAD){
+            Log.e("LocationService", "Locator task failed to load: " + mLocatorTask.getLoadError().getMessage());
+            if (mLocatorTask.getLoadError().getCause() != null){
+              Log.e("LocationService", "Locator task failed cause: " + mLocatorTask.getLoadError().getCause().getMessage());
+            }
+            onError.run();
+          }
+        }
+      });
       mLocatorTask.loadAsync();
     }
   }
@@ -106,7 +122,11 @@ public class LocationService implements PlacesServiceApi {
   }
 
   @Override public List<Place> getPlacesFromRepo() {
-    return filterPlaces(new ArrayList<>(mappedPlaces.values()));
+    if (mappedPlaces != null){
+      return filterPlaces(new ArrayList<>(mappedPlaces.values()));
+    }else{
+      return null;
+    }
   }
 
 
@@ -138,7 +158,7 @@ public class LocationService implements PlacesServiceApi {
     CategoryKeeper keeper = CategoryKeeper.getInstance();
     List<String> selectedTypes = keeper.getSelectedTypes();
     if (selectedTypes.isEmpty()){
-      return foundPlaces;
+      return null;
     }else{
       for (Place p: foundPlaces) {
         for (String filter : selectedTypes){
@@ -157,8 +177,16 @@ public class LocationService implements PlacesServiceApi {
   public void setCurrentLocation(Location currentLocation) {
     mCurrentLocation =  new Point(currentLocation.getLongitude(), currentLocation.getLatitude());
   }
+
+  public void setCurrentEnvelope(Envelope envelope){
+    mCurrentEnvelope = envelope;
+  }
   public Point getCurrentLocation(){
     return mCurrentLocation;
+  }
+
+  public Envelope getCurrentEnvelope(){
+    return mCurrentEnvelope;
   }
 
   private class GeocodeProcessor implements Runnable{
@@ -171,6 +199,9 @@ public class LocationService implements PlacesServiceApi {
     @Override public void run() {
 
       try {
+        if (mappedPlaces == null){
+          mappedPlaces = new HashMap<>();
+        }
         mappedPlaces.clear();
         List<GeocodeResult> data = mResults.get();
         List<Place> places = new ArrayList<Place>();
@@ -186,8 +217,24 @@ public class LocationService implements PlacesServiceApi {
           Place place = new Place(name, type, point, address, url,phone,null,0);
           setBearingAndDistanceForPlace(place);
           Log.i("PLACE", place.toString());
-          places.add(place);
-          mappedPlaces.put(name,place);
+
+          if (mCurrentEnvelope != null){
+            mCurrentEnvelope = (Envelope) GeometryEngine.project(mCurrentEnvelope, SpatialReferences.getWgs84());
+
+            // Filter out any places not within the current envelope
+
+            Point placePoint = new Point(place.getLocation().getX(), place.getLocation().getY(), SpatialReferences.getWgs84());
+            if (GeometryEngine.within(placePoint,mCurrentEnvelope)){
+              places.add(place);
+              mappedPlaces.put(name,place);
+            }else{
+              Log.i("GeometryEngine", "***Excluding " + place.getName() + " because it's outside the visible area of map.***");
+            }
+          }else{
+            places.add(place);
+            mappedPlaces.put(name, place);
+          }
+
 
         }
         mCallback.onLoaded(filterPlaces(places));
@@ -232,21 +279,27 @@ public class LocationService implements PlacesServiceApi {
   }
 
   /**
-   * Return the extent of the search results with a small buffer
+   * Return the current extent.  If the current extent is null,
+   * calculate extent based on current search results.
    * @return Envelope
    */
   public Envelope getResultEnveope(){
-    Envelope envelope = null;
-    List<Place> places = getPlacesFromRepo();
-    if (!places.isEmpty()){
-      List<Point> points = new ArrayList<>();
-      for (Place place : places){
-        points.add(place.getLocation());
+    if (mCurrentEnvelope == null){
+      Envelope envelope = null;
+      List<Place> places = getPlacesFromRepo();
+      if (!places.isEmpty()){
+        List<Point> points = new ArrayList<>();
+        for (Place place : places){
+          points.add(place.getLocation());
+        }
+        Multipoint mp = new Multipoint(points);
+        envelope = GeometryEngine.buffer(mp, 0.0007).getExtent();
       }
-      Multipoint mp = new Multipoint(points);
-      envelope = GeometryEngine.buffer(mp, 0.0007).getExtent();
+      return envelope;
+    }else{
+      return mCurrentEnvelope;
     }
-    return envelope;
+
   }
   /**
    * A helper class for solving routes
