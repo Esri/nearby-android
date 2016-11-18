@@ -39,7 +39,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="nearby-places-auth" android:host="auth"/>
+                <data android:scheme="my-ags-app"/>
             </intent-filter>
         </activity>
     </application>
