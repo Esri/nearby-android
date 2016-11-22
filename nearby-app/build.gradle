@@ -14,9 +14,6 @@ android {
         // Enabling multidex support.
         multiDexEnabled true
 
-        buildConfigField "String", "CLIENT_ID" , CLIENT_ID
-        buildConfigField "String", "OAUTH_REDIRECT_ID" , OAUTH_REDIRECT_ID
-
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
