@@ -20,21 +20,21 @@ This Nearby-Places repo is an Android Studio Project and App Module that can be 
 CLIENT_ID = YOUR_CLIENT_ID;
 OAUTH_REDIRECT_ID = "my-ags-app://auth"
 ```
-* As part of the registration process, you will need to add a redirect uri for your app.  Navigate to the Redirect URIs section at the bottom of the registration page and 
+* As part of the registration process, add a redirect uri for your app. Navigate to the Redirect URIs section at the bottom of the registration page and set the redirect uri to my-ags-app://auth. This redirect uri is the default redirect for https://www.arcgis.com.
 
 ![](Register2.png)
-* Note that the scheme for the `DefaultOAuthIntentReceiver` in the Android Manifest file is derived from the redirect uri.
+* Note that the scheme in the Android Manifest file is derived from the redirect uri.
 ```xml
-        <activity
-            android:name="com.esri.arcgisruntime.security.DefaultOAuthIntentReceiver"
-            android:label="OAuthIntentReceiver"
-            android:launchMode="singleTask">
+        <activity android:name=".map.MapActivity"
+                  android:parentActivityName=".places.PlacesActivity"
+                  android:configChanges="orientation|screenSize">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value=".places.PlacesActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-  
-                <data android:scheme="my-ags-app"/>
+                <data android:scheme="my-ags-app" android:host="auth"/>
             </intent-filter>
         </activity>
  ```
