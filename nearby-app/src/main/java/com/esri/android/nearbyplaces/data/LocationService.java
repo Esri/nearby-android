@@ -29,7 +29,6 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
-import com.esri.arcgisruntime.UnitSystem;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.loadable.LoadStatus;
@@ -37,7 +36,7 @@ import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.esri.arcgisruntime.tasks.geocode.LocatorInfo;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
-import com.esri.arcgisruntime.tasks.networkanalysis.*;
+import com.esri.arcgisruntime.tasks.route.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -203,7 +202,7 @@ public class LocationService implements PlacesServiceApi {
       LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);
       AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
       Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), place.getLocation().getSpatialReference() );
-      GeodeticDistanceResult result =GeometryEngine.distanceGeodetic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
+      GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
       double distance = result.getDistance();
       place.setDistance(Math.round(distance));
       double degrees = result.getAzimuth1();
@@ -271,7 +270,8 @@ public class LocationService implements PlacesServiceApi {
         Log.i(TAG, mRouteTask.getLoadError().getMessage());
         Log.i(TAG, "CAUSE = " + mRouteTask.getLoadError().getCause().getMessage());
       } else {
-        final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask.createDefaultParametersAsync();
+        final ListenableFuture<RouteParameters> routeTaskFuture = mRouteTask
+            .generateDefaultParametersAsync();
         // Add a done listener that uses the returned route parameters
         // to build up a specific request for the route we need
         routeTaskFuture.addDoneListener(new Runnable() {
@@ -289,12 +289,12 @@ public class LocationService implements PlacesServiceApi {
               routeParameters.getStops().add(destination);
               // We want the task to return driving directions and routes
               routeParameters.setReturnDirections(true);
-              routeParameters.setDirectionsDistanceUnits(
-                  UnitSystem.IMPERIAL);
+              routeParameters.setDirectionsDistanceTextUnits(
+                  DirectionDistanceTextUnits.IMPERIAL);
               routeParameters.setOutputSpatialReference(SpatialReferences.getWebMercator());
 
               final ListenableFuture<RouteResult> routeResFuture = mRouteTask
-                  .solveRouteAsync(routeParameters);
+                  .solveAsync(routeParameters);
               routeResFuture.addDoneListener(new Runnable() {
                 @Override
                 public void run() {

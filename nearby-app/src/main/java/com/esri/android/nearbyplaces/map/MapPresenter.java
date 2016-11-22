@@ -32,7 +32,7 @@ import com.esri.android.nearbyplaces.data.PlacesServiceApi;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.List;
 

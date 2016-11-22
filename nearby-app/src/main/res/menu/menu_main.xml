@@ -4,7 +4,7 @@
       tools:context="com.esri.android.nearbyplaces.MainActivity">
     <item android:id="@+id/map_action"
           android:title="@string/map_view"
-          android:icon="@drawable/ic_map_white_24px"
+          android:icon="@android:drawable/ic_menu_mapmode"
           android:orderInCategory="200"
           app:showAsAction="always"/>
     <item android:id="@+id/filter_in_list"

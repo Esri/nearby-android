@@ -79,15 +79,15 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lineColor"/>
-
+l
     <LinearLayout android:layout_width="wrap_content"
-                  android:layout_height="48dp" android:id="@+id/linkLayout"
+                  android:layout_height="48dp"
                   android:orientation="horizontal" android:gravity="center">
         <ImageView
                 android:id="@+id/placeWebIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_public_black_24px"
+                android:src="@drawable/ic_web_black_24dp"
                 android:paddingRight="16dp"/>
         <TextView
                 android:id="@+id/placeUrl"

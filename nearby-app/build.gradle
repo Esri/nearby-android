@@ -14,9 +14,6 @@ android {
         // Enabling multidex support.
         multiDexEnabled true
 
-        buildConfigField "String", "CLIENT_ID" , CLIENT_ID
-        buildConfigField "String", "OAUTH_REDIRECT_ID" , OAUTH_REDIRECT_ID
-
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -36,23 +33,6 @@ android {
         }
     }
 
-    // If you need to add more flavors, consider using flavor dimensions.
-    productFlavors {
-        mock {
-            applicationIdSuffix = ".mock"
-        }
-        prod {
-
-        }
-    }
-
-    // Remove mockRelease as it's not needed.
-    android.variantFilter { variant ->
-        if(variant.buildType.name.equals('release')
-                && variant.getFlavors().get(0).name.equals('mock')) {
-            variant.setIgnore(true);
-        }
-    }
 
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests.all {
