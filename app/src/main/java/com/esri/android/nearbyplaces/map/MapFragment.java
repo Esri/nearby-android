@@ -58,6 +58,7 @@ import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.layers.ArcGISVectorTiledLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
@@ -284,7 +285,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private void setUpMapView(final View root){
     mMapView = (MapView) root.findViewById(R.id.map);
 
-    final Basemap basemap = Basemap.createStreets();
+    // Vector tile layer for streets
+    ArcGISVectorTiledLayer tiledLayer = new ArcGISVectorTiledLayer(getString(R.string.streets_url));
+    final Basemap basemap = new Basemap(tiledLayer);
 
     final ArcGISMap map = new ArcGISMap(basemap);
 
