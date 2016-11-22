@@ -9,35 +9,7 @@ This repo provides an example app called Nearby Places for Android devices built
  
 
 ## Development Instructions
-This Nearby-Places repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio. In addition, you'll need to follow the steps below to obtain your client id and redirect uri. Both are required for leveraging all the features of the app.
-
-* Login to [ArcGIS for Developers](https://developers.arcgis.com/) and [register](https://developers.arcgis.com/applications/#/) your app.  
-
-![](Register1.png)
-* Once you've registered your version of the maps-app, grab a copy of the client id from the registration and set the client id in the applications your nearby-android/gradle.properties file.  Set the redirect uri in the nearby-android/gradle.properties file to `my-ags-app://auth`.  This redirect uri is the default redirect for `https://www.arcgis.com`.
-
-```
-CLIENT_ID = YOUR_CLIENT_ID;
-OAUTH_REDIRECT_ID = "my-ags-app://auth"
-```
-* As part of the registration process, add a redirect uri for your app. Navigate to the Redirect URIs section at the bottom of the registration page and set the redirect uri to my-ags-app://auth. This redirect uri is the default redirect for https://www.arcgis.com.
-
-![](Register2.png)
-* Note that the scheme in the Android Manifest file is derived from the redirect uri.
-```xml
-        <activity android:name=".map.MapActivity"
-                  android:parentActivityName=".places.PlacesActivity"
-                  android:configChanges="orientation|screenSize">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                       android:value=".places.PlacesActivity" />
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="my-ags-app" android:host="auth"/>
-            </intent-filter>
-        </activity>
- ```
+This Nearby-Places repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio. 
 
 ### Fork the repo
 **Fork** the [Nearby Places Android](https://github.com/Esri/nearby-android/fork) repo.
