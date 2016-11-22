@@ -26,7 +26,13 @@ package com.esri.android.nearbyplaces.places;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -39,6 +45,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import com.esri.android.nearbyplaces.R;
+import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
@@ -61,13 +68,25 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
     mMainLayout = (CoordinatorLayout) findViewById(R.id.list_coordinator_layout);
 
-    // Set up the toolbar.
-    setUpToolbar();
+    // Check for internet connectivity
+    if (!checkForInternetConnectivity()) {
+      showProblemDialog(getString(R.string.internet_connectivity),getString(R.string.wireless_problem));
+    }else{
+      // Set up the toolbar.
+      setUpToolbar();
 
-    setUpFragments();
+      setUpFragments();
 
-    // request location permission
-    requestLocationPermission();
+      // Is location tracking on?
+      if (!checkForLocationTracking()){
+        showProblemDialog(getString(R.string.location_enabled), getString(R.string.location_problem));
+      }else{
+        // request location permission
+        requestLocationPermission();
+      }
+
+    }
+
   }
 
   @Override
@@ -203,4 +222,42 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       }
     }
   }
+
+  /**
+   * Get the state of the network info
+   * @return - boolean, false if network state is unavailable
+   * and true if device is connected to a network.
+   */
+  private boolean checkForInternetConnectivity(){
+    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo wifi = connManager.getActiveNetworkInfo();
+    if (wifi == null){
+      return false;
+    }else {
+      return wifi.isConnected();
+    }
+  }
+
+  /**
+   * Get the state of location tracking
+   * @return - boolean, false if location tracking is unavailable
+   * and true if device has location tracking enabled.
+   */
+  private boolean checkForLocationTracking(){
+    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+  }
+  private void showProblemDialog(String message, String title){
+    final ProgressDialog progressDialog = new ProgressDialog(this);
+    progressDialog.setMessage(message);
+    progressDialog.setTitle(title);
+    progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+      @Override public void onClick(DialogInterface dialog, int which) {
+        progressDialog.dismiss();
+        finish();
+      }
+    });
+    progressDialog.show();
+  }
+
 }

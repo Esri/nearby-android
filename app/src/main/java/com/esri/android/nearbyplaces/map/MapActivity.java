@@ -37,7 +37,7 @@ import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
 
 public class MapActivity extends AppCompatActivity implements FilterContract.FilterView {
 
-  private MapPresenter mMapPresenter;
+    private MapPresenter mMapPresenter;
 
   @Override
   protected final void onCreate(final Bundle savedInstanceState) {
