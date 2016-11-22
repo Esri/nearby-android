@@ -76,9 +76,7 @@ public class LocationService implements PlacesServiceApi {
   }
 
   @Override public void getRouteFromService(Point start, Point end, RouteServiceCallback callback) {
-    if (mRouteTask == null){
-      mRouteTask = new RouteTask("https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/");
-    }
+    mRouteTask = new RouteTask("https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/");
     mRouteTask.addDoneLoadingListener(new RouteSolver(mCurrentLocation,end, callback));
     mRouteTask.loadAsync();
   }
