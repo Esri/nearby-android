@@ -10,36 +10,40 @@ The example application is open source and available on GitHub. You can modify i
 The nearby-app uses a list of categories (e.g. “Hotel”, “Food”, “Pizza”) with the World Geocoding Service to display places matching these types near the current device location. These categories can be changed dynamically in the app using the filter widget. The service uses a hierarchical structure of categories allowing high level concepts, like a category level 1 descriptor (e.g. “POI” for place of interest) to be searched as well as more specific category level 3 types like “Brazilian Food” or “Science Museum” to be used. These category filters and other search criteria are defined using the SDK’s [Geocode Parameters](https://developers.arcgis.com/android/beta/api-reference/reference/com/esri/arcgisruntime/tasks/geocode/GeocodeParameters.html#setPreferredSearchLocation(com.esri.arcgisruntime.geometry.Point).
 
 The geocode parameters are configured with the device's current location with the following code:
+
+```java
+GeocodeParameters parameters = new GeocodeParameters();
+parameters.setMaxResults(10);
+parameters.setPreferredSearchLocation(mCurrentLocation);
+
+List categories = parameters.getCategories();
+categories.add("Food");
+categories.add("Hotel");
+categories.add("Pizza");
+categories.add("Coffee Shop");
+categories.add("Bar or Pub");
+
+List outputAttributes = parameters.getResultAttributeNames();
+outputAttributes.add("*");
+<ListenableFuture> results = mLocatorTask.geocodeAsync(searchText, parameters);
 ```
-      GeocodeParameters parameters = new GeocodeParameters();
-      parameters.setMaxResults(10);
-      parameters.setPreferredSearchLocation(mCurrentLocation);
-      List categories = parameters.getCategories();
-      categories.add("Food");
-      categories.add("Hotel");
-      categories.add("Pizza");
-      categories.add("Coffee Shop");
-      categories.add("Bar or Pub");
-      List outputAttributes = parameters.getResultAttributeNames();
-      outputAttributes.add("*");
-      ListenableFuture> results = mLocatorTask.geocodeAsync(searchText, parameters);
-```
+
 ## Device Location
 This app uses a [design pattern](https://developers.arcgis.com/android/guide/determine-your-app-map-pattern.htm#ESRI_SECTION1_58C46384E3484890A47629F8F12E6EF5) with a list of places and option to see the list on a map. The device location is obtained using Google’s Location Services API. In the future, leveraging the SDK’s can be used to obtain the device location outside of the MapView.
 
-```
+```java
 // Create an instance of GoogleAPIClient.
-    if (mGoogleApiClient == null) {
-      mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-          .addConnectionCallbacks(this)
-          .addOnConnectionFailedListener(this)
-          .addApi(LocationServices.API)
-          .build();
-    }
+if (mGoogleApiClient == null) {
+    mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+      .addConnectionCallbacks(this)
+      .addOnConnectionFailedListener(this)
+      .addApi(LocationServices.API)
+      .build();
+}
 
-    @Override public void onConnected(@Nullable Bundle bundle) {
-    	mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-    }
+@Override public void onConnected(@Nullable Bundle bundle) {
+    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+}
 ```
 
 ## Calculating Bearing and Distance
@@ -47,33 +51,35 @@ To determine distance and bearing, the [geometry engine](https://developers.arcg
 
 The current device location requires a spatial reference when calculating distance and bearing.
 
-```
-      LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);
-      AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
-      //The current location is obtained from the Google Location API 
-      //needs to be created as a new point with a spatial reference.
-      Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), place.getLocation().getSpatialReference() );
-      GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
-      double distance = result.getDistance();
-      place.setDistance(Math.round(distance));
-      // Bearing degrees are returned in a range between -180 to 180.
-      double degrees = result.getAzimuth1();
-      if (degrees > -22.5  && degrees <= 22.5){
-        bearing = "N";
-      }else if (degrees > 22.5 && degrees <= 67.5){
-        bearing = "NE";
-      }else if (degrees > 67.5 && degrees <= 112.5){
-        bearing = "E";
-      }else if (degrees > 112.5 && degrees <= 157.5){
-        bearing = "SE";
-      }else if( (degrees > 157.5 ) || (degrees <= -157.5)){
-        bearing = "S";
-      }else if (degrees > -157.5 && degrees <= -112.5){
-        bearing = "SW";
-      }else if (degrees > -112.5 && degrees <= -67.5){
-        bearing = "W";
-      }else if (degrees > -67.5 && degrees <= -22.5){
-        bearing = "NW";
-      }
+```java
+LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);
+AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
+
+//The current location is obtained from the Google Location API 
+//needs to be created as a new point with a spatial reference.
+Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), place.getLocation().getSpatialReference() );
+GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
+double distance = result.getDistance();
+place.setDistance(Math.round(distance));
+
+// Bearing degrees are returned in a range between -180 to 180.
+double degrees = result.getAzimuth1();
+if (degrees > -22.5  && degrees <= 22.5){
+    bearing = "N";
+}else if (degrees > 22.5 && degrees <= 67.5){
+    bearing = "NE";
+}else if (degrees > 67.5 && degrees <= 112.5){
+    bearing = "E";
+}else if (degrees > 112.5 && degrees <= 157.5){
+    bearing = "SE";
+}else if( (degrees > 157.5 ) || (degrees <= -157.5)){
+    bearing = "S";
+}else if (degrees > -157.5 && degrees <= -112.5){
+    bearing = "SW";
+}else if (degrees > -112.5 && degrees <= -67.5){
+    bearing = "W";
+}else if (degrees > -67.5 && degrees <= -22.5){
+    bearing = "NW";
+}
 ```
 
