@@ -26,7 +26,7 @@ package com.esri.android.nearbyplaces.data;
 import android.support.annotation.NonNull;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.List;
 

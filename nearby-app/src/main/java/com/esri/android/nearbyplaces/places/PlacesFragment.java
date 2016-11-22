@@ -188,7 +188,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
         mGoogleApiClient);
     if (mLastLocation != null){
-      Log.i(PlacesFragment.TAG, "Latitude/longitude from Google's FusedLocationApi " + mLastLocation.getLatitude() + '/' + mLastLocation.getLongitude());
+      Log.i(PlacesFragment.TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + '/' + mLastLocation.getLongitude());
       mPresenter.setLocation(mLastLocation);
       final LocationService locationService = LocationService.getInstance();
       locationService.setCurrentLocation(mLastLocation);

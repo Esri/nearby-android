@@ -64,11 +64,10 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
-import com.esri.arcgisruntime.tasks.networkanalysis.Route;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.route.DirectionManeuver;
+import com.esri.arcgisruntime.tasks.route.Route;
+import com.esri.arcgisruntime.tasks.route.RouteResult;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -94,7 +93,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   @Nullable private Place mCenteredPlace = null;
 
-  @Nullable private NavigationChangedListener mNavigationChangeListener;
+  @Nullable private NavigationCompletedListener mNavigationCompletedListener;
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
@@ -111,7 +110,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private final boolean mRoutingState = false;
 
-  private List<DirectionManeuver> mRouteDirections = new ArrayList<>();
+  private List<DirectionManeuver> mRouteDirections;
 
   private Viewpoint mViewpoint = null;
 
@@ -139,7 +138,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     //Set up behavior for the bottom sheet
     setUpBottomSheet();
-
   }
 
   @Override
@@ -212,55 +210,54 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
         }
           if (item.getTitle().toString().equalsIgnoreCase("Route")){
-            mPresenter.getRoute();
+            final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            final View routeHeaderView = inflater.inflate(R.layout.route_header,null);
+            final TextView tv = (TextView) routeHeaderView.findViewById(R.id.route_bar_title);
+            tv.setElevation(6f);
+            tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
+            tv.setTextColor(Color.WHITE);
+            final ImageView btnClose = (ImageView) routeHeaderView.findViewById(R.id.btnClose);
+            final ImageView btnDirections = (ImageView) routeHeaderView.findViewById(R.id.btnDirections);
+
+            if (ab != null){
+              ab.hide();
+            }
+
+            mMapView.addView(routeHeaderView, layout);
+            btnClose.setOnClickListener(new View.OnClickListener() {
+              @Override public void onClick(final View v) {
+                mMapView.removeView(routeHeaderView);
+                if (ab != null){
+                  ab.show();
+                }
+
+                // Clear route
+                if (mRouteOverlay != null){
+                  mRouteOverlay.getGraphics().clear();
+                }
+                if (mViewpoint != null){
+                  mMapView.setViewpoint(mViewpoint);
+                }
+                mPresenter.start();
+              }
+            });
+            btnDirections.setOnClickListener(new View.OnClickListener() {
+              @Override public void onClick(final View v) {
+                // show directions fragment
+                final RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
+                routeDirectionsFragment.show(getActivity().getFragmentManager(),"route_directions_fragment");
+                routeDirectionsFragment.setRoutingDirections(mRouteDirections);
+              }
+            });
+          mPresenter.getRoute();
 
         }
         return false;
       }
     });
   }
-  private void showRouteHeader(){
-    final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    final View routeHeaderView = inflater.inflate(R.layout.route_header,null);
-    final TextView tv = (TextView) routeHeaderView.findViewById(R.id.route_bar_title);
-    tv.setElevation(6f);
-    tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
-    tv.setTextColor(Color.WHITE);
-    final ImageView btnClose = (ImageView) routeHeaderView.findViewById(R.id.btnClose);
-    final ImageView btnDirections = (ImageView) routeHeaderView.findViewById(R.id.btnDirections);
-    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
-    if (ab != null){
-      ab.hide();
-    }
 
-    mMapView.addView(routeHeaderView, layout);
-    btnClose.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(final View v) {
-        mMapView.removeView(routeHeaderView);
-        if (ab != null){
-          ab.show();
-        }
-
-        // Clear route
-        if (mRouteOverlay != null){
-          mRouteOverlay.getGraphics().clear();
-        }
-        if (mViewpoint != null){
-          mMapView.setViewpoint(mViewpoint);
-        }
-        mPresenter.start();
-      }
-    });
-    btnDirections.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(final View v) {
-        // show directions fragment
-        final RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
-        routeDirectionsFragment.show(getActivity().getFragmentManager(),"route_directions_fragment");
-        routeDirectionsFragment.setRoutingDirections(mRouteDirections);
-      }
-    });
-  }
   /**
    * Switch to the list view of the places
    */
@@ -289,38 +286,35 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final Basemap basemap = Basemap.createStreets();
 
     final ArcGISMap map = new ArcGISMap(basemap);
-
     mMapView.setMap(map);
-
+    //If a Viewpoint is set immediately after calling setMap,
+    // the Viewpoint will be cached, and then applied as soon
+    // as the ArcGISMap is loaded, overriding the default Viewpoint.
     if (mViewpoint != null){
-      mMapView.setViewpointAsync(mViewpoint);
+      mMapView.setViewpoint(mViewpoint);
     }
 
     // Add graphics overlay for map markers
     mGraphicOverlay  = new GraphicsOverlay();
     mMapView.getGraphicsOverlays().add(mGraphicOverlay);
 
+    mLocationDisplay = mMapView.getLocationDisplay();
 
+    mLocationDisplay.startAsync();
 
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
           final long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime);
           Log.i("MapFragment", "Time to DrawStatus.COMPLETED = " + Long.toString(elapsedTime) + " ms");
-
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
-          mLocationDisplay = mMapView.getLocationDisplay();
-
-          mLocationDisplay.startAsync();
         }
       }
     });
 
     // Setup OnTouchListener to detect and act on long-press
     mMapView.setOnTouchListener(new MapTouchListener(getActivity().getApplicationContext(), mMapView));
-
-
   }
 
   /**
@@ -406,22 +400,20 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * so that POIs get updated as map's
    * visible area is changed.
    */
-  private void setNavigationCompleteListener(){
-    mNavigationChangeListener = new NavigationChangedListener() {
-      @Override public void navigationChanged(NavigationChangedEvent navigationChangedEvent) {
-        if (navigationChangedEvent.isNavigating()) {
+  private void setNavigationCompletedListener(){
+    mNavigationCompletedListener = new NavigationCompletedListener() {
+      @Override public void navigationCompleted(final NavigationCompletedEvent navigationCompletedEvent) {
           onMapScroll();
-        }
       }
     };
-    mMapView.addNavigationChangedListener(mNavigationChangeListener);
+    mMapView.addNavigationCompletedListener(mNavigationCompletedListener);
   }
 
 
-  private void removeNavigationChangeListener(){
-    if (mNavigationChangeListener != null){
-      mMapView.removeNavigationChangedListener(mNavigationChangeListener);
-      mNavigationChangeListener = null;
+  private void removeNavigationCompletedListener(){
+    if (mNavigationCompletedListener != null){
+      mMapView.removeNavigationCompletedListener(mNavigationCompletedListener);
+      mNavigationCompletedListener = null;
     }
   }
 
@@ -429,7 +421,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onResume(){
     super.onResume();
     mMapView.resume();
-   if (mLocationDisplay != null && !mLocationDisplay.isStarted()){
+   if (!mLocationDisplay.isStarted()){
       mLocationDisplay.startAsync();
     }
   }
@@ -438,7 +430,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onPause(){
     super.onPause();
     mMapView.pause();
-   if (mLocationDisplay != null && mLocationDisplay.isStarted()){
+   if (mLocationDisplay.isStarted()){
       mLocationDisplay.stop();
     }
   }
@@ -450,7 +442,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   @Override public final void showNearbyPlaces(final List<Place> places) {
     if (!initialLocationLoaded){
-      setNavigationCompleteListener();
+      setNavigationCompletedListener();
     }
     initialLocationLoaded = true;
     if (places.isEmpty()){
@@ -562,14 +554,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Stop listening to navigation changes
     // while place is centered in map.
-    removeNavigationChangeListener();
+    removeNavigationCompletedListener();
     final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
     viewCentered.addDoneListener(new Runnable() {
       @Override public void run() {
         // Once we've centered on a place, listen
         // for changes in viewpoint.
-        if (mNavigationChangeListener == null){
-          setNavigationCompleteListener();
+        if (mNavigationCompletedListener == null){
+          setNavigationCompletedListener();
         }
       }
     });
@@ -629,19 +621,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       return;
     }
 
-    // Hide the bottom sheet
-    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-    // Don't show the snackbar
-    mShowSnackbar = false;
-
     // Clear all place graphics
     clearPlaceGraphicOverlay();
 
     // Clear any previous route
     if (mRouteOverlay == null) {
       mRouteOverlay = new GraphicsOverlay();
-      mMapView.getGraphicsOverlays().add(mRouteOverlay);
     }else{
 
       mRouteOverlay.getGraphics().clear();
@@ -662,18 +647,15 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final Graphic begin = generateRoutePoints(startPoint, startPin);
     mRouteOverlay.getGraphics().add(begin);
     mRouteOverlay.getGraphics().add(generateRoutePoints(endPoint,endPin));
+    mMapView.getGraphicsOverlays().add(mRouteOverlay);
 
 
     // Zoom to the extent of the entire route with a padding
     final Geometry shape = routeGraphic.getGeometry();
-    mMapView.setViewpointGeometryAsync(shape, 400);
+    mMapView.setViewpointGeometryWithPaddingAsync(shape, 400);
 
     // Get routing directions
     mRouteDirections = route.getDirectionManeuvers();
-    Log.i("RouteDirections", "Size = " + mRouteDirections.size());
-
-    // Show route header
-    showRouteHeader();
   }
   /**
    * Converts device specific pixels to density independent pixels.
@@ -731,25 +713,25 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
-      removeNavigationChangeListener();
+      removeNavigationCompletedListener();
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());
       // identify graphics on the graphics overlay
-      final ListenableFuture<IdentifyGraphicsOverlayResult> identifyGraphic = super.mMapView
-          .identifyGraphicsOverlayAsync(mGraphicOverlay, screenPoint, 10, false);
+      final ListenableFuture<List<Graphic>> identifyGraphic = super.mMapView
+          .identifyGraphicsOverlayAsync(mGraphicOverlay, screenPoint, 10, 2);
 
       identifyGraphic.addDoneListener(new Runnable() {
         @Override
         public void run() {
           try {
             // get the list of graphics returned by identify
-            final IdentifyGraphicsOverlayResult graphic = identifyGraphic.get();
+            final List<Graphic> graphic = identifyGraphic.get();
 
             // get size of list in results
-            final int identifyResultSize = graphic.getGraphics().size();
+            final int identifyResultSize = graphic.size();
             if (identifyResultSize > 0){
-              final Graphic foundGraphic = graphic.getGraphics().get(0);
+              final Graphic foundGraphic = graphic.get(0);
               final Place foundPlace = getPlaceForPoint((Point)foundGraphic.getGeometry());
               if (foundPlace != null){
                 showDetail(foundPlace);

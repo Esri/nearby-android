@@ -13,11 +13,4 @@
     <string name="no_places_found">No places found</string>
     <string name="filter_dialog">Filter Places</string>
 
-    <!-- Connectivity warnings -->
-    <string name="internet_connectivity">Internet connectivity is required for this application</string>
-    <string name="wireless_problem">Wireless Connectivity Problem</string>
-
-    <string name="location_enabled">Location tracking must be enabled for this application</string>
-    <string name="location_problem">Location Service Problem</string>
-
 </resources>
