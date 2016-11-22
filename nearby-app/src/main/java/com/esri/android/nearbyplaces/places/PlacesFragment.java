@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.LocationService;
@@ -111,19 +110,22 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override
+  public final void onResume() {
+    super.onResume();
+    if (mPresenter != null){
+      mPresenter.start();
+    }
+  }
+
+  @Override
   public final void onSaveInstanceState(final Bundle outState) {
     super.onSaveInstanceState(outState);
   }
 
   @Override public final void showNearbyPlaces(final List<Place> places) {
-    if (places.size() == 0){
-      showMessage("No places found");
-    }else{
-      Collections.sort(places);
-      mPlaceAdapter.setPlaces(places);
-      mPlaceAdapter.notifyDataSetChanged();
-    }
-
+    Collections.sort(places);
+    mPlaceAdapter.setPlaces(places);
+    mPlaceAdapter.notifyDataSetChanged();
   }
 
   // TODO: Implement support for progress indicators
@@ -132,10 +134,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   @Override public final boolean isActive() {
     return false;
-  }
-
-  @Override public void showMessage(String message) {
-    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
   }
 
   @Override public final void setPresenter(final PlacesContract.Presenter presenter) {

@@ -21,46 +21,39 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.map;
 
+package com.esri.android.nearbyplaces.places;
+
+import android.location.Location;
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.tasks.route.RouteResult;
 
 import java.util.List;
 
-public interface MapContract {
 
-  interface View extends BaseView<Presenter>{
+public interface PlacesContract {
 
-    void showNearbyPlaces(List<Place> placeList);
+  interface View extends BaseView<Presenter> {
 
-    MapView getMapView();
+    void showNearbyPlaces(List<Place> places);
 
-    void centerOnPlace(Place p);
+    void showProgressIndicator(boolean active);
 
-    void showRoute(RouteResult routeResult, Point start, Point end);
-
-    void showMessage(String message);
+    boolean isActive();
 
   }
 
-  interface Presenter extends BasePresenter{
+  interface Presenter extends BasePresenter {
 
-    void findPlacesNearby();
+    void setPlacesNearby(List<Place> places);
 
-    void centerOnPlace(Place p);
+    void setLocation(Location location);
 
-    Place findPlaceForPoint(Point p);
+    void getPlacesNearby();
 
-    void getRoute();
+    Envelope getExtentForNearbyPlaces();
 
-    void setRoute(RouteResult routeResult, Point start, Point end);
-
-    void setCurrentExtent(Envelope envelope);
   }
 }

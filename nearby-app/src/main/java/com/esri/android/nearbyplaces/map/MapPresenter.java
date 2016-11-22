@@ -26,15 +26,14 @@ package com.esri.android.nearbyplaces.map;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
-import com.esri.arcgisruntime.geometry.*;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.route.RouteResult;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -48,7 +47,6 @@ public class MapPresenter implements MapContract.Presenter {
   private final static int MAX_RESULT_COUNT = 10;
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   private Place mCenteredPlace;
-  private Envelope mCurrentEnvelope;
 
   public MapPresenter(@NonNull final MapContract.View mapView ){
     mMapView = checkNotNull(mapView, "map view cannot be null");
@@ -61,6 +59,7 @@ public class MapPresenter implements MapContract.Presenter {
    */
   @Override public final void findPlacesNearby() {
     final Point g =  mMapView.getMapView().getVisibleArea().getExtent().getCenter();
+
     if ( g !=null ){
       final GeocodeParameters parameters = new GeocodeParameters();
       parameters.setMaxResults(MAX_RESULT_COUNT);
@@ -68,6 +67,7 @@ public class MapPresenter implements MapContract.Presenter {
       mLocationService.getPlacesFromService(parameters, new PlacesServiceApi.PlacesServiceCallback() {
         @Override public void onLoaded(final Object places) {
           final List<Place> data = (List) places;
+
           // Create graphics for displaying locations in map
           mMapView.showNearbyPlaces(data);
         }
@@ -107,16 +107,9 @@ public class MapPresenter implements MapContract.Presenter {
     mMapView.showRoute(routeResult, start, end);
   }
 
-  /**
-   * Set the envelope based on map's current
-   * view.
-   * @param envelope - Envelope representing visible area of map.
-   */
-  @Override public void setCurrentExtent(Envelope envelope) {
-    mCurrentEnvelope = envelope;
-    mLocationService.setCurrentEnvelope(envelope);
+  @Override public final Envelope getExtentForNearbyPlaces() {
+    return (mLocationService != null) ? mLocationService.getResultEnveope() : null;
   }
-
 
   /**
    * The entry point for this class starts
@@ -125,20 +118,13 @@ public class MapPresenter implements MapContract.Presenter {
   @Override public final void start() {
     mLocationService = LocationService.getInstance();
     final List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
-    if (existingPlaces != null){
+    if ((existingPlaces != null) && !existingPlaces.isEmpty()){
       mMapView.showNearbyPlaces(existingPlaces);
     }else{
       LocationService.configureService(GEOCODE_URL,
-          // On locator task load success
           new Runnable() {
             @Override public void run() {
               findPlacesNearby();
-            }
-          },
-          // On locator task load error
-          new Runnable() {
-            @Override public void run() {
-              mMapView.showMessage("The locator task was unable to load");
             }
           });
     }
