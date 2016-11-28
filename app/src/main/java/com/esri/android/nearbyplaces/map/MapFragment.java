@@ -286,10 +286,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView = (MapView) root.findViewById(R.id.map);
 
     // Vector tile layer for streets
-    ArcGISVectorTiledLayer tiledLayer = new ArcGISVectorTiledLayer(getString(R.string.streets_url));
-    final Basemap basemap = new Basemap(tiledLayer);
-
-    final ArcGISMap map = new ArcGISMap(basemap);
+    final ArcGISMap map = new ArcGISMap(Basemap.createStreets());
 
     mMapView.setMap(map);
 
