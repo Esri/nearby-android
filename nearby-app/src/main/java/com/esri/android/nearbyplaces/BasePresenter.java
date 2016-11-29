@@ -24,8 +24,6 @@
 
 package com.esri.android.nearbyplaces;
 
-import android.app.Activity;
-
 
 public interface BasePresenter {
 

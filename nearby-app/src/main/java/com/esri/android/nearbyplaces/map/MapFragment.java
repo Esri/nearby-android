@@ -45,7 +45,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
@@ -64,9 +63,10 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.*;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
-import com.esri.arcgisruntime.tasks.route.DirectionManeuver;
-import com.esri.arcgisruntime.tasks.route.Route;
-import com.esri.arcgisruntime.tasks.route.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
+import com.esri.arcgisruntime.tasks.networkanalysis.Route;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.android.nearbyplaces.PlaceListener;
 
 import java.util.Calendar;
 import java.util.List;
@@ -93,7 +93,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   @Nullable private Place mCenteredPlace = null;
 
-  @Nullable private NavigationCompletedListener mNavigationCompletedListener;
+  @Nullable private NavigationChangedListener mNavigationChangedListener;
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
@@ -401,19 +401,20 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * visible area is changed.
    */
   private void setNavigationCompletedListener(){
-    mNavigationCompletedListener = new NavigationCompletedListener() {
-      @Override public void navigationCompleted(final NavigationCompletedEvent navigationCompletedEvent) {
-          onMapScroll();
+    mNavigationChangedListener = new NavigationChangedListener() {
+      @Override public void navigationChanged(NavigationChangedEvent navigationChangedEvent) {
+        onMapScroll();
       }
+
     };
-    mMapView.addNavigationCompletedListener(mNavigationCompletedListener);
+    mMapView.addNavigationChangedListener(mNavigationChangedListener);
   }
 
 
-  private void removeNavigationCompletedListener(){
-    if (mNavigationCompletedListener != null){
-      mMapView.removeNavigationCompletedListener(mNavigationCompletedListener);
-      mNavigationCompletedListener = null;
+  private void removeNavigationChangedListener(){
+    if (mNavigationChangedListener != null){
+      mMapView.removeNavigationChangedListener(mNavigationChangedListener);
+      mNavigationChangedListener = null;
     }
   }
 
@@ -554,13 +555,13 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Stop listening to navigation changes
     // while place is centered in map.
-    removeNavigationCompletedListener();
+    removeNavigationChangedListener();
     final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
     viewCentered.addDoneListener(new Runnable() {
       @Override public void run() {
         // Once we've centered on a place, listen
         // for changes in viewpoint.
-        if (mNavigationCompletedListener == null){
+        if (mNavigationChangedListener == null){
           setNavigationCompletedListener();
         }
       }
@@ -652,7 +653,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Zoom to the extent of the entire route with a padding
     final Geometry shape = routeGraphic.getGeometry();
-    mMapView.setViewpointGeometryWithPaddingAsync(shape, 400);
+    mMapView.setViewpointGeometryAsync(shape, 400);
 
     // Get routing directions
     mRouteDirections = route.getDirectionManeuvers();
@@ -713,25 +714,25 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
-      removeNavigationCompletedListener();
+      removeNavigationChangedListener();
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());
       // identify graphics on the graphics overlay
-      final ListenableFuture<List<Graphic>> identifyGraphic = super.mMapView
-          .identifyGraphicsOverlayAsync(mGraphicOverlay, screenPoint, 10, 2);
+      final ListenableFuture<IdentifyGraphicsOverlayResult> identifyGraphic = super.mMapView
+          .identifyGraphicsOverlayAsync(mGraphicOverlay, screenPoint, 10, false);
 
       identifyGraphic.addDoneListener(new Runnable() {
         @Override
         public void run() {
           try {
             // get the list of graphics returned by identify
-            final List<Graphic> graphic = identifyGraphic.get();
+            final IdentifyGraphicsOverlayResult graphic = identifyGraphic.get();
 
             // get size of list in results
-            final int identifyResultSize = graphic.size();
+            final int identifyResultSize = graphic.getGraphics().size();
             if (identifyResultSize > 0){
-              final Graphic foundGraphic = graphic.get(0);
+              final Graphic foundGraphic = graphic.getGraphics().get(0);
               final Place foundPlace = getPlaceForPoint((Point)foundGraphic.getGeometry());
               if (foundPlace != null){
                 showDetail(foundPlace);
