@@ -23,6 +23,9 @@
  */
 package com.esri.android.nearbyplaces.map;
 
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -43,8 +46,21 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.Place;
@@ -60,17 +76,22 @@ import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
-import com.esri.arcgisruntime.mapping.view.*;
+import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
+import com.esri.arcgisruntime.mapping.view.DrawStatus;
+import com.esri.arcgisruntime.mapping.view.DrawStatusChangedEvent;
+import com.esri.arcgisruntime.mapping.view.DrawStatusChangedListener;
+import com.esri.arcgisruntime.mapping.view.Graphic;
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
+import com.esri.arcgisruntime.mapping.view.IdentifyGraphicsOverlayResult;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.mapping.view.NavigationChangedEvent;
+import com.esri.arcgisruntime.mapping.view.NavigationChangedListener;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
-import com.esri.android.nearbyplaces.PlaceListener;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
@@ -282,10 +303,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void setUpMapView(final View root){
     mMapView = (MapView) root.findViewById(R.id.map);
-
-    final Basemap basemap = Basemap.createStreets();
-
-    final ArcGISMap map = new ArcGISMap(basemap);
+    final ArcGISMap map = new ArcGISMap(Basemap.createNavigationVector());
     mMapView.setMap(map);
     //If a Viewpoint is set immediately after calling setMap,
     // the Viewpoint will be cached, and then applied as soon
