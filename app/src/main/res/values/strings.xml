@@ -19,6 +19,8 @@
 
     <string name="location_enabled">Location tracking must be enabled for this application</string>
     <string name="location_problem">Location Service Problem</string>
+    <string name="portal_url">https://www.arcgis.com</string>
+    <string name="auth_prob">"There was a problem authenticating against "</string>
 
 
 

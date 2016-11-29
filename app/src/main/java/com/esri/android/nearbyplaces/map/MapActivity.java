@@ -28,12 +28,15 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
+import com.esri.android.nearbyplaces.BuildConfig;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.security.AuthenticationChallengeHandler;
 import com.esri.arcgisruntime.security.AuthenticationManager;
 import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
+import com.esri.arcgisruntime.security.OAuthConfiguration;
 
 public class MapActivity extends AppCompatActivity implements FilterContract.FilterView {
 
@@ -51,15 +54,21 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
 
   }
 
+  /**
+   * Set up the challenge handler and configure OAuth.
+   * This requires you register the app at http://developers.arcgis.com
+   * and set the client id value in the gradle.properties file.
+   */
   private void setUpAuth(){
     try{
-//      OAuthConfiguration oauthConfig = new OAuthConfiguration(
-//          "https://www.arcgis.com", BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
-     // AuthenticationManager.addOAuthConfiguration(oauthConfig);
       final AuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
+      OAuthConfiguration oauthConfig = new OAuthConfiguration(
+          getString(R.string.portal_url), BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
+      AuthenticationManager.addOAuthConfiguration(oauthConfig);
     }catch(final Exception e){
       Log.e("MapActivity", e.getMessage());
+      Toast.makeText(this, getString(R.string.auth_prob)+ getString(R.string.portal_url), Toast.LENGTH_LONG).show();
     }
   }
   /**
@@ -87,8 +96,6 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
     }
-
-
     mMapPresenter = new MapPresenter(mapFragment);
 
   }
