@@ -20,4 +20,6 @@
     <string name="location_enabled">Location tracking must be enabled for this application</string>
     <string name="location_problem">Location Service Problem</string>
 
+
+
 </resources>
