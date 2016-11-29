@@ -25,7 +25,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".map.MapActivity"
-                  android:parentActivityName=".places.PlacesActivity">
+                  android:parentActivityName=".places.PlacesActivity"
+                  android:configChanges="orientation|screenSize">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                        android:value=".places.PlacesActivity" />
             <intent-filter>
