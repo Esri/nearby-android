@@ -29,7 +29,7 @@ import com.esri.android.nearbyplaces.data.Place;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.tasks.route.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public interface MapContract {
 
   }
 
-  interface Presenter extends BasePresenter{
+  interface Presenter extends BasePresenter {
 
     void findPlacesNearby();
 
