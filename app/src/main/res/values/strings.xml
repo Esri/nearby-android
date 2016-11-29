@@ -20,7 +20,6 @@
     <string name="location_enabled">Location tracking must be enabled for this application</string>
     <string name="location_problem">Location Service Problem</string>
 
-    <string name="streets_url">http://www.arcgis.com/home/item.html?id=3b8814f6ddbd485cae67e8018992246e</string>
 
 
 </resources>
