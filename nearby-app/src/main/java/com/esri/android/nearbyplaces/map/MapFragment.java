@@ -305,9 +305,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView = (MapView) root.findViewById(R.id.map);
     final ArcGISMap map = new ArcGISMap(Basemap.createNavigationVector());
     mMapView.setMap(map);
-    //If a Viewpoint is set immediately after calling setMap,
-    // the Viewpoint will be cached, and then applied as soon
-    // as the ArcGISMap is loaded, overriding the default Viewpoint.
+
     if (mViewpoint != null){
       mMapView.setViewpoint(mViewpoint);
     }
@@ -316,17 +314,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mGraphicOverlay  = new GraphicsOverlay();
     mMapView.getGraphicsOverlays().add(mGraphicOverlay);
 
-    mLocationDisplay = mMapView.getLocationDisplay();
-
-    mLocationDisplay.startAsync();
-
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
-          final long elapsedTime = (Calendar.getInstance().getTimeInMillis() - mStartTime);
-          Log.i("MapFragment", "Time to DrawStatus.COMPLETED = " + Long.toString(elapsedTime) + " ms");
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
+
+          mLocationDisplay = mMapView.getLocationDisplay();
+          mLocationDisplay.startAsync();
         }
       }
     });
@@ -421,7 +416,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private void setNavigationCompletedListener(){
     mNavigationChangedListener = new NavigationChangedListener() {
       @Override public void navigationChanged(NavigationChangedEvent navigationChangedEvent) {
-        onMapScroll();
+        if (navigationChangedEvent.isNavigating()) {
+          onMapScroll();
+        }
       }
 
     };
@@ -440,7 +437,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onResume(){
     super.onResume();
     mMapView.resume();
-   if (!mLocationDisplay.isStarted()){
+   if (mLocationDisplay != null && !mLocationDisplay.isStarted()){
       mLocationDisplay.startAsync();
     }
   }
@@ -449,7 +446,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onPause(){
     super.onPause();
     mMapView.pause();
-   if (mLocationDisplay.isStarted()){
+   if (mLocationDisplay != null && mLocationDisplay.isStarted()){
       mLocationDisplay.stop();
     }
   }
