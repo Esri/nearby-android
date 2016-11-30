@@ -19,5 +19,6 @@
 
     <string name="location_enabled">Location tracking must be enabled for this application</string>
     <string name="location_problem">Location Service Problem</string>
+    <string name="google_location_connection_problem">There is a problem obtaining a location</string>
 
 </resources>

@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.LocationService;
@@ -197,7 +198,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override public void onConnectionSuspended(final int i) {
-
+    Log.i(TAG, "Location connection lost, trying to re-connect");
+    mGoogleApiClient.connect();
   }
   @Override public final void onStart() {
     mGoogleApiClient.connect();
@@ -210,7 +212,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
-
+    Toast.makeText(getContext(), getString(R.string.google_location_connection_problem),Toast.LENGTH_LONG).show();
+    Log.e(TAG, "Google location service problem: " + connectionResult.getErrorMessage());
   }
   public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 

@@ -29,12 +29,6 @@
                   android:configChanges="orientation|screenSize">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                        android:value=".places.PlacesActivity" />
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="my-ags-app" android:host="auth"/>
-            </intent-filter>
         </activity>
     </application>
 
