@@ -16,9 +16,7 @@ allprojects {
     repositories {
         jcenter()
         // Add the Esri public Bintray Maven repository
-        maven {
-            url 'http://android:8080/artifactory/arcgis'
-        }
+        maven{ url 'https://esri.bintray.com/arcgis' }
     }
 }
 
@@ -35,7 +33,7 @@ ext {
 
     // App dependencies
     supportLibraryVersion = '25.0.1'
-    runtimeVersion = '100.0.0-1524'
+    runtimeVersion = '100.0.0'
     googleLocationServicesVersion = '10.0.1'
     guavaVersion='20.0'
 }
