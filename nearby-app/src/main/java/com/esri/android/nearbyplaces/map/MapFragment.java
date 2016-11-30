@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -42,6 +43,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -506,8 +508,22 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     txtAddress.setText(address);
     final TextView txtPhone  = (TextView) mBottomSheet.findViewById(R.id.placePhone) ;
     txtPhone.setText(place.getPhone());
-    final TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);
-    txtUrl.setText(place.getURL());
+
+    LinearLayout linkLayout = (LinearLayout) mBottomSheet.findViewById(R.id.linkLayout);
+    // Hide the link placeholder if no link is found
+    if (place.getURL().length() == 0) {
+      linkLayout.setLayoutParams(new LinearLayoutCompat.LayoutParams(0, 0));
+      linkLayout.requestLayout();
+    }else {
+      int height = (int) (48 * Resources.getSystem().getDisplayMetrics().density);
+      linkLayout.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+          height));
+      linkLayout.requestLayout();
+      final TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);
+      txtUrl.setText(place.getURL());
+    }
+
+
     final TextView txtType = (TextView) mBottomSheet.findViewById(R.id.placeType) ;
     txtType.setText(place.getType());
 
