@@ -52,7 +52,7 @@ If there are changes made in the Original repository, you can sync the fork to k
 Find a bug or want to request a new feature enhancement?  Let us know by submitting an issue.
 
 ## Contributing
-Anyone and everyone is welcome to [contribute](https://github.com/Esri/nearby-android/blob/master/CONTRIBUTING.md). We do accept pull requests.
+Anyone and everyone is welcome to [contribute](CONTRIBUTING.md). We do accept pull requests.
 
 1. Get involved
 2. Report issues
