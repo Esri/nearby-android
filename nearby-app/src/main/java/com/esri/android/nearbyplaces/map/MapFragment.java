@@ -235,50 +235,57 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
         }
           if (item.getTitle().toString().equalsIgnoreCase("Route")){
-            final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            mRouteHeaderView = inflater.inflate(R.layout.route_header,null);
-            final TextView tv = (TextView) mRouteHeaderView.findViewById(R.id.route_bar_title);
-            tv.setElevation(6f);
-            tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
-            tv.setTextColor(Color.WHITE);
-            final ImageView btnClose = (ImageView) mRouteHeaderView.findViewById(R.id.btnClose);
-            final ImageView btnDirections = (ImageView) mRouteHeaderView.findViewById(R.id.btnDirections);
-
-            if (ab != null){
-              ab.hide();
-            }
-            // Add the route header to the top of the map
-            mMapView.addView(mRouteHeaderView, layout);
-            // When user taps on the white 'X' in the route header, remove it from map view
-            btnClose.setOnClickListener(new View.OnClickListener() {
-              @Override public void onClick(final View v) {
-                removeRouteHeaderView();
-
-                // Clear route from the map view
-                if (mRouteOverlay != null){
-                  mRouteOverlay.getGraphics().clear();
-                }
-                // Reset any previous viewpoint
-                if (mViewpoint != null){
-                  mMapView.setViewpoint(mViewpoint);
-                }
-                // Show any nearby places
-                mPresenter.start();
-              }
-            });
-            btnDirections.setOnClickListener(new View.OnClickListener() {
-              @Override public void onClick(final View v) {
-                // show directions fragment
-                final RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
-                routeDirectionsFragment.show(getActivity().getFragmentManager(),"route_directions_fragment");
-                routeDirectionsFragment.setRoutingDirections(mRouteDirections);
-              }
-            });
-          mPresenter.getRoute();
+            mPresenter.getRoute();
 
         }
         return false;
+      }
+    });
+  }
+
+  @Override public void showMessage(String message) {
+    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  }
+
+  private void showRouteHeader(){
+    final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    mRouteHeaderView = inflater.inflate(R.layout.route_header,null);
+    final TextView tv = (TextView) mRouteHeaderView.findViewById(R.id.route_bar_title);
+    tv.setElevation(6f);
+    tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
+    tv.setTextColor(Color.WHITE);
+    final ImageView btnClose = (ImageView) mRouteHeaderView.findViewById(R.id.btnClose);
+    final ImageView btnDirections = (ImageView) mRouteHeaderView.findViewById(R.id.btnDirections);
+    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+    if (ab != null){
+      ab.hide();
+    }
+
+    mMapView.addView(mRouteHeaderView, layout);
+    btnClose.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(final View v) {
+        mMapView.removeView(mRouteHeaderView);
+        if (ab != null){
+          ab.show();
+        }
+
+        // Clear route
+        if (mRouteOverlay != null){
+          mRouteOverlay.getGraphics().clear();
+        }
+        if (mViewpoint != null){
+          mMapView.setViewpoint(mViewpoint);
+        }
+        mPresenter.start();
+      }
+    });
+    btnDirections.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(final View v) {
+        // show directions fragment
+        final RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
+        routeDirectionsFragment.show(getActivity().getFragmentManager(),"route_directions_fragment");
+        routeDirectionsFragment.setRoutingDirections(mRouteDirections);
       }
     });
   }
@@ -680,11 +687,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Clear all place graphics
     clearPlaceGraphicOverlay();
 
-    // Clear any previous route
+
     if (mRouteOverlay == null) {
       mRouteOverlay = new GraphicsOverlay();
+      mMapView.getGraphicsOverlays().add(mRouteOverlay);
     }else{
-
+      // Clear any previous route
       mRouteOverlay.getGraphics().clear();
     }
     // Create polyline graphic of the full route
@@ -703,19 +711,18 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final Graphic begin = generateRoutePoints(startPoint, startPin);
     mRouteOverlay.getGraphics().add(begin);
     mRouteOverlay.getGraphics().add(generateRoutePoints(endPoint,endPin));
-    mMapView.getGraphicsOverlays().add(mRouteOverlay);
 
 
     // Zoom to the extent of the entire route with a padding
     final Geometry shape = routeGraphic.getGeometry();
-    mMapView.setViewpointGeometryAsync(shape, 400);
+    mMapView.setViewpointScaleAsync()
+    mMapView.setViewpointGeometryAsync(shape, 500);
 
     // Get routing directions
     mRouteDirections = route.getDirectionManeuvers();
-  }
 
-  @Override public void showMessage(String message) {
-    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+    // Show route header
+    showRouteHeader();
   }
 
   /**
