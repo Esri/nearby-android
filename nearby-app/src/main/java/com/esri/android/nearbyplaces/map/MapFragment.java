@@ -71,10 +71,7 @@ import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
 import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.Geometry;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.SpatialReference;
+import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
@@ -714,9 +711,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
 
     // Zoom to the extent of the entire route with a padding
-    final Geometry shape = routeGraphic.getGeometry();
-    mMapView.setViewpointScaleAsync()
-    mMapView.setViewpointGeometryAsync(shape, 500);
+    final Envelope routingEnvelope = new Envelope(beginPoint.getX(),beginPoint.getY(), endPoint.getX(), endPoint.getY(), SpatialReferences.getWgs84());
+    final Envelope projectedEnvelope = (Envelope) GeometryEngine.project(routingEnvelope, mMapView.getSpatialReference());
+    mMapView.setViewpointGeometryAsync(projectedEnvelope, 100);
 
     // Get routing directions
     mRouteDirections = route.getDirectionManeuvers();
