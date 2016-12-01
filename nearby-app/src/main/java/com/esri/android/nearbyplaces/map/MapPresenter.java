@@ -47,6 +47,7 @@ public class MapPresenter implements MapContract.Presenter {
   private final static int MAX_RESULT_COUNT = 10;
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   private Place mCenteredPlace;
+  private Envelope mCurrentEnvelope;
 
   public MapPresenter(@NonNull final MapContract.View mapView ){
     mMapView = checkNotNull(mapView, "map view cannot be null");
@@ -107,8 +108,14 @@ public class MapPresenter implements MapContract.Presenter {
     mMapView.showRoute(routeResult, start, end);
   }
 
-  @Override public final Envelope getExtentForNearbyPlaces() {
-    return (mLocationService != null) ? mLocationService.getResultEnveope() : null;
+  /**
+   * Set the envelope based on map's current
+   * view.
+   * @param envelope - Envelope representing visible area of map.
+   */
+  @Override public void setCurrentExtent(Envelope envelope) {
+    mCurrentEnvelope = envelope;
+    mLocationService.setCurrentEnvelope(envelope);
   }
 
   /**
@@ -118,13 +125,20 @@ public class MapPresenter implements MapContract.Presenter {
   @Override public final void start() {
     mLocationService = LocationService.getInstance();
     final List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
-    if ((existingPlaces != null) && !existingPlaces.isEmpty()){
+    if (existingPlaces != null){
       mMapView.showNearbyPlaces(existingPlaces);
     }else{
       LocationService.configureService(GEOCODE_URL,
+          // On locator task load success
           new Runnable() {
             @Override public void run() {
               findPlacesNearby();
+            }
+          },
+          // On locator task load error
+          new Runnable() {
+            @Override public void run() {
+              mMapView.showMessage("The locator task was unable to load");
             }
           });
     }

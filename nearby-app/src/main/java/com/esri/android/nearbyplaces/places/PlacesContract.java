@@ -43,6 +43,8 @@ public interface PlacesContract {
 
     boolean isActive();
 
+    void showMessage(String message);
+
   }
 
   interface Presenter extends BasePresenter {

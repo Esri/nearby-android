@@ -137,6 +137,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private Viewpoint mViewpoint = null;
 
+  private View mRouteHeaderView;
+
   public MapFragment(){}
 
   public static MapFragment newInstance(){
@@ -187,9 +189,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         mViewpoint = new Viewpoint(envelope);
       }
 
-      setUpMapView(root);
-    }
 
+    }
+    setUpMapView(root);
     return root;
   }
 
@@ -235,33 +237,33 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
           if (item.getTitle().toString().equalsIgnoreCase("Route")){
             final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            final View routeHeaderView = inflater.inflate(R.layout.route_header,null);
-            final TextView tv = (TextView) routeHeaderView.findViewById(R.id.route_bar_title);
+            mRouteHeaderView = inflater.inflate(R.layout.route_header,null);
+            final TextView tv = (TextView) mRouteHeaderView.findViewById(R.id.route_bar_title);
             tv.setElevation(6f);
             tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
             tv.setTextColor(Color.WHITE);
-            final ImageView btnClose = (ImageView) routeHeaderView.findViewById(R.id.btnClose);
-            final ImageView btnDirections = (ImageView) routeHeaderView.findViewById(R.id.btnDirections);
+            final ImageView btnClose = (ImageView) mRouteHeaderView.findViewById(R.id.btnClose);
+            final ImageView btnDirections = (ImageView) mRouteHeaderView.findViewById(R.id.btnDirections);
 
             if (ab != null){
               ab.hide();
             }
-
-            mMapView.addView(routeHeaderView, layout);
+            // Add the route header to the top of the map
+            mMapView.addView(mRouteHeaderView, layout);
+            // When user taps on the white 'X' in the route header, remove it from map view
             btnClose.setOnClickListener(new View.OnClickListener() {
               @Override public void onClick(final View v) {
-                mMapView.removeView(routeHeaderView);
-                if (ab != null){
-                  ab.show();
-                }
+                removeRouteHeaderView();
 
-                // Clear route
+                // Clear route from the map view
                 if (mRouteOverlay != null){
                   mRouteOverlay.getGraphics().clear();
                 }
+                // Reset any previous viewpoint
                 if (mViewpoint != null){
                   mMapView.setViewpoint(mViewpoint);
                 }
+                // Show any nearby places
                 mPresenter.start();
               }
             });
@@ -279,6 +281,19 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         return false;
       }
     });
+  }
+
+  /**
+   * Remove RouteHeader view from map view and restore action bar
+   */
+  private void removeRouteHeaderView(){
+    if(mRouteHeaderView != null){
+      mMapView.removeView(mRouteHeaderView);
+    }
+    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+    if (ab != null){
+      ab.show();
+    }
   }
 
   /**
@@ -419,7 +434,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mNavigationChangedListener = new NavigationChangedListener() {
       @Override public void navigationChanged(NavigationChangedEvent navigationChangedEvent) {
         if (navigationChangedEvent.isNavigating()) {
-          onMapScroll();
+          onMapViewChange();
         }
       }
 
@@ -438,9 +453,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   @Override
   public final void onResume(){
     super.onResume();
-    mMapView.resume();
-   if (mLocationDisplay != null && !mLocationDisplay.isStarted()){
-      mLocationDisplay.startAsync();
+    if (mMapView != null){
+      mMapView.resume();
+      if (mLocationDisplay != null && !mLocationDisplay.isStarted()){
+        mLocationDisplay.startAsync();
+      }
     }
   }
 
@@ -448,7 +465,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onPause(){
     super.onPause();
     mMapView.pause();
-   if (mLocationDisplay != null && mLocationDisplay.isStarted()){
+    if (mLocationDisplay != null && mLocationDisplay.isStarted()){
       mLocationDisplay.stop();
     }
   }
@@ -459,6 +476,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param places List of Place items
    */
   @Override public final void showNearbyPlaces(final List<Place> places) {
+
+    // Clear out any existing graphics
+    mGraphicOverlay.getGraphics().clear();
+
     if (!initialLocationLoaded){
       setNavigationCompletedListener();
     }
@@ -467,8 +488,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       Toast.makeText(getContext(),getString(R.string.no_places_found),Toast.LENGTH_SHORT).show();
       return;
     }
-    // Clear out any existing graphics
-    mGraphicOverlay.getGraphics().clear();
 
     // Create a graphic for every place
     for (final Place place : places){
@@ -541,15 +560,17 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   /**
    * Dismiss the bottom sheet
-   * when map is scrolled.
+   * when map is scrolled and notify
+   * presenter
    */
-  @Override public final void onMapScroll() {
+  @Override public final void onMapViewChange() {
     mShowSnackbar = true;
     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){ // show snackbar prompting for re-doing search
       showSearchSnackbar();
     }else{
       bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
+    mPresenter.setCurrentExtent(getMapView().getVisibleArea().getExtent());
   }
 
   /**
@@ -578,6 +599,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     if (p.getLocation() == null){
       return;
     }
+    // Dismiss the route header view
+    removeRouteHeaderView();
+
     // Keep track of centered place since
     // it will be needed to reset
     // the graphic if another place
@@ -689,6 +713,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Get routing directions
     mRouteDirections = route.getDirectionManeuvers();
   }
+
+  @Override public void showMessage(String message) {
+    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  }
+
   /**
    * Converts device specific pixels to density independent pixels.
    *
@@ -745,7 +774,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
-      removeNavigationChangedListener();
+  //    removeNavigationCompletedListener();
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());
