@@ -23,12 +23,9 @@
  */
 package com.esri.android.nearbyplaces.data;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 import com.esri.arcgisruntime.UnitSystem;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
@@ -43,7 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.RunnableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -63,8 +59,8 @@ public class LocationService implements PlacesServiceApi {
     }
     return instance;
   }
-
-  private Map<String,Place> mappedPlaces;
+  // A local cache of found places
+  private Map<String,Place> mCachedPlaces;
 
 
   public static void configureService(@NonNull String locatorUrl, @NonNull final Runnable onSuccess, @NonNull final
@@ -112,17 +108,17 @@ public class LocationService implements PlacesServiceApi {
 
   @Override public Place getPlaceDetail(String placeName) {
     Place foundPlace = null;
-    if (!mappedPlaces.isEmpty()){
-      if (mappedPlaces.get(placeName) != null){
-        foundPlace = mappedPlaces.get(placeName);
+    if (!mCachedPlaces.isEmpty()){
+      if (mCachedPlaces.get(placeName) != null){
+        foundPlace = mCachedPlaces.get(placeName);
       }
     }
     return foundPlace;
   }
 
   @Override public List<Place> getPlacesFromRepo() {
-    if (mappedPlaces != null){
-      return filterPlaces(new ArrayList<>(mappedPlaces.values()));
+    if (mCachedPlaces != null){
+      return filterPlaces(new ArrayList<>(mCachedPlaces.values()));
     }else{
       return null;
     }
@@ -170,6 +166,7 @@ public class LocationService implements PlacesServiceApi {
     if (!placesToRemove.isEmpty()){
       foundPlaces.removeAll(placesToRemove);
     }
+    Log.i("FilteredPlaces", "After filtering on categories, there are " + foundPlaces.size());
     return foundPlaces;
   }
 
@@ -198,13 +195,15 @@ public class LocationService implements PlacesServiceApi {
     @Override public void run() {
 
       try {
-        if (mappedPlaces == null){
-          mappedPlaces = new HashMap<>();
+        if (mCachedPlaces == null){
+          mCachedPlaces = new HashMap<>();
         }
-        mappedPlaces.clear();
+        mCachedPlaces.clear();
         List<GeocodeResult> data = mResults.get();
         List<Place> places = new ArrayList<Place>();
+        int i = 0;
         for (GeocodeResult r: data){
+          i = i + 1;
           Map<String,Object> attributes = r.getAttributes();
           String address = (String) attributes.get("Place_addr");
           String name = (String) attributes.get("PlaceName");
@@ -217,6 +216,9 @@ public class LocationService implements PlacesServiceApi {
           setBearingAndDistanceForPlace(place);
           Log.i("PLACE", place.toString());
 
+          // Envelope is null the very first time the geocode search runs
+          // because the search is initiated from the list view which
+          // has no extent.
           if (mCurrentEnvelope != null){
             mCurrentEnvelope = (Envelope) GeometryEngine.project(mCurrentEnvelope, SpatialReferences.getWgs84());
 
@@ -225,17 +227,18 @@ public class LocationService implements PlacesServiceApi {
             Point placePoint = new Point(place.getLocation().getX(), place.getLocation().getY(), SpatialReferences.getWgs84());
             if (GeometryEngine.within(placePoint,mCurrentEnvelope)){
               places.add(place);
-              mappedPlaces.put(name,place);
+              mCachedPlaces.put(name,place);
             }else{
               Log.i("GeometryEngine", "***Excluding " + place.getName() + " because it's outside the visible area of map.***");
             }
           }else{
             places.add(place);
-            mappedPlaces.put(name, place);
+            mCachedPlaces.put(name, place);
           }
 
 
         }
+        Log.i("GecodeResults", "Returned with "+ i +" places, " + places.size() + " are within extent");
         mCallback.onLoaded(filterPlaces(places));
       } catch (Exception e) {
         e.printStackTrace();

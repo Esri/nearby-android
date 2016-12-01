@@ -53,9 +53,6 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
 
   private void setUpAuth(){
     try{
-//      OAuthConfiguration oauthConfig = new OAuthConfiguration(
-//          "https://www.arcgis.com", BuildConfig.CLIENT_ID, BuildConfig.OAUTH_REDIRECT_ID);
-     // AuthenticationManager.addOAuthConfiguration(oauthConfig);
       final AuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
     }catch(final Exception e){
@@ -63,7 +60,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     }
   }
   /**
-   * When user presses 'Apply' button in filter dialong,
+   * When user presses 'Apply' button in filter dialog,
    * re-filter results.
    * @param applyFilter - boolean
    */

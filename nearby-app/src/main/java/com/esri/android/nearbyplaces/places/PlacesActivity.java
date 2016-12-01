@@ -43,14 +43,17 @@ import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.map.MapActivity;
+import com.esri.android.nearbyplaces.map.MapContract;
+import com.esri.android.nearbyplaces.map.MapFragment;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.geometry.Envelope;
 
 
 public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
-    ActivityCompat.OnRequestPermissionsResultCallback {
+    ActivityCompat.OnRequestPermissionsResultCallback, PlacesFragment.FragmentListener {
 
   private static final int PERMISSION_REQUEST_LOCATION = 0;
+  private PlacesFragment mPlacesFragment;
   private CoordinatorLayout mMainLayout;
   private PlacesPresenter mPresenter;
 
@@ -133,15 +136,14 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    */
   private void setUpFragments(){
 
-    PlacesFragment placesFragment = (PlacesFragment) getSupportFragmentManager().findFragmentById(R.id.recycleView) ;
+    mPlacesFragment = (PlacesFragment) getSupportFragmentManager().findFragmentById(R.id.recycleView) ;
 
-    if (placesFragment == null){
+    if (mPlacesFragment == null){
       // Create the fragment
-      placesFragment = PlacesFragment.newInstance();
+      mPlacesFragment = PlacesFragment.newInstance();
       ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), placesFragment, R.id.list_fragment_container, "list fragment");
+          getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container, "list fragment");
     }
-    mPresenter = new PlacesPresenter(placesFragment);
   }
 
   /**
@@ -202,5 +204,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
         Snackbar.make(mMainLayout, "Location permission request was denied.", Snackbar.LENGTH_SHORT).show();
       }
     }
+  }
+
+  @Override public void onCreationComplete() {
+    mPresenter = new PlacesPresenter(mPlacesFragment);
   }
 }

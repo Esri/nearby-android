@@ -26,6 +26,8 @@ package com.esri.android.nearbyplaces.map;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -488,7 +490,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       setNavigationCompletedListener();
     }
     initialLocationLoaded = true;
-    if (places.isEmpty()){
+    if (places == null || places.isEmpty()){
       Toast.makeText(getContext(),getString(R.string.no_places_found),Toast.LENGTH_SHORT).show();
       return;
     }
@@ -574,6 +576,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }else{
       bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
+    Log.i("MapChange", "Set current extent");
     mPresenter.setCurrentExtent(getMapView().getVisibleArea().getExtent());
   }
 
@@ -764,6 +767,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private Place getPlaceForPoint(final Point p){
     return mPresenter.findPlaceForPoint(p);
   }
+
   private class MapTouchListener extends DefaultMapViewOnTouchListener {
     /**
      * Instantiates a new DrawingMapViewOnTouchListener with the specified

@@ -10,7 +10,7 @@
     <!-- Search categories for geocoding -->
 
     <!-- Toast and dialog message -->
-    <string name="no_places_found">No places found</string>
+    <string name="no_places_found">No places found, try zooming out and searching again</string>
     <string name="filter_dialog">Filter Places</string>
 
     <!-- Connectivity warnings -->

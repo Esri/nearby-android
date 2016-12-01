@@ -45,6 +45,7 @@ import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.map.MapContract;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -70,6 +71,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   private GoogleApiClient mGoogleApiClient;
   private Location mLastLocation;
 
+  private FragmentListener mCallback;
   public PlacesFragment(){
 
   }
@@ -86,14 +88,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
     mPlaceAdapter = new PlacesFragment.PlacesAdapter(getContext(), R.id.placesContainer,placeList);
 
-    // Create an instance of GoogleAPIClient.
-    if (mGoogleApiClient == null) {
-      mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-          .addConnectionCallbacks(this)
-          .addOnConnectionFailedListener(this)
-          .addApi(LocationServices.API)
-          .build();
-    }
+    mCallback.onCreationComplete();
   }
 
   @Nullable
@@ -111,8 +106,16 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override
-  public final void onSaveInstanceState(final Bundle outState) {
-    super.onSaveInstanceState(outState);
+  public void onAttach(Context activity) {
+    super.onAttach(activity);
+    // This makes sure that the container activity has implemented
+    // the callback interface. If not, it throws an exception
+    try {
+      mCallback = (FragmentListener) activity;
+    } catch (ClassCastException e) {
+      throw new ClassCastException(activity.toString()
+          + " must implement FragmentListener");
+    }
   }
 
   @Override public final void showNearbyPlaces(final List<Place> places) {
@@ -140,6 +143,14 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   @Override public final void setPresenter(final PlacesContract.Presenter presenter) {
     mPresenter = checkNotNull(presenter);
+    // Create an instance of GoogleAPIClient.
+    if (mGoogleApiClient == null) {
+      mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+          .addConnectionCallbacks(this)
+          .addOnConnectionFailedListener(this)
+          .addApi(LocationServices.API)
+          .build();
+    }
   }
 
 
@@ -215,6 +226,15 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   @Override public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
     Toast.makeText(getContext(), getString(R.string.google_location_connection_problem),Toast.LENGTH_LONG).show();
     Log.e(TAG, "Google location service problem: " + connectionResult.getErrorMessage());
+  }
+
+
+  /**
+   * Signals to the activity that this fragment has
+   * completed creation activities.
+   */
+  public interface FragmentListener{
+    void onCreationComplete();
   }
   public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
