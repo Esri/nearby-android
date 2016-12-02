@@ -25,15 +25,25 @@
 package com.esri.android.nearbyplaces.places;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,6 +63,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     ActivityCompat.OnRequestPermissionsResultCallback, PlacesFragment.FragmentListener {
 
   private static final int PERMISSION_REQUEST_LOCATION = 0;
+  private static final int REQUEST_LOCATION_SETTINGS = 1;
+  private static final int REQUEST_WIFI_SETTINGS = 2;
   private PlacesFragment mPlacesFragment;
   private CoordinatorLayout mMainLayout;
   private PlacesPresenter mPresenter;
@@ -64,13 +76,18 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
     mMainLayout = (CoordinatorLayout) findViewById(R.id.list_coordinator_layout);
 
+    // Check for gps and wifi
+    checkSettings();
+  }
+
+  private void completeSetUp(){
+    // request location permission
+    requestLocationPermission();
+
     // Set up the toolbar.
     setUpToolbar();
 
     setUpFragments();
-
-    // request location permission
-    requestLocationPermission();
   }
 
   @Override
@@ -201,12 +218,95 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
       if (grantResults.length != 1 ) {
         // Permission request was denied.
-        Snackbar.make(mMainLayout, "Location permission request was denied.", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mMainLayout, R.string.locatin_permission, Snackbar.LENGTH_SHORT).show();
       }
     }
   }
 
   @Override public void onCreationComplete() {
     mPresenter = new PlacesPresenter(mPlacesFragment);
+  }
+
+  private boolean locationTrackingEnabled() {
+    LocationManager locationManager = (LocationManager) getApplicationContext()
+        .getSystemService(Context.LOCATION_SERVICE);
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+  }
+
+  /**
+   * Determine wifi connectivity.
+   * @return boolean indicating wifi connectivity. True for connected.
+   */
+  private boolean internetConnectivity(){
+    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo wifi = connManager.getActiveNetworkInfo();
+    if (wifi == null){
+      return false;
+    }else {
+      return wifi.isConnected();
+    }
+  }
+
+
+  /*
+   * Prompt user to turn on location tracking and wireless if needed
+   */
+  private void checkSettings() {
+    // Is GPS enabled?
+    boolean gpsEnabled = locationTrackingEnabled();
+    // Is there internet connectivity?
+    boolean internetConnected = internetConnectivity();
+
+    if (gpsEnabled && internetConnected) {
+      completeSetUp();
+    }else if (!gpsEnabled) {
+      Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+      showDialog(gpsIntent, REQUEST_LOCATION_SETTINGS, getString(R.string.location_tracking_off));
+    }else if(!internetConnected)	{
+      Intent internetIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+      showDialog(internetIntent, REQUEST_WIFI_SETTINGS, getString(R.string.wireless_off));
+    }
+  }
+  /**
+   * When returning from activities concerning wifi mode and location
+   * settings, check them again.
+   *
+   * @param requestCode
+   * @param resultCode
+   * @param data
+   */
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == REQUEST_WIFI_SETTINGS || requestCode == REQUEST_LOCATION_SETTINGS) {
+      checkSettings();
+    }
+
+  }
+  /**
+   * Prompt user to change settings required for app
+   * @param intent
+   * @param requestCode
+   * @param message
+   */
+  private void showDialog(final Intent intent, final int requestCode, String message) {
+
+    final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+    alertDialog.setMessage(message);
+    alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        //
+        startActivityForResult(intent, requestCode);
+      }
+    });
+    alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        finish();
+      }
+    });
+    alertDialog.create().show();
   }
 }
