@@ -32,7 +32,6 @@ import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Implementation of the Notes Service API that adds a latency simulating network.
@@ -49,7 +48,6 @@ public class PlacesServiceApiImpl implements  PlacesServiceApi{
 
   @Override public void getPlacesFromService(final @NonNull GeocodeParameters parameters, final @NonNull PlacesServiceCallback callback) {
 
-    checkNotNull(callback);
     // Simulate network by delaying the execution.
     Handler handler = new Handler();
     handler.postDelayed(new Runnable() {

@@ -35,7 +35,6 @@ import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class PlacesPresenter implements PlacesContract.Presenter {
 
@@ -48,7 +47,7 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
 
   public PlacesPresenter( @NonNull PlacesContract.View listView){
-    mPlacesView = checkNotNull(listView);
+    mPlacesView = listView;
     mPlacesView.setPresenter(this);
   }
 

@@ -36,7 +36,6 @@ import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MapPresenter implements MapContract.Presenter {
 
@@ -50,7 +49,7 @@ public class MapPresenter implements MapContract.Presenter {
   private Envelope mCurrentEnvelope;
 
   public MapPresenter(@NonNull final MapContract.View mapView ){
-    mMapView = checkNotNull(mapView, "map view cannot be null");
+    mMapView = mapView;
     mMapView.setPresenter(this);
   }
 

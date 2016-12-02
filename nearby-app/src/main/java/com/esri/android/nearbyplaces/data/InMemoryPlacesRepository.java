@@ -31,8 +31,6 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Concrete implementation to load places from the a data source.
  */
@@ -49,7 +47,7 @@ public class InMemoryPlacesRepository implements PlacesRepository {
 
   @Override public void getPlaces(@NonNull final LoadPlacesCallback callback) {
 
-    checkNotNull(callback);
+
     if (mCachedPlaces == null){
       mPlacesServiceApi.getPlacesFromService( new GeocodeParameters(), new PlacesServiceApi.PlacesServiceCallback<List<Place>>() {
         @Override public void onLoaded(List<Place> places) {

@@ -46,7 +46,6 @@ import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
-import com.esri.android.nearbyplaces.map.MapContract;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -56,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class PlacesFragment extends Fragment implements PlacesContract.View,
     GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -151,7 +149,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
 
   @Override public final void setPresenter(final PlacesContract.Presenter presenter) {
-    mPresenter = checkNotNull(presenter);
+    mPresenter = presenter;
     // Create an instance of GoogleAPIClient.
     if (mGoogleApiClient == null) {
       mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -171,7 +169,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     }
 
     public final void setPlaces(final List<Place> places){
-      checkNotNull(places);
       mPlaces = places;
       notifyDataSetChanged();
     }

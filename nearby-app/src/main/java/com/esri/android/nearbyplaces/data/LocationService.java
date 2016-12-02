@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LocationService implements PlacesServiceApi {
 
@@ -65,9 +64,6 @@ public class LocationService implements PlacesServiceApi {
 
   public static void configureService(@NonNull String locatorUrl, @NonNull final Runnable onSuccess, @NonNull final
       Runnable onError){
-    checkNotNull(locatorUrl);
-    checkNotNull(onSuccess);
-    checkNotNull(onError);
     if (null == mLocatorTask){
       mLocatorTask = new LocatorTask(locatorUrl);
       mLocatorTask.addDoneLoadingListener(new Runnable() {
@@ -94,8 +90,6 @@ public class LocationService implements PlacesServiceApi {
   }
 
   @Override public void getPlacesFromService(@NonNull GeocodeParameters parameters,@NonNull final PlacesServiceCallback callback)  {
-    checkNotNull(parameters);
-    checkNotNull(callback);
     String searchText = "";
     provisionOutputAttributes(parameters);
     provisionCategories(parameters);
@@ -130,7 +124,6 @@ public class LocationService implements PlacesServiceApi {
   }
 
   private GeocodeParameters provisionCategories(@NonNull  GeocodeParameters parameters){
-    checkNotNull(parameters);
     List<String> categories = parameters.getCategories();
     categories.add("Food");
     categories.add("Hotel");
@@ -141,7 +134,6 @@ public class LocationService implements PlacesServiceApi {
     return parameters;
   }
   private GeocodeParameters provisionOutputAttributes(@NonNull GeocodeParameters parameters){
-    checkNotNull(parameters);
     List<String> outputAttributes = parameters.getResultAttributeNames();
     outputAttributes.clear();
     outputAttributes.add("*");
