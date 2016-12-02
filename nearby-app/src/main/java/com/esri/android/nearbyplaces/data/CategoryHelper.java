@@ -102,9 +102,15 @@ public class CategoryHelper {
         "Vietnamese Food",
         "Winery");
 
-  public static String getCategoryForFoodType(final String type){
-    String category = type;
-    if (foodTypes.contains(type)){
+  /**
+   * Checks a specific type of food (e.g. Thai Food) against
+   * a known list of food types.
+   * @param foodType - String representing a type of food
+   * @return - Returns a String, either 'Food' or if not found in list, returns the input.
+   */
+  private static String getCategoryForFoodType(final String foodType){
+    String category = foodType;
+    if (foodTypes.contains(foodType)){
       category = "Food";
     }
     return category;
@@ -138,6 +144,12 @@ public class CategoryHelper {
     }
     return d;
   }
+
+  /**
+   * Return appropriate id for given type of place.
+   * @param p - Place
+   * @return - Integer representing icon id
+   */
   public static Integer getPinForCenterPlace(final Place p){
     final String category = CategoryHelper.getCategoryForFoodType(p.getType());
     final Integer d;
@@ -162,6 +174,13 @@ public class CategoryHelper {
     }
     return d;
   }
+
+  /**
+   * Return appropriate drawable base on place type
+   * @param p - Place item
+   * @param a - Activity
+   * @return - Drawable
+   */
   public static Drawable getDrawableForPlace(final Place p, final Activity a){
 
     final String placeType = p.getType();

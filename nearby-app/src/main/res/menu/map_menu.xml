@@ -22,6 +22,6 @@
           android:title="Directions"
           android:orderInCategory="200"
           android:visible="false"
-          android:icon="@drawable/ic_directions_walk_black_24px"
+          android:icon="@drawable/ic_directions_walk_white_24px"
           app:showAsAction="always"/>
 </menu>

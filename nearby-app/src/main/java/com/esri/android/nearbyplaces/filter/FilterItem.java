@@ -23,12 +23,16 @@
  */
 package com.esri.android.nearbyplaces.filter;
 
+/**
+ * Represents a filter setting used to control what types of places are
+ * viewed in map and list
+ */
 public class FilterItem {
 
-  private String mTitle;
-  private int mIconId;
+  private final String mTitle;
+  private final int mIconId;
   private boolean mSelected;
-  private int mSelectedIconId;
+  private final int mSelectedIconId;
 
   public FilterItem (final String title, final int icon, final boolean s, final int selectedIcon){
     mTitle = title;
@@ -53,4 +57,12 @@ public class FilterItem {
     return mSelectedIconId;
   }
 
+  @Override public String toString() {
+    return "FilterItem{" +
+        "mTitle='" + mTitle + '\'' +
+        ", mIconId=" + mIconId +
+        ", mSelected=" + mSelected +
+        ", mSelectedIconId=" + mSelectedIconId +
+        '}';
+  }
 }

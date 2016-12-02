@@ -37,7 +37,7 @@ import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
 
 public class MapActivity extends AppCompatActivity implements FilterContract.FilterView {
 
-  private MapPresenter mMapPresenter;
+  private MapPresenter mMapPresenter = null;
 
   @Override
   protected final void onCreate(final Bundle savedInstanceState) {
@@ -45,18 +45,21 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     super.onCreate(savedInstanceState);
     setContentView(R.layout.map_layout);
 
-    setUpFragments(savedInstanceState);
+    setUpFragments();
 
     setUpAuth();
 
   }
 
+  /**
+   * Authentication method used when requesting a route.
+   */
   private void setUpAuth(){
     try{
       final AuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
     }catch(final Exception e){
-      Log.e("MapActivity", e.getMessage());
+      Log.e("MapActivity", "Authentication handling issue: " + e.getMessage());
     }
   }
   /**
@@ -74,7 +77,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
   /**
    * Set up fragments
    */
-  private void setUpFragments(final Bundle savedInstanceState){
+  private void setUpFragments(){
 
     final FragmentManager fm = getSupportFragmentManager();
     MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_container);
@@ -84,7 +87,6 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
     }
-
 
     mMapPresenter = new MapPresenter(mapFragment);
 

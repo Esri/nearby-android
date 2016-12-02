@@ -23,7 +23,6 @@
  */
 package com.esri.android.nearbyplaces.data;
 
-import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -34,19 +33,7 @@ public interface PlacesRepository {
   interface LoadPlacesCallback{  // callback from server
 
     void onPlacesLoaded(List<Place> places);
-
-    void onDataNotAvailable();
   }
 
-  interface GetPlaceCallback{ //call back from local data repo
-
-    void onPlacesLoaded(List<Place> places);
-
-    void onDataNotAvailabe();
-  }
-
-  void getPlaces(@NonNull LoadPlacesCallback callback);
-
-  Place getPlaceDetail(String placeName);
 
 }

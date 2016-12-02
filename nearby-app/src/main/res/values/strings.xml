@@ -23,5 +23,15 @@
     <string name="locatin_permission">Location permission request was denied.</string>
     <string name="location_tracking_off">Location tracking is required for this app.  Do you want modify the location options?</string>
     <string name="wireless_off">An internet connection is needed for this app. Do you want to modify the wireless settings?</string>
+    <string name="m">m</string>
+    <string name="latlong">"Latitude/longitude from Google Location Services "</string>
+    <string name="location_connection_lost">Location connection lost, trying to re-connect</string>
+    <string name="google_location_problem">"Google location service problem: "</string>
+    <string name="place_detail">PLACE_DETAIL</string>
+    <string name="address">address</string>
+    <string name="n">N</string>
+    <string name="dummy_address">address</string>
+    <string name="title">title</string>
+    <string name="some_long_place_name">Some long place name</string>
 
 </resources>

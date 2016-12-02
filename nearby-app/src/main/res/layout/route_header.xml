@@ -19,13 +19,13 @@
             android:id="@+id/route_bar_title"
             android:textSize="@dimen/abc_text_size_large_material"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Some long place name" android:layout_weight="1"/>
+            android:text="@string/some_long_place_name" android:layout_weight="1"/>
     <ImageView
             android:id="@+id/btnDirections"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_directions_walk_white_24px"
-            android:layout_gravity="center|right"
+            android:layout_gravity="center|end"
             android:layout_weight="1"/>
 
 </LinearLayout>

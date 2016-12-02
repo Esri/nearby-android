@@ -23,10 +23,10 @@
  */
 package com.esri.android.nearbyplaces.filter;
 
-import android.app.Activity;
 import com.esri.android.nearbyplaces.data.CategoryKeeper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FilterPresenter implements FilterContract.Presenter{
@@ -34,11 +34,11 @@ public class FilterPresenter implements FilterContract.Presenter{
 
   @Override
   public final List<FilterItem> getFilteredCategories() {
-    return mFilters;
+    return Collections.unmodifiableList(mFilters);
   }
 
   @Override public final void start() {
-    CategoryKeeper keeper = CategoryKeeper.getInstance();
+    final CategoryKeeper keeper = CategoryKeeper.getInstance();
     mFilters = keeper.getCategories();
   }
 

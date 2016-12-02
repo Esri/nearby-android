@@ -24,7 +24,6 @@
 package com.esri.android.nearbyplaces.route;
 
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;

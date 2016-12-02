@@ -13,14 +13,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" android:layout_alignParentBottom="true"/>
 
     <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/placeTypeIcon"
-            android:layout_toRightOf="@+id/placeTypeIcon"
             android:orientation="vertical"
             android:id="@+id/layoutNameAddress">
         <TextView
@@ -28,38 +26,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:text="title"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:text="@string/title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title" />
         <TextView
                 android:id="@+id/placeAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:text="address"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:text="@string/dummy_address"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption" android:layout_below="@+id/placeName"/>
 
     </android.support.v7.widget.LinearLayoutCompat>
     <LinearLayout android:layout_width="wrap_content"
                   android:orientation="vertical"
                   android:layout_height="wrap_content"
-                  android:layout_alignParentRight="true">
+                  android:layout_alignParentEnd="true">
         <TextView
-                android:layout_toRightOf="@id/layoutNameAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/placeBearing" android:text="N"
+                android:id="@+id/placeBearing" android:text="@string/n"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:layout_gravity="right"/>
+                android:layout_gravity="end"/>
         <TextView
                 android:id="@+id/placeDistance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:text="address"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption" android:layout_below="@+id/layoutNameAddress"/>
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:text="@string/address"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
     </LinearLayout>
 
 

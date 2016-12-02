@@ -109,7 +109,7 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   }
 
   @Override public final Envelope getExtentForNearbyPlaces() {
-    return mLocationService != null ? mLocationService.getResultEnveope(): null;
+    return mLocationService != null ? mLocationService.getResultEnvelope(): null;
   }
 
 }

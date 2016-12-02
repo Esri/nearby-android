@@ -24,7 +24,6 @@
 
 package com.esri.android.nearbyplaces.map;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
@@ -46,7 +45,6 @@ public class MapPresenter implements MapContract.Presenter {
   private final static int MAX_RESULT_COUNT = 10;
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   private Place mCenteredPlace;
-  private Envelope mCurrentEnvelope;
 
   public MapPresenter(@NonNull final MapContract.View mapView ){
     mMapView = mapView;
@@ -114,8 +112,8 @@ public class MapPresenter implements MapContract.Presenter {
    * view.
    * @param envelope - Envelope representing visible area of map.
    */
-  @Override public void setCurrentExtent(Envelope envelope) {
-    mCurrentEnvelope = envelope;
+  @Override public void setCurrentExtent(final Envelope envelope) {
+    Envelope mCurrentEnvelope = envelope;
     mLocationService.setCurrentEnvelope(envelope);
   }
 

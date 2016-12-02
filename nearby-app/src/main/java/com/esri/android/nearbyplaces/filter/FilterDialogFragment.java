@@ -37,7 +37,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.R.id;
 import com.esri.android.nearbyplaces.R.layout;
 import com.esri.android.nearbyplaces.R.string;
@@ -47,22 +46,26 @@ import com.esri.android.nearbyplaces.filter.FilterContract.Presenter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class representing the filter dialog used to set what types of places are
+ * viewed in list or map.
+ */
 public class FilterDialogFragment extends DialogFragment implements FilterContract.View {
-  private Presenter mPresenter;
-  private FilterDialogFragment.FilterItemAdapter mFilterItemAdapter;
+  private Presenter mPresenter = null;
 
   public FilterDialogFragment(){}
 
   @Override
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
       final Bundle savedInstanceState) {
+    super.onCreateView(inflater, container, savedInstanceState);
     getDialog().setTitle(string.filter_dialog);
-    final View view = inflater.inflate(layout.place_filter, container,false);
+    final View view = inflater.inflate(layout.filter_view, container,false);
     final ListView listView = (ListView) view.findViewById(id.filterView);
     final List<FilterItem> filters = mPresenter.getFilteredCategories();
     final ArrayList<FilterItem> arrayList = new ArrayList<>();
     arrayList.addAll(filters);
-    mFilterItemAdapter = new FilterDialogFragment.FilterItemAdapter(getActivity(), arrayList);
+    final FilterItemAdapter mFilterItemAdapter = new FilterItemAdapter(getActivity(), arrayList);
     listView.setAdapter(mFilterItemAdapter);
 
     // Listen for Cancel/Apply
@@ -98,13 +101,13 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
 
 
   public class FilterItemAdapter extends ArrayAdapter<FilterItem>{
-    public FilterItemAdapter(final Context context, final ArrayList<FilterItem> items){
+    public FilterItemAdapter(final Context context, final List<FilterItem> items){
       super(context,0, items);
     }
 
     private class ViewHolder {
-      Button btn;
-      TextView txtName;
+      Button btn = null;
+      TextView txtName = null;
     }
     @NonNull @Override
     public final View getView(final int position, View convertView, @NonNull final ViewGroup parent) {
@@ -114,7 +117,7 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
       final FilterItem item = getItem(position);
       // Check if an existing view is being reused, otherwise inflate the view
       if (convertView == null) {
-        convertView = LayoutInflater.from(getActivity()).inflate(layout.filter_view, parent, false);
+        convertView = LayoutInflater.from(getActivity()).inflate(layout.filter_list_item, parent, false);
         holder = new FilterDialogFragment.FilterItemAdapter.ViewHolder();
         holder.btn = (Button) convertView.findViewById(id.categoryBtn);
         holder.txtName =  (TextView) convertView.findViewById(id.categoryName);
@@ -123,32 +126,32 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
         holder = (FilterDialogFragment.FilterItemAdapter.ViewHolder) convertView.getTag();
       }
       // Lookup view for data population
-      holder.txtName.setText(item != null ? item.getTitle() : null);
+      holder.txtName.setText((item != null) ? item.getTitle() : null);
 
-      if (!item.getSelected()){
-        holder.btn.setBackgroundResource(item.getIconId());
-        holder.btn.setAlpha(0.5f);
-      }else{
+      if (item.getSelected()) {
         holder.btn.setBackgroundResource(item.getSelectedIconId());
         holder.btn.setAlpha(1.0f);
+      } else {
+        holder.btn.setBackgroundResource(item.getIconId());
+        holder.btn.setAlpha(0.5f);
       }
 
-      final int myPosition = position;
-      final FilterDialogFragment.FilterItemAdapter.ViewHolder clickHolder = holder;
       // Attach listener that toggles selected state of category
       convertView.setOnClickListener(new OnClickListener() {
         @Override public void onClick(final View v) {
-          final FilterItem clickedItem = getItem(myPosition);
-          if (clickedItem != null ? clickedItem.getSelected() : false){
-            clickedItem.setSelected(false);
-            clickHolder.btn.setBackgroundResource(item.getIconId());
-            clickHolder.btn.setAlpha(0.5f);
-
-          }else{
-            clickedItem.setSelected(true);
-            clickHolder.btn.setBackgroundResource(item.getSelectedIconId());
-            clickHolder.btn.setAlpha(1.0f);
+          final FilterItem clickedItem = getItem(position);
+          if (clickedItem !=  null ){
+            if (clickedItem.getSelected()){
+              clickedItem.setSelected(false);
+              holder.btn.setBackgroundResource(item.getIconId());
+              holder.btn.setAlpha(0.5f);
+            }else {
+              clickedItem.setSelected(true);
+              holder.btn.setBackgroundResource(item.getSelectedIconId());
+              holder.btn.setAlpha(1.0f);
+            }
           }
+
         }
       });
 

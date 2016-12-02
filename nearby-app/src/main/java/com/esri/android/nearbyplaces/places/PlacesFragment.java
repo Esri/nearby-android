@@ -63,12 +63,9 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   private PlacesFragment.PlacesAdapter mPlaceAdapter;
 
-  private RecyclerView mPlacesView;
-
   private static final String TAG = PlacesFragment.class.getSimpleName();
 
   private GoogleApiClient mGoogleApiClient;
-  private Location mLastLocation;
 
   private FragmentListener mCallback;
 
@@ -82,7 +79,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   }
   @Override
-  public final void onCreate(@NonNull final Bundle savedInstanceState){
+  public final void onCreate(final Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     // retain this fragment
     setRetainInstance(true);
@@ -98,8 +95,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
       final Bundle savedInstance){
 
-    mPlacesView= (RecyclerView) inflater.inflate(
-        R.layout.places_fragment2, container, false);
+    RecyclerView mPlacesView = (RecyclerView) inflater.inflate(
+        R.layout.place_recycler_view, container, false);
 
     mPlacesView.setLayoutManager(new LinearLayoutManager(mPlacesView.getContext()));
     mPlacesView.setAdapter(mPlaceAdapter);
@@ -108,20 +105,20 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override
-  public void onAttach(Context activity) {
+  public void onAttach(final Context activity) {
     super.onAttach(activity);
     // This makes sure that the container activity has implemented
     // the callback interface. If not, it throws an exception
     try {
       mCallback = (FragmentListener) activity;
-    } catch (ClassCastException e) {
+    } catch (final ClassCastException e) {
       throw new ClassCastException(activity.toString()
           + " must implement FragmentListener");
     }
   }
 
   @Override public final void showNearbyPlaces(final List<Place> places) {
-    if (places.size() == 0){
+    if (places.isEmpty()){
       showMessage("No places found");
     }else{
       Collections.sort(places);
@@ -131,7 +128,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     mProgressDialog.dismiss();
   }
 
-  @Override public void showProgressIndicator(String message) {
+  @Override public void showProgressIndicator(final String message) {
     if (mProgressDialog == null){
       mProgressDialog = new ProgressDialog(getActivity());
     }
@@ -143,7 +140,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
 
-  @Override public void showMessage(String message) {
+  @Override public void showMessage(final String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
   }
 
@@ -188,7 +185,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       final Drawable drawable = assignIcon(position);
       holder.icon.setImageDrawable(drawable);
       holder.bearing.setText(place.getBearing());
-      holder.distance.setText(place.getDistance() + "m");
+      holder.distance.setText(place.getDistance() + getString(R.string.m));
       holder.bind(place);
     }
 
@@ -204,10 +201,10 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
 
   @Override public final void onConnected(@Nullable final Bundle bundle) {
-    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+    Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
         mGoogleApiClient);
     if (mLastLocation != null){
-      Log.i(PlacesFragment.TAG, "Latitude/longitude from FusedLocationApi " + mLastLocation.getLatitude() + '/' + mLastLocation.getLongitude());
+      Log.i(PlacesFragment.TAG, getString(R.string.latlong) + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
       mPresenter.setLocation(mLastLocation);
       final LocationService locationService = LocationService.getInstance();
       locationService.setCurrentLocation(mLastLocation);
@@ -216,7 +213,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
   @Override public void onConnectionSuspended(final int i) {
-    Log.i(TAG, "Location connection lost, trying to re-connect");
+    Log.i(TAG, getString(R.string.location_connection_lost));
     mGoogleApiClient.connect();
   }
   @Override public final void onStart() {
@@ -231,7 +228,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   @Override public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
     Toast.makeText(getContext(), getString(R.string.google_location_connection_problem),Toast.LENGTH_LONG).show();
-    Log.e(TAG, "Google location service problem: " + connectionResult.getErrorMessage());
+    Log.e(TAG, getString(R.string.google_location_problem) + connectionResult.getErrorMessage());
   }
 
 
@@ -263,7 +260,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
         @Override public void onClick(final View v) {
           final Envelope envelope = mPresenter.getExtentForNearbyPlaces();
           final Intent intent = PlacesActivity.createMapIntent(getActivity(),envelope);
-          intent.putExtra("PLACE_DETAIL", place.getName());
+          intent.putExtra(getString(R.string.place_detail), place.getName());
           startActivity(intent);
         }
       });

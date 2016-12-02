@@ -25,7 +25,6 @@
 package com.esri.android.nearbyplaces.places;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,7 +32,6 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -43,7 +41,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,8 +50,6 @@ import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.map.MapActivity;
-import com.esri.android.nearbyplaces.map.MapContract;
-import com.esri.android.nearbyplaces.map.MapFragment;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.geometry.Envelope;
 
@@ -65,9 +60,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   private static final int PERMISSION_REQUEST_LOCATION = 0;
   private static final int REQUEST_LOCATION_SETTINGS = 1;
   private static final int REQUEST_WIFI_SETTINGS = 2;
-  private PlacesFragment mPlacesFragment;
-  private CoordinatorLayout mMainLayout;
-  private PlacesPresenter mPresenter;
+  private PlacesFragment mPlacesFragment = null;
+  private CoordinatorLayout mMainLayout = null;
+  private PlacesPresenter mPresenter = null;
 
   @Override
   public final void onCreate(final Bundle savedInstanceState) {
@@ -228,7 +223,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   }
 
   private boolean locationTrackingEnabled() {
-    LocationManager locationManager = (LocationManager) getApplicationContext()
+    final LocationManager locationManager = (LocationManager) getApplicationContext()
         .getSystemService(Context.LOCATION_SERVICE);
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
   }
@@ -238,13 +233,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * @return boolean indicating wifi connectivity. True for connected.
    */
   private boolean internetConnectivity(){
-    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo wifi = connManager.getActiveNetworkInfo();
-    if (wifi == null){
-      return false;
-    }else {
-      return wifi.isConnected();
-    }
+    final ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    final NetworkInfo wifi = connManager.getActiveNetworkInfo();
+    return wifi == null ? false : wifi.isConnected();
   }
 
 
@@ -253,17 +244,17 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    */
   private void checkSettings() {
     // Is GPS enabled?
-    boolean gpsEnabled = locationTrackingEnabled();
+    final boolean gpsEnabled = locationTrackingEnabled();
     // Is there internet connectivity?
-    boolean internetConnected = internetConnectivity();
+    final boolean internetConnected = internetConnectivity();
 
     if (gpsEnabled && internetConnected) {
       completeSetUp();
     }else if (!gpsEnabled) {
-      Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+      final Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
       showDialog(gpsIntent, REQUEST_LOCATION_SETTINGS, getString(R.string.location_tracking_off));
     }else if(!internetConnected)	{
-      Intent internetIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+      final Intent internetIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
       showDialog(internetIntent, REQUEST_WIFI_SETTINGS, getString(R.string.wireless_off));
     }
   }
@@ -276,7 +267,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * @param data
    */
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
     if (requestCode == REQUEST_WIFI_SETTINGS || requestCode == REQUEST_LOCATION_SETTINGS) {
       checkSettings();
     }
@@ -288,14 +279,14 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * @param requestCode
    * @param message
    */
-  private void showDialog(final Intent intent, final int requestCode, String message) {
+  private void showDialog(final Intent intent, final int requestCode, final String message) {
 
     final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
     alertDialog.setMessage(message);
     alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
       @Override
-      public void onClick(DialogInterface dialog, int which) {
+      public void onClick(final DialogInterface dialog, final int which) {
         //
         startActivityForResult(intent, requestCode);
       }
@@ -303,7 +294,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
 
       @Override
-      public void onClick(DialogInterface dialog, int which) {
+      public void onClick(final DialogInterface dialog, final int which) {
         finish();
       }
     });

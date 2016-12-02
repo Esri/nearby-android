@@ -4,7 +4,7 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/bottom_card_view"
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/bottom_card_view"
         android:layout_width="match_parent"
         android:background="@color/background_floating_material_light"
         android:layout_height="200dp"
@@ -58,12 +58,6 @@
     <LinearLayout android:layout_width="fill_parent"
                   android:layout_height="48dp"
                   android:orientation="horizontal" android:gravity="center">
-        <ImageView
-                android:id="@+id/placePhoneIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_call_black_24px"
-                android:paddingRight="16dp"/>
         <TextView
                 android:id="@+id/placePhone"
                 android:layout_width="fill_parent"
@@ -71,7 +65,9 @@
                 android:text="Phone"
                 android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
                 android:textColor="@android:color/primary_text_light"
-                android:alpha=".87" android:paddingLeft="16dp"/>
+                android:alpha=".87" android:paddingLeft="0dp"
+                android:drawableLeft="@drawable/ic_call_black_24px" android:textAlignment="viewStart"
+                android:drawablePadding="30dp"/>
 
     </LinearLayout>
 
@@ -83,12 +79,7 @@ l
     <LinearLayout android:layout_width="wrap_content" android:id="@+id/linkLayout"
                   android:layout_height="48dp"
                   android:orientation="horizontal" android:gravity="center">
-        <ImageView
-                android:id="@+id/placeWebIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_public_black_24px"
-                android:paddingRight="16dp"/>
+
         <TextView
                 android:id="@+id/placeUrl"
                 android:layout_width="fill_parent"
@@ -97,7 +88,9 @@ l
                 android:autoLink="web"
                 android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
                 android:textColor="@android:color/primary_text_light"
-                android:alpha=".87" android:paddingLeft="16dp"/>
+                android:alpha=".87"
+                android:drawableLeft="@drawable/ic_public_black_24px" android:drawablePadding="30dp"/>
+
      </LinearLayout>
      <View
         android:layout_width="match_parent"
@@ -107,20 +100,17 @@ l
         <LinearLayout android:layout_width="wrap_content"
                       android:layout_height="48dp"
                       android:orientation="horizontal" android:gravity="center">
-            <ImageView
-                    android:id="@+id/TypeIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_place_black_24dp"
-                    android:paddingRight="16dp"/>
+
             <TextView
                     android:id="@+id/placeType"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Restaurant"
+                    android:text="Phone"
                     android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
                     android:textColor="@android:color/primary_text_light"
-                    android:alpha=".87" android:paddingLeft="16dp"/>
+                    android:alpha=".87"
+                    android:drawableLeft="@drawable/ic_place_black_24dp" android:drawablePadding="30dp"/>
+
         </LinearLayout>
 
         <View

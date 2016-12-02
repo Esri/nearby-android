@@ -23,6 +23,7 @@
  */
 package com.esri.android.nearbyplaces.data;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
@@ -44,8 +45,8 @@ public final class Place implements Comparable<Place> {
   private  String mBearing;
   private  long mDistance;
 
-  public Place(String name, @Nullable String type, @Nullable Point location, @Nullable String address, @Nullable String URL, @Nullable String phone,
-      @Nullable String bearing, long distance) {
+  public Place(final String name, @Nullable final String type, @Nullable final Point location, @Nullable final String address, @Nullable final String URL, @Nullable final String phone,
+      @Nullable final String bearing, final long distance) {
     mName = name;
     mType = type;
     mLocation = location;
@@ -86,11 +87,11 @@ public final class Place implements Comparable<Place> {
 
   public long getDistance() { return  mDistance; }
 
-  public void setBearing(String bearing){
+  public void setBearing(final String bearing){
     mBearing = bearing;
   }
 
-  public void setDistance(long d){
+  public void setDistance(final long d){
     mDistance =d;
   }
   @Override public String toString() {
@@ -106,12 +107,12 @@ public final class Place implements Comparable<Place> {
         '}';
   }
 
-  @Override public int compareTo(Place anotherPlace) {
+  @Override public int compareTo(@NonNull Place anotherPlace) {
     int result = 0;
-    if (this.getDistance() > anotherPlace.getDistance()){
+    if (mDistance > anotherPlace.mDistance){
       result = 1;
     }
-    if (this.getDistance() < anotherPlace.getDistance()){
+    if (mDistance < anotherPlace.mDistance){
       result = -1;
     }
     return  result;
