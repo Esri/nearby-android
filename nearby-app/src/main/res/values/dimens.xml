@@ -5,6 +5,4 @@
     <dimen name="place_item_padding">8dp</dimen>
     <dimen name="list_item_padding">8dp</dimen>
     <dimen name="dialog_margin">24dp</dimen>
-    <dimen name="button_width">24dp</dimen>
-    <dimen name="button_height">24dp</dimen>
 </resources>

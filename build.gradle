@@ -35,5 +35,4 @@ ext {
     designLibraryVersion = '23.4.0'
     runtimeVersion = '100.0.0'
     googleLocationServicesVersion = '10.0.1'
-    guavaVersion='20.0'
 }

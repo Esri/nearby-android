@@ -51,10 +51,8 @@ dependencies {
     compile "com.android.support:design:$rootProject.designLibraryVersion"
     compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-    compile "com.google.guava:guava:$rootProject.guavaVersion"
 
     // Google location services
     compile "com.google.android.gms:play-services:$rootProject.googleLocationServicesVersion";
-
 
 }

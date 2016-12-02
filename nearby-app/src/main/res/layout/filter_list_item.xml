@@ -7,8 +7,8 @@
                 android:gravity="center_vertical">
     <Button
             android:id="@+id/categoryBtn"
-            android:layout_width="@dimen/button_width"
-            android:layout_height="@dimen/button_height"/>
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
 
 
     <TextView

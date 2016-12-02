@@ -65,8 +65,8 @@
                 android:text="Phone"
                 android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
                 android:textColor="@android:color/primary_text_light"
-                android:alpha=".87" android:paddingLeft="0dp"
-                android:drawableLeft="@drawable/ic_call_black_24px" android:textAlignment="viewStart"
+                android:alpha=".87"
+                android:drawableLeft="@drawable/ic_call_black_24px"
                 android:drawablePadding="30dp"/>
 
     </LinearLayout>
