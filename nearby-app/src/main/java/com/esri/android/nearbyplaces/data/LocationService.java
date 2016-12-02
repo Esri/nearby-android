@@ -152,9 +152,7 @@ public class LocationService implements PlacesServiceApi {
     List<Place> placesToRemove = new ArrayList<>();
     CategoryKeeper keeper = CategoryKeeper.getInstance();
     List<String> selectedTypes = keeper.getSelectedTypes();
-    if (selectedTypes.isEmpty()){
-      return null;
-    }else{
+    if (!selectedTypes.isEmpty()){
       for (Place p: foundPlaces) {
         for (String filter : selectedTypes){
           if (filter.equalsIgnoreCase(p.getType())){
@@ -166,7 +164,7 @@ public class LocationService implements PlacesServiceApi {
     if (!placesToRemove.isEmpty()){
       foundPlaces.removeAll(placesToRemove);
     }
-    Log.i("FilteredPlaces", "After filtering on categories, there are " + foundPlaces.size());
+    //Log.i("FilteredPlaces", "After filtering on categories, there are " + foundPlaces.size());
     return foundPlaces;
   }
 
@@ -238,7 +236,7 @@ public class LocationService implements PlacesServiceApi {
 
 
         }
-        Log.i("GecodeResults", "Returned with "+ i +" places, " + places.size() + " are within extent");
+    //    Log.i("GecodeResults", "Returned with "+ i +" places, " + places.size() + " are within extent");
         mCallback.onLoaded(filterPlaces(places));
       } catch (Exception e) {
         e.printStackTrace();

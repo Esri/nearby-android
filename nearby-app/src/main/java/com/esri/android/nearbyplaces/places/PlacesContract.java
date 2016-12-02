@@ -39,11 +39,10 @@ public interface PlacesContract {
 
     void showNearbyPlaces(List<Place> places);
 
-    void showProgressIndicator(boolean active);
-
-    boolean isActive();
+    void showProgressIndicator(String message);
 
     void showMessage(String message);
+
 
   }
 

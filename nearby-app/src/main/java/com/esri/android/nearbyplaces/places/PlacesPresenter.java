@@ -58,6 +58,7 @@ public class PlacesPresenter implements PlacesContract.Presenter {
    * geocode search.
    */
   @Override public final void start() {
+    mPlacesView.showProgressIndicator("Finding places...");
     mLocationService = LocationService.getInstance();
     List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
     if (existingPlaces != null ){

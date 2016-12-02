@@ -47,6 +47,8 @@ public interface MapContract {
 
     void showMessage(String message);
 
+    void showProgressIndicator(String message);
+
   }
 
   interface Presenter extends BasePresenter {

@@ -24,6 +24,7 @@
 
 package com.esri.android.nearbyplaces.places;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -72,6 +73,9 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   private Location mLastLocation;
 
   private FragmentListener mCallback;
+
+  private ProgressDialog mProgressDialog;
+
   public PlacesFragment(){
 
   }
@@ -126,20 +130,25 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       mPlaceAdapter.setPlaces(places);
       mPlaceAdapter.notifyDataSetChanged();
     }
+    mProgressDialog.dismiss();
+  }
+
+  @Override public void showProgressIndicator(String message) {
+    if (mProgressDialog == null){
+      mProgressDialog = new ProgressDialog(getActivity());
+    }
+    mProgressDialog.dismiss();
+    mProgressDialog.setTitle("Nearby Places");
+    mProgressDialog.setMessage(message);
+    mProgressDialog.show();
 
   }
 
-  // TODO: Implement support for progress indicators
-  @Override public void showProgressIndicator(final boolean active) {
-  }
-
-  @Override public final boolean isActive() {
-    return false;
-  }
 
   @Override public void showMessage(String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
   }
+
 
   @Override public final void setPresenter(final PlacesContract.Presenter presenter) {
     mPresenter = checkNotNull(presenter);

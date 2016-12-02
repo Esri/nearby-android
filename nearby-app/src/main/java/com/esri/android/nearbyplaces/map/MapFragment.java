@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -138,6 +139,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private View mRouteHeaderView;
 
+  private ProgressDialog mProgressDialog;
+
   public MapFragment(){}
 
   public static MapFragment newInstance(){
@@ -190,6 +193,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
 
     }
+    showProgressIndicator("Loading map");
     setUpMapView(root);
     return root;
   }
@@ -244,6 +248,16 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   @Override public void showMessage(String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+  }
+
+  @Override public void showProgressIndicator(String message) {
+    if (mProgressDialog == null){
+      mProgressDialog = new ProgressDialog(getActivity());
+    }
+    mProgressDialog.dismiss();
+    mProgressDialog.setTitle("Nearby Places");
+    mProgressDialog.setMessage(message);
+    mProgressDialog.show();
   }
 
   private void showRouteHeader(){
@@ -340,6 +354,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
+          if (mProgressDialog != null){
+            mProgressDialog.dismiss();
+          }
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
 
@@ -492,6 +509,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     initialLocationLoaded = true;
     if (places == null || places.isEmpty()){
       Toast.makeText(getContext(),getString(R.string.no_places_found),Toast.LENGTH_SHORT).show();
+      if (mProgressDialog !=  null){
+        mProgressDialog.dismiss();
+      }
       return;
     }
 
@@ -515,6 +535,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         }
       }
     }
+    if (mProgressDialog !=  null){
+      mProgressDialog.dismiss();
+    }
+
   }
   /**
    * Populate the place detail contained
@@ -576,7 +600,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }else{
       bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
-    Log.i("MapChange", "Set current extent");
     mPresenter.setCurrentExtent(getMapView().getVisibleArea().getExtent());
   }
 
@@ -723,6 +746,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Show route header
     showRouteHeader();
+
+    if (mProgressDialog != null){
+      mProgressDialog.dismiss();
+    }
   }
 
   /**

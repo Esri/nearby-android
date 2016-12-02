@@ -59,6 +59,7 @@ public class MapPresenter implements MapContract.Presenter {
    * based on the map's visible area extent.
    */
   @Override public final void findPlacesNearby() {
+    mMapView.showProgressIndicator("Finding nearby places...");
     final Point g =  mMapView.getMapView().getVisibleArea().getExtent().getCenter();
 
     if ( g !=null ){
@@ -95,6 +96,7 @@ public class MapPresenter implements MapContract.Presenter {
 
   @Override public final void getRoute() {
     if ((mCenteredPlace != null) && (mLocationService.getCurrentLocation() != null)){
+      mMapView.showProgressIndicator("Retrieving route...");
       mLocationService.getRouteFromService(mLocationService.getCurrentLocation(), mCenteredPlace.getLocation(),
           new PlacesServiceApi.RouteServiceCallback() {
             @Override public void onRouteReturned(final RouteResult result) {
