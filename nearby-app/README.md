@@ -100,3 +100,37 @@ if (degrees > -22.5  && degrees <= 22.5){
 }
 ```
 
+## Mutable Lists
+A common pattern throughout the SDK is the use of mutable lists to control a variety of settings.  Examples of this occur in the following places across the nearby app:
+
+```java
+
+//Setting GeocodeParamters (see the section above about Geocoding With Categories)
+
+// Setting the restriction attributes for walk times
+// when solving for a route.
+
+List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
+restrictionAttributes.clear();
+restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
+restrictionAttributes.add("Preferred for Pedestrians");
+restrictionAttributes.add("Walking");
+
+// Showing the route result, the route overlay is added
+// only once.  Subsequent access is via "getGraphcis"
+
+if (mRouteOverlay == null) {
+    mRouteOverlay = new GraphicsOverlay();
+    mMapView.getGraphicsOverlays().add(mRouteOverlay);
+}else{
+    // Clear any previous route
+    mRouteOverlay.getGraphics().clear();
+}
+
+//Adding graphics to the map
+final BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(place)) ;
+final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
+final Point graphicPoint = place.getLocation();
+final Graphic graphic = new Graphic(graphicPoint, pinSymbol);
+mGraphicOverlay.getGraphics().add(graphic);
+```
