@@ -26,7 +26,6 @@ package com.esri.android.nearbyplaces.data;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import com.esri.arcgisruntime.UnitSystem;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.Envelope;
@@ -42,7 +41,6 @@ import com.esri.arcgisruntime.geometry.Multipoint;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
-import com.esri.arcgisruntime.tasks.geocode.LocatorInfo;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteTask;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
@@ -324,16 +322,22 @@ public class LocationService implements PlacesServiceApi {
             try {
               final RouteParameters routeParameters = routeTaskFuture.get();
               final TravelMode mode = routeParameters.getTravelMode();
-              mode.setType("WALK");
-              mode.setName("Walking Time");
+              mode.setImpedanceAttributeName("WalkTime");
+              mode.setTimeAttributeName("WalkTime");
+              // Set the restriction attributes for walk times
+              List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
+              restrictionAttributes.clear();
+              restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
+              restrictionAttributes.add("Preferred for Pedestrians");
+              restrictionAttributes.add("Walking");
+
               // Add a stop for origin and destination
               routeParameters.setTravelMode(mode);
               routeParameters.getStops().add(origin);
               routeParameters.getStops().add(destination);
               // We want the task to return driving directions and routes
               routeParameters.setReturnDirections(true);
-              routeParameters.setDirectionsDistanceUnits(
-                  UnitSystem.IMPERIAL);
+
               routeParameters.setOutputSpatialReference(SpatialReferences.getWebMercator());
 
               final ListenableFuture<RouteResult> routeResFuture = mRouteTask
@@ -343,7 +347,6 @@ public class LocationService implements PlacesServiceApi {
                 public void run() {
                   try {
                     final RouteResult routeResult = routeResFuture.get();
-                    Log.i(TAG, routeParameters.getTravelMode().getName());
                     // Show route results
                     if (routeResult != null){
                       mCallback.onRouteReturned(routeResult);
