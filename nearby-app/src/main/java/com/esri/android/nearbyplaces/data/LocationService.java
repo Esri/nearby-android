@@ -23,32 +23,36 @@
  */
 package com.esri.android.nearbyplaces.data;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.GeometryEngine;
-import com.esri.arcgisruntime.geometry.GeodeticDistanceResult;
-import com.esri.arcgisruntime.geometry.SpatialReferences;
-import com.esri.arcgisruntime.geometry.LinearUnit;
 import com.esri.arcgisruntime.geometry.AngularUnit;
 import com.esri.arcgisruntime.geometry.AngularUnitId;
-import com.esri.arcgisruntime.geometry.LinearUnitId;
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.GeodeticCurveType;
+import com.esri.arcgisruntime.geometry.GeodeticDistanceResult;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.LinearUnit;
+import com.esri.arcgisruntime.geometry.LinearUnitId;
 import com.esri.arcgisruntime.geometry.Multipoint;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteTask;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteParameters;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.RouteTask;
 import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 import com.esri.arcgisruntime.tasks.networkanalysis.TravelMode;
-
-import java.util.*;
 
 public class LocationService implements PlacesServiceApi {
 
@@ -326,7 +330,9 @@ public class LocationService implements PlacesServiceApi {
               mode.setTimeAttributeName("WalkTime");
               // Set the restriction attributes for walk times
               List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
+              // clear default restrictions set for vehicles
               restrictionAttributes.clear();
+              // add pedestrian restrictions
               restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
               restrictionAttributes.add("Preferred for Pedestrians");
               restrictionAttributes.add("Walking");
