@@ -105,7 +105,7 @@ A common pattern throughout the SDK is the use of mutable lists to control a var
 
 ```java
 
-//Setting GeocodeParamters (see the section above about Geocoding With Categories)
+// Setting GeocodeParameters (see the section above about Geocoding With Categories)
 
 // Setting the restriction attributes for walk times
 // when solving for a route.
