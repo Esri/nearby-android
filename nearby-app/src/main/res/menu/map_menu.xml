@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.esri.android.nearbyplaces.MainActivity">
+    <item android:id="@+id/list_action"
+          android:title="@string/list_view"
+          android:icon="@drawable/ic_list_white_24px"
+          android:orderInCategory="200"
+          app:showAsAction="always"/>
+    <item android:id="@+id/route_action"
+          android:title="@string/route_view"
+          android:icon="@drawable/ic_directions_white_24px"
+          android:orderInCategory="200"
+          android:visible="false"
+          app:showAsAction="always"/>
+    <item android:id="@+id/filter_in_map"
+          android:title="@string/filter"
+          android:icon="@drawable/ic_filter_list_white_24px"
+          android:orderInCategory="100"
+          app:showAsAction="always"/>
+    <item android:id="@+id/walking_directions"
+          android:title="Directions"
+          android:orderInCategory="200"
+          android:visible="false"
+          android:icon="@drawable/ic_directions_walk_white_24px"
+          app:showAsAction="always"/>
+</menu>

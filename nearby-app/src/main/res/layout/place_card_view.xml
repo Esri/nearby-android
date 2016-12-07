@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/bottom_card_view"
+        android:layout_width="match_parent"
+        android:background="@color/background_floating_material_light"
+        android:layout_height="200dp"
+        app:layout_behavior="@string/bottom_sheet_behavior" android:focusable="false" android:elevation="6dp">
+
+    <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical" android:paddingLeft="16dp" android:paddingTop="8dp"
+            android:paddingRight="16dp" android:paddingBottom="8dp">
+
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="48dp"
+                      android:orientation="horizontal">
+            <ImageView
+                    android:id="@+id/placeTypeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_place_black_24dp"
+                    android:paddingEnd="16dp"/>
+
+
+            <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                <TextView
+                        android:id="@+id/placeName"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Place name"
+                        android:textSize="16sp" android:layout_gravity="center_vertical"
+                        android:textColor="#000"
+                        android:alpha=".87" android:paddingLeft="16dp"/>
+                <TextView
+                        android:id="@+id/placeAddress"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Place address"
+                        android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
+                        android:textColor="@android:color/primary_text_light"
+                        android:alpha=".87" android:paddingLeft="16dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/lineColor"/>
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="48dp"
+                  android:orientation="horizontal" android:gravity="center">
+        <TextView
+                android:id="@+id/placePhone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Phone"
+                android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
+                android:textColor="@android:color/primary_text_light"
+                android:alpha=".87"
+                android:drawableStart="@drawable/ic_call_black_24px"
+                android:drawablePadding="30dp"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/lineColor"/>
+
+    <LinearLayout android:layout_width="wrap_content" android:id="@+id/linkLayout"
+                  android:layout_height="48dp"
+                  android:orientation="horizontal" android:gravity="center">
+
+        <TextView
+                android:id="@+id/placeUrl"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="URL"
+                android:autoLink="web"
+                android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
+                android:textColor="@android:color/primary_text_light"
+                android:alpha=".87"
+                android:drawableStart="@drawable/ic_public_black_24px" android:drawablePadding="30dp"/>
+
+     </LinearLayout>
+     <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/lineColor"/>
+
+        <LinearLayout android:layout_width="wrap_content"
+                      android:layout_height="48dp"
+                      android:orientation="horizontal" android:gravity="center">
+
+            <TextView
+                    android:id="@+id/placeType"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Phone"
+                    android:textSize="@dimen/abc_floating_window_z" android:layout_gravity="center_vertical"
+                    android:textColor="@android:color/primary_text_light"
+                    android:alpha=".87"
+                    android:drawableStart="@drawable/ic_place_black_24dp" android:drawablePadding="30dp"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lineColor"/>
+    </android.support.v7.widget.LinearLayoutCompat>
+    </FrameLayout>

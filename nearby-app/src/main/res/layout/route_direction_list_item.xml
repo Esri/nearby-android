@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" android:padding="@dimen/dialog_margin">
+
+    <ImageView
+            android:id="@+id/directions_maneuver_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:paddingRight="5dp"
+            android:src="@drawable/ic_routing_bear_left"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/directions_text_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="start|center_vertical"
+                android:text="These are the directions and they may be more than one line"
+                tools:ignore="HardcodedText"/>
+
+        <TextView
+                android:id="@+id/directions_length_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="end|center_vertical"
+                android:text="19.3 km"
+                tools:ignore="HardcodedText"/>
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/lineColor"/>
+    </LinearLayout>
+</LinearLayout>

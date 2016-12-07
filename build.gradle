@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -15,10 +15,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        // Add the Esri public Bintray Maven repository
-        maven {
-            url 'http://android:8080/artifactory/arcgis'
-        }
+        maven{ url 'https://esri.bintray.com/arcgis' }
     }
 }
 
@@ -31,18 +28,11 @@ ext {
     minSdkVersion = 21
     targetSdkVersion = 22
     compileSdkVersion = 23
-    buildToolsVersion = '23.0.3'
+    buildToolsVersion = '25.0.0'
 
     // App dependencies
-    supportLibraryVersion = '23.4.0'
-    guavaVersion = '18.0'
-    junitVersion = '4.12'
-    mockitoVersion = '1.10.19'
-    powerMockito = '1.6.2'
-    hamcrestVersion = '1.3'
-    runnerVersion = '0.4.1'
-    rulesVersion = '0.4.1'
-    espressoVersion = '2.2.1'
-    runtimeVersion = '100.0.0-1411'
-    googleLocationServicesVersion = '9.4.0'
+    supportLibraryVersion = '25.0.1'
+    designLibraryVersion = '23.4.0'
+    runtimeVersion = '100.0.0'
+    googleLocationServicesVersion = '10.0.1'
 }

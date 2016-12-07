@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Nearby Places</string>
+    <string name="map_view">Map</string>
+    <string name="list_view">List</string>
+    <string name="route_view">Route</string>
+    <string name="filter">Filter</string>
+    <!-- Service URLs -->
+
+
+    <!-- Search categories for geocoding -->
+
+    <!-- Toast and dialog message -->
+    <string name="no_places_found">No places found, try zooming out or checking the filter settings</string>
+    <string name="filter_dialog">Filter Places</string>
+
+    <!-- Connectivity warnings -->
+    <string name="internet_connectivity">Internet connectivity is required for this application</string>
+    <string name="wireless_problem">Wireless Connectivity Problem</string>
+
+    <string name="location_enabled">Location tracking must be enabled for this application</string>
+    <string name="location_problem">Location Service Problem</string>
+    <string name="google_location_connection_problem">There is a problem obtaining a location</string>
+    <string name="locatin_permission">Location permission request was denied.</string>
+    <string name="location_tracking_off">Location tracking is required for this app.  Do you want modify the location options?</string>
+    <string name="wireless_off">An internet connection is needed for this app. Do you want to modify the wireless settings?</string>
+    <string name="m">m</string>
+    <string name="latlong">"Latitude/longitude from Google Location Services "</string>
+    <string name="location_connection_lost">Location connection lost, trying to re-connect</string>
+    <string name="google_location_problem">"Google location service problem: "</string>
+    <string name="place_detail">PLACE_DETAIL</string>
+    <string name="address">address</string>
+    <string name="n">N</string>
+    <string name="dummy_address">address</string>
+    <string name="title">title</string>
+    <string name="some_long_place_name">Some long place name</string>
+
+</resources>

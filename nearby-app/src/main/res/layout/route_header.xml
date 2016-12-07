@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="100dp"
+              android:orientation="horizontal"
+              android:gravity="center_vertical"
+              android:id="@+id/app_bar_linear_layout"
+              android:background="@drawable/route_appbar_background"
+              android:padding="@dimen/activity_horizontal_margin">
+    <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_clear_white_24px"
+            android:layout_weight="1"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/route_bar_title"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/some_long_place_name" android:layout_weight="1"/>
+    <ImageView
+            android:id="@+id/btnDirections"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_directions_walk_white_24px"
+            android:layout_gravity="center|end"
+            android:layout_weight="1"/>
+
+</LinearLayout>
