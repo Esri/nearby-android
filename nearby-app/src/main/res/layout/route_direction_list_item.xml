@@ -17,7 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical">
-
+        <TextView
+                android:id="@+id/directions_length_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:gravity="start|center_vertical"
+                android:text="19.3 km"
+                tools:ignore="HardcodedText"/>
         <TextView
                 android:id="@+id/directions_text_textview"
                 android:layout_width="match_parent"
@@ -25,19 +32,9 @@
                 android:ellipsize="marquee"
                 android:gravity="start|center_vertical"
                 android:text="These are the directions and they may be more than one line"
-                tools:ignore="HardcodedText"/>
+                tools:ignore="HardcodedText"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
-        <TextView
-                android:id="@+id/directions_length_textview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:gravity="end|center_vertical"
-                android:text="19.3 km"
-                tools:ignore="HardcodedText"/>
-        <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/lineColor"/>
+
     </LinearLayout>
 </LinearLayout>

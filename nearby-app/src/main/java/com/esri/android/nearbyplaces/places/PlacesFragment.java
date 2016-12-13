@@ -133,7 +133,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       mProgressDialog = new ProgressDialog(getActivity());
     }
     mProgressDialog.dismiss();
-    mProgressDialog.setTitle("Nearby Places");
+    mProgressDialog.setTitle(getString(R.string.nearby_places));
     mProgressDialog.setMessage(message);
     mProgressDialog.show();
 

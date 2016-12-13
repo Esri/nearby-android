@@ -23,40 +23,71 @@
  */
 package com.esri.android.nearbyplaces.route;
 
-import android.app.DialogFragment;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 import com.esri.android.nearbyplaces.R;
+import com.esri.android.nearbyplaces.data.CategoryHelper;
+import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RouteDirectionsFragment extends DialogFragment {
+public class RouteDirectionsFragment extends Fragment {
 
   private List<DirectionManeuver> mDirectionManeuvers = new ArrayList<>();
   private final static String TAG = RouteDirectionsFragment.class.getSimpleName();
+
+  public static RouteDirectionsFragment newInstance(){
+    return new RouteDirectionsFragment();
+  }
 
   @Override
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
       final Bundle savedInstanceState) {
     final View view = inflater.inflate(R.layout.route_direction_list, container,false);
 
+    // Set up the header
+    ImageView backBtn = (ImageView) getActivity().findViewById(R.id.btnCloseDirections);
+    backBtn.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        ((MapActivity)getActivity()).showMap();
+      }
+    });
+
+    // Hide the action bar
+    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+    if (ab != null){
+      ab.hide();
+    }
+
+
     // Setup list adapter
     final ListView listView = (ListView) view.findViewById(R.id.directions_list);
     listView.setAdapter(new DirectionsListAdapter(mDirectionManeuvers));
+
+    // When directions are tapped, show selected route section
+    // highlighted on map and zoomed in with route section description
+    // overlayed on map
+    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ((MapActivity)getActivity()).showRouteDetail(position);
+      }
+    });
+
+
     return view;
   }
 
@@ -95,92 +126,9 @@ public class RouteDirectionsFragment extends DialogFragment {
     }
 
     private Drawable getRoutingIcon(final DirectionManeuverType maneuver) {
-      final int id;
-      switch (maneuver) {
-        case STRAIGHT :
-          id = R.drawable.ic_routing_straight_arrow;
-          break;
-        case BEAR_LEFT :
-          id = R.drawable.ic_routing_bear_left;
-          break;
-        case BEAR_RIGHT :
-          id = R.drawable.ic_routing_bear_right;
-          break;
-        case TURN_LEFT :
-          id = R.drawable.ic_routing_turn_left;
-          break;
-        case TURN_RIGHT :
-          id = R.drawable.ic_routing_turn_right;
-          break;
-        case SHARP_LEFT :
-          id = R.drawable.ic_routing_turn_sharp_left;
-          break;
-        case SHARP_RIGHT :
-          id = R.drawable.ic_routing_turn_sharp_right;
-          break;
-        case U_TURN :
-          id = R.drawable.ic_routing_u_turn;
-          break;
-        case FERRY :
-          id = R.drawable.ic_routing_take_ferry;
-          break;
-        case ROUNDABOUT :
-          id = R.drawable.ic_routing_get_on_roundabout;
-          break;
-        case HIGHWAY_MERGE :
-          id = R.drawable.ic_routing_merge_onto_highway;
-          break;
-        case HIGHWAY_CHANGE :
-          id = R.drawable.ic_routing_highway_change;
-          break;
-        case FORK_CENTER :
-          id = R.drawable.ic_routing_take_center_fork;
-          break;
-        case FORK_LEFT :
-          id = R.drawable.ic_routing_take_fork_left;
-          break;
-        case FORK_RIGHT :
-          id = R.drawable.ic_routing_take_fork_right;
-          break;
-        case END_OF_FERRY :
-          id = R.drawable.ic_routing_get_off_ferry;
-          break;
-        case RAMP_RIGHT :
-          id = R.drawable.ic_routing_take_ramp_right;
-          break;
-        case RAMP_LEFT :
-          id = R.drawable.ic_routing_take_ramp_left;
-          break;
-        case TURN_LEFT_RIGHT :
-          id = R.drawable.ic_routing_left_right;
-          break;
-        case TURN_RIGHT_LEFT :
-          id = R.drawable.ic_routing_right_left;
-          break;
-        case TURN_RIGHT_RIGHT :
-          id = R.drawable.ic_routing_right_right;
-          break;
-        case TURN_LEFT_LEFT :
-          id = R.drawable.ic_routing_left_left;
-          break;
-        case STOP :
-          id = R.drawable.end_route_pin;
-          break;
-        case DEPART:
-          id = R.drawable.route_pin_start;
-          break;
-        case HIGHWAY_EXIT :
-        case TRIP_ITEM :
-        case PEDESTRIAN_RAMP :
-        case ELEVATOR :
-        case ESCALATOR :
-        case STAIRS :
-        case DOOR_PASSAGE :
-        default :
-          Log.w(RouteDirectionsFragment.TAG, maneuver.name() + "not supported");
-          return null;
-      }
+
       try {
+        Integer id = CategoryHelper.getResourceIdForManeuverType(maneuver);
         return ResourcesCompat.getDrawable(getActivity().getResources(),id,null);
       } catch (final Resources.NotFoundException e) {
         Log.w(RouteDirectionsFragment.TAG, "No drawable found for" + maneuver.name());

@@ -32,6 +32,7 @@
     <string name="n">N</string>
     <string name="dummy_address">address</string>
     <string name="title">title</string>
-    <string name="some_long_place_name">Some long place name</string>
+    <string name="some_long_place_name">Some long, long, long, long, long, long place name</string>
+    <string name="nearby_places">Nearby Places</string>
 
 </resources>

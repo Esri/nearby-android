@@ -50,19 +50,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
 
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
@@ -72,13 +61,8 @@ import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
-import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
-import com.esri.arcgisruntime.geometry.Point;
-import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.SpatialReference;
-import com.esri.arcgisruntime.geometry.GeometryEngine;
-import com.esri.arcgisruntime.geometry.SpatialReferences;
+import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
@@ -95,52 +79,60 @@ import com.esri.arcgisruntime.mapping.view.NavigationChangedEvent;
 import com.esri.arcgisruntime.mapping.view.NavigationChangedListener;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
+import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.util.ListenableList;
+import org.w3c.dom.Text;
 
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
-  private MapContract.Presenter mPresenter;
+  private MapContract.Presenter mPresenter = null;
 
-  private CoordinatorLayout mMapLayout;
+  private CoordinatorLayout mMapLayout = null;
 
-  private MapView mMapView;
+  private MapView mMapView = null;
 
-  private LocationDisplay mLocationDisplay;
+  private LocationDisplay mLocationDisplay = null;
 
-  private GraphicsOverlay mGraphicOverlay;
+  private GraphicsOverlay mGraphicOverlay = null;
 
-  private GraphicsOverlay mRouteOverlay;
+  private GraphicsOverlay mRouteOverlay = null;
 
 
-  private boolean initialLocationLoaded =false;
+  private boolean initialLocationLoaded = false;
 
   private Graphic mCenteredGraphic = null;
 
   @Nullable private Place mCenteredPlace = null;
 
-  @Nullable private NavigationChangedListener mNavigationChangedListener;
+  @Nullable private NavigationChangedListener mNavigationChangedListener = null;
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
+  private int mCurrentPosition = 0;
 
-  @Nullable private String centeredPlaceName;
+  @Nullable private String centeredPlaceName = null;
 
 
-  private BottomSheetBehavior bottomSheetBehavior;
+  private LinearLayout routeDetailHeader = null;
 
-  private FrameLayout mBottomSheet;
+  private BottomSheetBehavior bottomSheetBehavior = null;
+
+  private FrameLayout mBottomSheet = null;
+
+  private boolean mShowingRouteDetail = false;
 
   private boolean mShowSnackbar = false;
 
-  private List<DirectionManeuver> mRouteDirections;
+  private List<DirectionManeuver> mRouteDirections = null;
 
   private Viewpoint mViewpoint = null;
 
-  private View mRouteHeaderView;
+  private View mRouteHeaderView = null;
 
-  private ProgressDialog mProgressDialog;
+  private ProgressDialog mProgressDialog = null;
 
   public MapFragment(){}
 
@@ -253,15 +245,118 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       mProgressDialog = new ProgressDialog(getActivity());
     }
     mProgressDialog.dismiss();
-    mProgressDialog.setTitle("Nearby Places");
+    mProgressDialog.setTitle(getString(R.string.nearby_places));
     mProgressDialog.setMessage(message);
     mProgressDialog.show();
+  }
+
+  @Override public void showRouteDetail(final int position) {
+    // State  and stage flags
+    mCurrentPosition = position;
+    mShowingRouteDetail = true;
+
+    // Hide action bar
+    final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+    if (ab != null){
+      ab.hide();
+    }
+
+    // Display route detail header
+   final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT);
+
+    routeDetailHeader = (LinearLayout) inflater.inflate(R.layout.route_detail_header, null);
+    TextView title = (TextView) routeDetailHeader.findViewById(R.id.route_txt_detail) ;
+    title.setText("Route Detail");
+
+    routeDetailHeader.setBackgroundColor(Color.WHITE);
+    mMapView.addView(routeDetailHeader);
+    mMapView.requestLayout();
+
+    // Attach a listener to the back arrow
+    ImageView imageBtn = (ImageView) routeDetailHeader.findViewById(R.id.btnDetailHeaderClose) ;
+    imageBtn.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        // Navigate back to directions list
+        mShowingRouteDetail = false;
+        ((MapActivity)getActivity()).showDirections(mRouteDirections);
+      }
+    });
+
+    // Display arrows to scroll through directions
+    LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.navigation_arrows,null);
+    final FrameLayout frameLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_container);
+    FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM|Gravity.END);
+    frameLayout.addView(linearLayout, frameLayoutParams);
+    frameLayout.requestLayout();
+    // Add button click listeners
+    Button btnPrev = (Button) getActivity().findViewById(R.id.btnBack) ;
+
+    btnPrev.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+             if (mCurrentPosition > 0){
+               populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition - 1), routeDetailHeader);
+               mCurrentPosition = mCurrentPosition - 1;
+             }
+
+      }
+    });
+    Button btnNext = (Button) getActivity().findViewById(R.id.btnNext);
+    btnNext.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        if (mCurrentPosition < mRouteDirections.size() -1){
+          populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition + 1), routeDetailHeader);
+          mCurrentPosition = mCurrentPosition + 1;
+        }
+
+      }
+    });
+
+    // Populate with directions
+    DirectionManeuver maneuver = mRouteDirections.get(position);
+    populateViewWithRouteDetail(maneuver, routeDetailHeader);
+
+  }
+  public void removeRouteDetail(){
+    mMapView.removeView(routeDetailHeader);
+  }
+
+  private void populateViewWithRouteDetail(DirectionManeuver maneuver, View routeDetailHeader){
+    TextView direction = (TextView) routeDetailHeader.findViewById(R.id.directions_text_textview);
+
+    direction.setText(maneuver.getDirectionText());
+    TextView travelDistance = (TextView) routeDetailHeader.findViewById(R.id.directions_length_textview);
+    travelDistance.setText(String.format("%.1f meters", maneuver.getLength()));
+
+    // Remove any previously highlighted graphic
+    // that we may have added
+    if (mRouteOverlay.getGraphics().size() == 4){
+      mRouteOverlay.getGraphics().remove(0);
+    }
+
+    // Highlight route segment in map
+    Geometry geometry = maneuver.getGeometry();
+    Graphic graphic = null;
+    if (geometry instanceof Polyline){
+      SimpleLineSymbol symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 7);
+      graphic = new Graphic(geometry, symbol);
+    }else{
+      SimpleMarkerSymbol marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.RED, 7);
+      graphic = new Graphic(geometry, marker);
+    }
+
+    mRouteOverlay.getGraphics().add(0,graphic);
+
+    // Zoom to segment
+    mMapView.setViewpointGeometryAsync(geometry,70);
   }
 
   /**
    * Show a special header when routes are displayed
    */
-  private void showRouteHeader(){
+  private void showRouteHeader(double travelTime){
     final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -270,6 +365,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     tv.setElevation(6f);
     tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
     tv.setTextColor(Color.WHITE);
+    final TextView time = (TextView) mRouteHeaderView.findViewById(R.id.routeTime);
+    time.setText(Math.round(travelTime)+" min");
     final ImageView btnClose = (ImageView) mRouteHeaderView.findViewById(R.id.btnClose);
     final ImageView btnDirections = (ImageView) mRouteHeaderView.findViewById(R.id.btnDirections);
     final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
@@ -297,10 +394,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     });
     btnDirections.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(final View v) {
-        // show directions fragment
-        final RouteDirectionsFragment routeDirectionsFragment = new RouteDirectionsFragment();
-        routeDirectionsFragment.show(getActivity().getFragmentManager(),"route_directions_fragment");
-        routeDirectionsFragment.setRoutingDirections(mRouteDirections);
+        // show directions
+        ((MapActivity)getActivity()).showDirections(mRouteDirections);
       }
     });
   }
@@ -464,7 +559,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
            @Override public void run() {
 
              if (!mMapView.isNavigating()) {
-               Log.i("NavigationChange", "Is navigating after sleep " + mMapView.isNavigating());
                onMapViewChange();
              }
            }
@@ -531,10 +625,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Create a graphic for every place
     for (final Place place : places){
       final BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(place)) ;
-      final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
-      final Point graphicPoint = place.getLocation();
-      final Graphic graphic = new Graphic(graphicPoint, pinSymbol);
-      mGraphicOverlay.getGraphics().add(graphic);
+      addGraphicToMap(pin, place.getLocation());
     }
 
     // If a centered place name is not null,
@@ -552,6 +643,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       mProgressDialog.dismiss();
     }
 
+  }
+  private void addGraphicToMap(BitmapDrawable bitdrawable, Geometry geometry){
+    final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(bitdrawable);
+    final Graphic graphic = new Graphic(geometry, pinSymbol);
+    mGraphicOverlay.getGraphics().add(graphic);
   }
   /**
    * Populate the place detail contained
@@ -607,8 +703,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   @Override public final void onMapViewChange() {
     mShowSnackbar = true;
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){ // show snackbar prompting for re-doing search
-      showSearchSnackbar();
+    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+      if (!mShowingRouteDetail){
+        // show snackbar prompting for re-doing search
+        showSearchSnackbar();
+      }
+
     }else{
       bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
@@ -621,7 +721,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @return - the appropriate id representing the drawable for the given place
    */
   private static int getDrawableForPlace(final Place p){
-    return CategoryHelper.getPinForPlace(p);
+    return CategoryHelper.getResourceIdForPlacePin(p);
   }
   private static int getPinForCenterPlace(final Place p){
     return CategoryHelper.getPinForCenterPlace(p);
@@ -757,7 +857,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mRouteDirections = route.getDirectionManeuvers();
 
     // Show route header
-    showRouteHeader();
+    showRouteHeader(route.getTravelTime());
 
     if (mProgressDialog != null){
       mProgressDialog.dismiss();
@@ -854,5 +954,4 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       return true;
     }
   }
-
 }
