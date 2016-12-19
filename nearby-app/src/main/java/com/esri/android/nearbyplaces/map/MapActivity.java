@@ -103,7 +103,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
    * Show the list of directions
    * @param directions List of DirectionManeuver items containing navigation directions
    */
-  public void showDirections(List<DirectionManeuver> directions){
+  public final void showDirections(final List<DirectionManeuver> directions){
     final FragmentManager fm = getSupportFragmentManager();
     RouteDirectionsFragment routeDirectionsFragment = (RouteDirectionsFragment) fm.findFragmentById(R.id.route_directions_container);
     if (routeDirectionsFragment == null){
@@ -112,14 +112,14 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
           getSupportFragmentManager(), routeDirectionsFragment, R.id.route_directions_container, "route fragment");
     }
     // Show the fragment
-    LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
+    final LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     layout.requestLayout();
 
     // Hide the map
     final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_fragment_container);
-    CoordinatorLayout.LayoutParams  layoutParams  =  new CoordinatorLayout.LayoutParams(0,0);
+    final CoordinatorLayout.LayoutParams  layoutParams  =  new CoordinatorLayout.LayoutParams(0,0);
     layoutParams.setMargins(0, 0,0,0);
     mapLayout.setLayoutParams(layoutParams);
     mapLayout.requestLayout();
@@ -127,35 +127,53 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     routeDirectionsFragment.setRoutingDirections(directions);
   }
 
-  public void showRouteDetail(int position){
-    // Hide the directions
-    LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
+  /**
+   * Display the specific directions for the segment of the route
+   * the user has clicked on.
+   * @param position
+   */
+  public final void showRouteDetail(final int position){
+    // Hide the list of directions
+    final LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(0,0));
     layout.requestLayout();
 
-    // Show the map
-    MapFragment  mapFragment = showMap();
+    // Restore the map, removing any route segment detail
+    final MapFragment  mapFragment = restoreMapAndRemoveRouteDetail();
+    // Add specific route segment detail
     mapFragment.showRouteDetail(position);
   }
 
-  public MapFragment showMap(){
+  /**
+   * Restore map to original size and remove
+   * views associated with displaying route segments.
+   * @return MapFragment - The fragment containing the map
+   */
+  public final MapFragment restoreMapAndRemoveRouteDetail(){
     // Remove the route directions
-    LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
-    layout.removeAllViews();
+    final LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
+    layout.setLayoutParams(new CoordinatorLayout.LayoutParams(0, 0));
     layout.requestLayout();
-
 
     // Show the map
     final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_fragment_container);
 
-    CoordinatorLayout.LayoutParams  layoutParams  =  new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+    final CoordinatorLayout.LayoutParams  layoutParams  =  new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT);
     mapLayout.setLayoutParams(layoutParams);
     mapLayout.requestLayout();
 
     final FragmentManager fm = getSupportFragmentManager();
-    MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_container);
+    final MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.map_fragment_container);
     mapFragment.removeRouteDetail();
     return mapFragment;
+  }
+
+  /**
+   * Adjust the map view and show route
+   */
+  public final void restoreRouteView(){
+    MapFragment mapFragment = restoreMapAndRemoveRouteDetail();
+    mapFragment.displayRoute();
   }
 }

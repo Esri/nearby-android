@@ -5,13 +5,14 @@
               android:orientation="horizontal"
               android:gravity="center_vertical"
               android:id="@+id/app_bar_linear_layout"
-              android:background="@drawable/route_appbar_background">
+              android:background="@drawable/route_appbar_background"
+              android:padding="@dimen/activity_horizontal_margin">
     <ImageView
             android:id="@+id/btnClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_clear_white_24px"
-            android:layout_weight="1"/>
+            android:layout_marginStart="8dp" android:layout_marginEnd="5dp"/>
     <TextView
             android:layout_width="0dp"
             android:ellipsize="end"
@@ -19,11 +20,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/route_bar_title"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/some_long_place_name" android:layout_weight="4"
-            android:textColor="@color/colorText"/>
+            android:text="@string/some_long_place_name"
+            android:textColor="@color/colorText" android:textSize="18sp" android:layout_weight="4"/>
     <LinearLayout android:layout_width="wrap_content"
                   android:orientation="vertical"
-                  android:layout_height="wrap_content" android:paddingEnd="16dp">
+                  android:layout_height="wrap_content" android:paddingStart="5dp">
 
         <ImageView
                 android:id="@+id/btnDirections"

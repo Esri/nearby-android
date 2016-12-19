@@ -83,8 +83,6 @@ import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
-import com.esri.arcgisruntime.util.ListenableList;
-import org.w3c.dom.Text;
 
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
@@ -116,7 +114,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   @Nullable private String centeredPlaceName = null;
 
 
-  private LinearLayout routeDetailHeader = null;
+  private LinearLayout mRouteHeaderDetail = null;
+
+  private LinearLayout mSegmentNavigator = null;
 
   private BottomSheetBehavior bottomSheetBehavior = null;
 
@@ -133,6 +133,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private View mRouteHeaderView = null;
 
   private ProgressDialog mProgressDialog = null;
+
+  private RouteResult mRouteResult = null;
+
+  private Point mStart = null;
+
+  private Point mEnd = null;
 
   public MapFragment(){}
 
@@ -251,6 +257,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   @Override public void showRouteDetail(final int position) {
+    // Remove the route header view,
+    //
+    //since we're replacing it with a different header
+
+    removeRouteHeaderView();
     // State  and stage flags
     mCurrentPosition = position;
     mShowingRouteDetail = true;
@@ -263,71 +274,92 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Display route detail header
    final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+    final LinearLayout.LayoutParams routeDetailLayout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT);
 
-    routeDetailHeader = (LinearLayout) inflater.inflate(R.layout.route_detail_header, null);
-    TextView title = (TextView) routeDetailHeader.findViewById(R.id.route_txt_detail) ;
-    title.setText("Route Detail");
+    if (mRouteHeaderDetail == null){
+      mRouteHeaderDetail = (LinearLayout) inflater.inflate(R.layout.route_detail_header, null);
+      TextView title = (TextView) mRouteHeaderDetail.findViewById(R.id.route_txt_detail) ;
+      title.setText("Route Detail");
 
-    routeDetailHeader.setBackgroundColor(Color.WHITE);
-    mMapView.addView(routeDetailHeader);
-    mMapView.requestLayout();
+      mRouteHeaderDetail.setBackgroundColor(Color.WHITE);
+      mMapView.addView(mRouteHeaderDetail, routeDetailLayout);
+      mMapView.requestLayout();
 
-    // Attach a listener to the back arrow
-    ImageView imageBtn = (ImageView) routeDetailHeader.findViewById(R.id.btnDetailHeaderClose) ;
-    imageBtn.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        // Navigate back to directions list
-        mShowingRouteDetail = false;
-        ((MapActivity)getActivity()).showDirections(mRouteDirections);
-      }
-    });
+      // Attach a listener to the back arrow
+      ImageView imageBtn = (ImageView) mRouteHeaderDetail.findViewById(R.id.btnDetailHeaderClose) ;
+      imageBtn.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          // Navigate back to directions list
+          mShowingRouteDetail = false;
+          ((MapActivity)getActivity()).showDirections(mRouteDirections);
+        }
+      });
+    }
+
+
 
     // Display arrows to scroll through directions
-    LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.navigation_arrows,null);
-    final FrameLayout frameLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_container);
-    FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM|Gravity.END);
-    frameLayout.addView(linearLayout, frameLayoutParams);
-    frameLayout.requestLayout();
-    // Add button click listeners
-    Button btnPrev = (Button) getActivity().findViewById(R.id.btnBack) ;
+    if (mSegmentNavigator == null){
+      mSegmentNavigator = (LinearLayout)inflater.inflate(R.layout.navigation_arrows,null);
+      final FrameLayout navigatorLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_container);
+      FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+          ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM|Gravity.END);
+      navigatorLayout.addView(mSegmentNavigator, frameLayoutParams);
+      navigatorLayout.requestLayout();
+      // Add button click listeners
+      Button btnPrev = (Button) getActivity().findViewById(R.id.btnBack) ;
 
-    btnPrev.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-             if (mCurrentPosition > 0){
-               populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition - 1), routeDetailHeader);
-               mCurrentPosition = mCurrentPosition - 1;
-             }
+      btnPrev.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          if (mCurrentPosition > 0){
+            populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition - 1));
+            mCurrentPosition = mCurrentPosition - 1;
+          }
 
-      }
-    });
-    Button btnNext = (Button) getActivity().findViewById(R.id.btnNext);
-    btnNext.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        if (mCurrentPosition < mRouteDirections.size() -1){
-          populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition + 1), routeDetailHeader);
-          mCurrentPosition = mCurrentPosition + 1;
         }
+      });
+      Button btnNext = (Button) getActivity().findViewById(R.id.btnNext);
+      btnNext.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          if (mCurrentPosition < mRouteDirections.size() -1){
+            populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition + 1));
+            mCurrentPosition = mCurrentPosition + 1;
+          }
 
-      }
-    });
+        }
+      });
+    }
+
+
 
     // Populate with directions
     DirectionManeuver maneuver = mRouteDirections.get(position);
-    populateViewWithRouteDetail(maneuver, routeDetailHeader);
+    populateViewWithRouteDetail(maneuver);
 
   }
+
+  /**
+   * Remove special header and navigator buttons for route detail
+   */
   public void removeRouteDetail(){
-    mMapView.removeView(routeDetailHeader);
+    mMapView.removeView(mRouteHeaderDetail);
+    mRouteHeaderDetail = null;
+    final FrameLayout navigatorLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_container);
+    navigatorLayout.removeView(mSegmentNavigator);
+    mMapView.removeView(mSegmentNavigator);
+    mSegmentNavigator = null;
   }
 
-  private void populateViewWithRouteDetail(DirectionManeuver maneuver, View routeDetailHeader){
-    TextView direction = (TextView) routeDetailHeader.findViewById(R.id.directions_text_textview);
+  /**
+   * Show text directions for a specific route segment
+   * @param maneuver - DirectionManeuver corresponding to the specific direction segment
+   */
+  private void populateViewWithRouteDetail(DirectionManeuver maneuver ){
+    TextView direction = (TextView) mRouteHeaderDetail.findViewById(R.id.directions_text_textview);
 
     direction.setText(maneuver.getDirectionText());
-    TextView travelDistance = (TextView) routeDetailHeader.findViewById(R.id.directions_length_textview);
+    TextView travelDistance = (TextView) mRouteHeaderDetail.findViewById(R.id.directions_length_textview);
     travelDistance.setText(String.format("%.1f meters", maneuver.getLength()));
 
     // Remove any previously highlighted graphic
@@ -798,69 +830,83 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   /**
-   * Show the returned route on the map
+   * Set the returned route details
    * @param routeResult - RouteResult returned from the routing task
    * @param beginPoint - the point representing the start of the route
    * @param endPoint - the point representing the end of the route
    */
-  @Override public final void showRoute(final RouteResult routeResult, final Point beginPoint, final Point endPoint) {
-    final Route route;
-    try {
-      route = routeResult.getRoutes().get(0);
-      if (route.getTotalLength() == 0.0) {
-        throw new Exception("Can not find the Route");
+  @Override public final void setRoute(final RouteResult routeResult, final Point beginPoint, final Point endPoint) {
+    mRouteResult = routeResult;
+    mStart = beginPoint;
+    mEnd = endPoint;
+    displayRoute();
+  }
+
+  /**
+   * Show the route
+   */
+  public final void displayRoute() {
+    if ( mRouteResult != null && mStart != null && mEnd != null)  {
+      final Route route;
+      try {
+        route = mRouteResult.getRoutes().get(0);
+        if (route.getTotalLength() == 0.0) {
+          throw new Exception("Can not find the Route");
+        }
+      } catch (final Exception e) {
+        Toast.makeText(getActivity(),
+            "We're sorry, we couldn't find the route. Please make "
+                + "sure the Start and Destination are different or are connected by a road",
+            Toast.LENGTH_LONG).show();
+        Log.e(MapFragment.TAG, e.getMessage());
+        return;
       }
-    } catch (final Exception e) {
-      Toast.makeText(getActivity(),
-          "We are sorry, we couldn't find the route. Please make "
-              + "sure the Source and Destination are different or are connected by road",
-          Toast.LENGTH_LONG).show();
-      Log.e(MapFragment.TAG, e.getMessage());
-      return;
-    }
 
-    // Clear all place graphics
-    clearPlaceGraphicOverlay();
+      // Clear all place graphics
+      clearPlaceGraphicOverlay();
 
 
-    if (mRouteOverlay == null) {
-      mRouteOverlay = new GraphicsOverlay();
-      mMapView.getGraphicsOverlays().add(mRouteOverlay);
+      if (mRouteOverlay == null) {
+        mRouteOverlay = new GraphicsOverlay();
+        mMapView.getGraphicsOverlays().add(mRouteOverlay);
+      }else{
+        // Clear any previous route
+        mRouteOverlay.getGraphics().clear();
+      }
+      // Create polyline graphic of the full route
+      final SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 6);
+      final Graphic routeGraphic = new Graphic(route.getRouteGeometry(), lineSymbol);
+
+      // Add the route graphic to the route layer
+      mRouteOverlay.getGraphics().add(routeGraphic);
+      // Add start and end pins
+      final BitmapDrawable startPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.route_pin_start) ;
+      final BitmapDrawable endPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.end_route_pin) ;
+      // Current location from Google location services
+      // needs a spatial reference before it can be added to map.
+      final Point startPoint = new Point(mStart.getX(), mStart.getY(), mEnd.getSpatialReference());
+
+      final Graphic begin = generateRoutePoints(startPoint, startPin);
+      mRouteOverlay.getGraphics().add(begin);
+      mRouteOverlay.getGraphics().add(generateRoutePoints(mEnd,endPin));
+
+
+      // Zoom to the extent of the entire route with a padding
+      final Envelope routingEnvelope = new Envelope(mStart.getX(),mStart.getY(), mEnd.getX(), mEnd.getY(), SpatialReferences.getWgs84());
+      final Envelope projectedEnvelope = (Envelope) GeometryEngine.project(routingEnvelope, mMapView.getSpatialReference());
+      mMapView.setViewpointGeometryAsync(projectedEnvelope, 100);
+
+      // Get routing directions
+      mRouteDirections = route.getDirectionManeuvers();
+
+      // Show route header
+      showRouteHeader(route.getTravelTime());
+
+      if (mProgressDialog != null){
+        mProgressDialog.dismiss();
+      }
     }else{
-      // Clear any previous route
-      mRouteOverlay.getGraphics().clear();
-    }
-    // Create polyline graphic of the full route
-    final SimpleLineSymbol lineSymbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLUE, 6);
-    final Graphic routeGraphic = new Graphic(route.getRouteGeometry(), lineSymbol);
-
-    // Add the route graphic to the route layer
-    mRouteOverlay.getGraphics().add(routeGraphic);
-    // Add start and end pins
-    final BitmapDrawable startPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.route_pin_start) ;
-    final BitmapDrawable endPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.end_route_pin) ;
-    // Current location from Google location services
-    // needs a spatial reference before it can be added to map.
-    final Point startPoint = new Point(beginPoint.getX(), beginPoint.getY(), endPoint.getSpatialReference());
-
-    final Graphic begin = generateRoutePoints(startPoint, startPin);
-    mRouteOverlay.getGraphics().add(begin);
-    mRouteOverlay.getGraphics().add(generateRoutePoints(endPoint,endPin));
-
-
-    // Zoom to the extent of the entire route with a padding
-    final Envelope routingEnvelope = new Envelope(beginPoint.getX(),beginPoint.getY(), endPoint.getX(), endPoint.getY(), SpatialReferences.getWgs84());
-    final Envelope projectedEnvelope = (Envelope) GeometryEngine.project(routingEnvelope, mMapView.getSpatialReference());
-    mMapView.setViewpointGeometryAsync(projectedEnvelope, 100);
-
-    // Get routing directions
-    mRouteDirections = route.getDirectionManeuvers();
-
-    // Show route header
-    showRouteHeader(route.getTravelTime());
-
-    if (mProgressDialog != null){
-      mProgressDialog.dismiss();
+      Log.i(TAG, "Route details haven't been set, no route to display");
     }
   }
 

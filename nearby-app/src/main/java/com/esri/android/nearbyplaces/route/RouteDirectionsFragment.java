@@ -49,6 +49,7 @@ public class RouteDirectionsFragment extends Fragment {
 
   private List<DirectionManeuver> mDirectionManeuvers = new ArrayList<>();
   private final static String TAG = RouteDirectionsFragment.class.getSimpleName();
+  private DirectionsListAdapter mAdapter = null;
 
   public static RouteDirectionsFragment newInstance(){
     return new RouteDirectionsFragment();
@@ -63,7 +64,7 @@ public class RouteDirectionsFragment extends Fragment {
     ImageView backBtn = (ImageView) getActivity().findViewById(R.id.btnCloseDirections);
     backBtn.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        ((MapActivity)getActivity()).showMap();
+        ((MapActivity)getActivity()).restoreRouteView();
       }
     });
 
@@ -73,10 +74,10 @@ public class RouteDirectionsFragment extends Fragment {
       ab.hide();
     }
 
-
     // Setup list adapter
     final ListView listView = (ListView) view.findViewById(R.id.directions_list);
-    listView.setAdapter(new DirectionsListAdapter(mDirectionManeuvers));
+    mAdapter = new DirectionsListAdapter(mDirectionManeuvers);
+    listView.setAdapter(mAdapter);
 
     // When directions are tapped, show selected route section
     // highlighted on map and zoomed in with route section description
@@ -92,7 +93,12 @@ public class RouteDirectionsFragment extends Fragment {
   }
 
   public final void setRoutingDirections(final List<DirectionManeuver> directions){
+
     mDirectionManeuvers = directions;
+    if (mAdapter != null){
+      mAdapter.notifyDataSetChanged();
+    }
+
   }
   /**
    * List adapter for the list of route directions.

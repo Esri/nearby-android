@@ -44,7 +44,7 @@ public interface MapContract {
 
     void centerOnPlace(Place p);
 
-    void showRoute(RouteResult routeResult, Point start, Point end);
+    void setRoute(RouteResult routeResult, Point start, Point end);
 
     void showMessage(String message);
 
@@ -63,8 +63,6 @@ public interface MapContract {
     Place findPlaceForPoint(Point p);
 
     void getRoute();
-
-    void setRoute(RouteResult routeResult, Point start, Point end);
 
     void setCurrentExtent(Envelope envelope);
   }

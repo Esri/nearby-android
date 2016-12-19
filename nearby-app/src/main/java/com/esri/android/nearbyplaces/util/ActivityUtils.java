@@ -41,6 +41,7 @@ public class ActivityUtils {
       @NonNull Fragment fragment, int frameId, @NonNull String fragmentName) {
     FragmentTransaction transaction = fragmentManager.beginTransaction();
     transaction.add(frameId, fragment);
+    transaction.addToBackStack(fragmentName);
     transaction.commitAllowingStateLoss();
   }
 }
