@@ -305,6 +305,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       final FrameLayout navigatorLayout = (FrameLayout) getActivity().findViewById(R.id.map_fragment_container);
       FrameLayout.LayoutParams frameLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
           ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM|Gravity.END);
+      frameLayoutParams.setMargins(0,0,0,80);
       navigatorLayout.addView(mSegmentNavigator, frameLayoutParams);
       navigatorLayout.requestLayout();
       // Add button click listeners
