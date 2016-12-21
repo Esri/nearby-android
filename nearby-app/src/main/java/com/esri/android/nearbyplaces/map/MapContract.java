@@ -23,6 +23,7 @@
  */
 package com.esri.android.nearbyplaces.map;
 
+import android.widget.LinearLayout;
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
@@ -43,11 +44,15 @@ public interface MapContract {
 
     void centerOnPlace(Place p);
 
-    void showRoute(RouteResult routeResult, Point start, Point end);
+    void setRoute(RouteResult routeResult, Point start, Point end);
 
     void showMessage(String message);
 
     void showProgressIndicator(String message);
+
+    void showRouteDetail(int position);
+
+    void restoreMapView();
 
   }
 
@@ -60,8 +65,6 @@ public interface MapContract {
     Place findPlaceForPoint(Point p);
 
     void getRoute();
-
-    void setRoute(RouteResult routeResult, Point start, Point end);
 
     void setCurrentExtent(Envelope envelope);
   }

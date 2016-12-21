@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:id="@+id/imageContainer"
+              android:background="@android:color/white"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+
+    <Button android:layout_width="48dp"
+            android:id="@+id/btnBack"
+            android:background="@drawable/ic_navigate_before_black_48px"
+            android:layout_height="48dp" />
+
+    <Button android:layout_width="48dp"
+            android:id="@+id/btnNext"
+            android:background="@drawable/ic_navigate_next_black_48px"
+            android:layout_height="48dp" />
+</LinearLayout>
