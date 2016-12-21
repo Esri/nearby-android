@@ -52,6 +52,8 @@ public interface MapContract {
 
     void showRouteDetail(int position);
 
+    void restoreMapView();
+
   }
 
   interface Presenter extends BasePresenter {

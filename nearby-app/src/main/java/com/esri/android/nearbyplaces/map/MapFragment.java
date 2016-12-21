@@ -339,6 +339,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   }
 
+  @Override public void restoreMapView() {
+    removeRouteHeaderView();
+  }
+
   /**
    * Remove special header and navigator buttons for route detail
    */

@@ -38,9 +38,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -262,9 +264,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * When returning from activities concerning wifi mode and location
    * settings, check them again.
    *
-   * @param requestCode
-   * @param resultCode
-   * @param data
+   * @param requestCode - an integer representing the type of request
+   * @param resultCode - an integer representing the result of the returning activity
+   * @param data - the Intent returned
    */
   @Override
   protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -275,9 +277,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   }
   /**
    * Prompt user to change settings required for app
-   * @param intent
-   * @param requestCode
-   * @param message
+   * @param intent - the Intent containing any data
+   * @param requestCode -an integer representing the type of request
+   * @param message - a string representing the message to display in the dialog.
    */
   private void showDialog(final Intent intent, final int requestCode, final String message) {
 
@@ -299,5 +301,15 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       }
     });
     alertDialog.create().show();
+  }
+
+  @Override
+  public void onBackPressed() {
+    int count = getSupportFragmentManager().getBackStackEntryCount();
+    if (count == 0) {
+      super.onBackPressed();
+    } else {
+      finish();
+    }
   }
 }

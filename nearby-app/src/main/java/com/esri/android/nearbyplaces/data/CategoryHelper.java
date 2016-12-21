@@ -134,22 +134,22 @@ public class CategoryHelper {
     final Integer d;
     switch (category){
       case "Pizza":
-        d = Integer.valueOf(R.drawable.pizza_pin);
+        d = R.drawable.pizza_pin;
         break;
       case "Hotel":
-        d = Integer.valueOf(R.drawable.hotel_pin);
+        d = R.drawable.hotel_pin;
         break;
       case "Food":
-        d = Integer.valueOf(R.drawable.restaurant_pin);
+        d = R.drawable.restaurant_pin;
         break;
       case "Bar or Pub":
-        d = Integer.valueOf(R.drawable.bar_pin);
+        d = R.drawable.bar_pin;
         break;
       case "Coffee Shop":
-        d = Integer.valueOf(R.drawable.cafe_pin);
+        d = R.drawable.cafe_pin;
         break;
       default:
-        d = Integer.valueOf(R.drawable.empty_pin);
+        d = R.drawable.empty_pin;
     }
     return d;
   }
@@ -255,22 +255,22 @@ public class CategoryHelper {
     final Integer d;
     switch (category){
       case "Pizza":
-        d = Integer.valueOf(R.drawable.blue_pizza_pin);
+        d = R.drawable.blue_pizza_pin;
         break;
       case "Hotel":
-        d = Integer.valueOf(R.drawable.blue_hotel_pin);
+        d = R.drawable.blue_hotel_pin;
         break;
       case "Food":
-        d = Integer.valueOf(R.drawable.blue_rest_pin);
+        d = R.drawable.blue_rest_pin;
         break;
       case "Bar or Pub":
-        d = Integer.valueOf(R.drawable.blue_bar_pin);
+        d = R.drawable.blue_bar_pin;
         break;
       case "Coffee Shop":
-        d = Integer.valueOf(R.drawable.blue_cafe_pin);
+        d = R.drawable.blue_cafe_pin;
         break;
       default:
-        d = Integer.valueOf(R.drawable.blue_empty_pin);
+        d = R.drawable.blue_empty_pin;
     }
     return d;
   }

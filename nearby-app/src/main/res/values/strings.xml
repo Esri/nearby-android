@@ -34,5 +34,7 @@
     <string name="title">title</string>
     <string name="some_long_place_name">Some long, long, long, long, long, long place name</string>
     <string name="nearby_places">Nearby Places</string>
+    <string name="map_fragment">map fragment</string>
+    <string name="route_fragment">route fragment</string>
 
 </resources>

@@ -93,7 +93,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     if (mapFragment == null) {
       mapFragment = MapFragment.newInstance();
       ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, "map fragment");
+          getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, getString(R.string.map_fragment));
     }
     mMapPresenter = new MapPresenter(mapFragment);
 
@@ -109,7 +109,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     if (routeDirectionsFragment == null){
       routeDirectionsFragment = RouteDirectionsFragment.newInstance();
       ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), routeDirectionsFragment, R.id.route_directions_container, "route fragment");
+          getSupportFragmentManager(), routeDirectionsFragment, R.id.route_directions_container, getString(R.string.route_fragment));
     }
     // Show the fragment
     final LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
@@ -130,7 +130,8 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
   /**
    * Display the specific directions for the segment of the route
    * the user has clicked on.
-   * @param position
+   * @param position An integer representing the index in the
+   *                 list of segment directions.
    */
   public final void showRouteDetail(final int position){
     // Hide the list of directions
@@ -175,5 +176,22 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
   public final void restoreRouteView(){
     MapFragment mapFragment = restoreMapAndRemoveRouteDetail();
     mapFragment.displayRoute();
+  }
+
+  @Override
+  public void onBackPressed() {
+    int count = getSupportFragmentManager().getBackStackEntryCount();
+    if (count == 0) {
+      super.onBackPressed();
+    } else {
+      getSupportFragmentManager().popBackStack();
+      FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(count-1);
+      String fragmentName = entry.getName();
+      if (fragmentName.equalsIgnoreCase(getString(R.string.route_fragment))){
+        restoreRouteView();
+      }else{
+        finish();
+      }
+    }
   }
 }
