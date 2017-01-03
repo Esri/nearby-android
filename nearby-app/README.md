@@ -106,6 +106,16 @@ A common pattern throughout the SDK is the use of mutable lists to control a var
 ```java
 
 // Setting GeocodeParameters (see the section above about Geocoding With Categories)
+// Retrieve a mutable list
+List categories = parameters.getCategories();
+
+// Add a subset of specific keyword categories
+// known to the service.
+categories.add("Food");
+categories.add("Hotel");
+categories.add("Pizza");
+categories.add("Coffee Shop");
+categories.add("Bar or Pub");
 
 // Setting the restriction attributes for walk times
 // when solving for a route.
