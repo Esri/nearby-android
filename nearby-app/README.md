@@ -134,3 +134,76 @@ final Point graphicPoint = place.getLocation();
 final Graphic graphic = new Graphic(graphicPoint, pinSymbol);
 mGraphicOverlay.getGraphics().add(graphic);
 ```
+
+## Two Workarounds
+
+### Viewpoint and Location Display
+In version 100.00 of the Android SDK there's a bug when setting the viewpoint of the map view and turning on location display.  For example, the following code will not zoom to the given viewpoint.  Instead, the map extent remains unchanged when displaying device location.
+
+```
+mMapView = (MapView) root.findViewById(R.id.map);
+final ArcGISMap map = new ArcGISMap(Basemap.createNavigationVector());
+mMapView.setMap(map);
+
+// Setting the viewpoint and then
+// calling getLocationDisplay will cause
+// the map view to ignore the given viewpoint.
+
+mMapView.setViewpoint(mViewpoint); // a non-null viewpoint
+mLocationDisplay = mMapView.getLocationDisplay();
+mLocationDisplay.startAsync();
+
+```
+The desired behavior is to have the map view change the visible area of the map view to the given viewpoint and display the device location.  This is accomplished by 
+
+  1.  Setting the viewpoint
+  2.  Waiting for the map's draw status to be complete
+  3.  Get the location display and start it asynchronously
+
+```
+mMapView = (MapView) root.findViewById(R.id.map);
+final ArcGISMap map = new ArcGISMap(Basemap.createNavigationVector());
+mMapView.setMap(map);
+
+// Set view point first
+mMapView.setViewpoint(mViewpoint);
+
+// Wait for draw status to be complete before getting and 
+// starting location display.
+mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
+   @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
+        if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
+          mLocationDisplay = mMapView.getLocationDisplay();
+          mLocationDisplay.startAsync();
+        }
+    }
+});
+```
+
+### Handling Fling Gestures in the MapView
+In version 100.00 of the Android SDK there's a workaround to correctly manage fling gestures on the map.  Navigation changes are monitored by attaching a NavigationChangedListener to the MapView.  With each event received, we check the MapView.isNavigating() property. Such logic works well for discrete gestures. If a fling gesture is being executed, there's a slight pause before the fling that will result in the map view returning false for isNavigating().  To account for this delay, we add logic to the message queue and execute after 50 milliseconds.
+
+```
+    mNavigationChangedListener = new NavigationChangedListener() {
+      // This is a workaround for detecting when a fling motion has completed on the map view. The
+      // NavigationChangedListener listens for navigation changes, not whether navigation has completed.  We wait
+      // a small interval before checking if map is view still navigating.
+      
+      @Override public void navigationChanged(final NavigationChangedEvent navigationChangedEvent) {
+       if (!mMapView.isNavigating()){
+         Handler handler = new Handler();
+         
+         // Add a 50 ms delay and check again if map view is navigating.
+         handler.postDelayed(new Runnable() {
+           @Override public void run() {
+             if (!mMapView.isNavigating()) {
+               onMapViewChange();
+             }
+           }
+         }, 50);
+       }
+      }
+
+    };
+    mMapView.addNavigationChangedListener(mNavigationChangedListener);
+```
