@@ -74,6 +74,7 @@ AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
 
 //The current location is obtained from the Google Location API 
 //needs to be created as a new point with a spatial reference.
+
 Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), place.getLocation().getSpatialReference() );
 GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
 double distance = result.getDistance();
@@ -100,13 +101,13 @@ if (degrees > -22.5  && degrees <= 22.5){
 }
 ```
 
-## Mutable Lists
-A common pattern throughout the SDK is the use of mutable lists to control a variety of settings.  Examples of this occur in the following places across the nearby app:
+## Mutable Collections
+A common pattern throughout the SDK is the use of mutable collections to control a variety of settings.  Examples of this occur in the following places across the nearby app:
 
 ```java
 
 // Setting GeocodeParameters (see the section above about Geocoding With Categories)
-// Retrieve a mutable list
+// Retrieve a mutable collection
 List categories = parameters.getCategories();
 
 // Add a subset of specific keyword categories
