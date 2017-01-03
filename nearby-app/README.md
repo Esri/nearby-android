@@ -110,6 +110,9 @@ A common pattern throughout the SDK is the use of mutable collections to control
 // Retrieve a mutable collection
 List categories = parameters.getCategories();
 
+// Clear out any previous values
+categories.clear();
+
 // Add a subset of specific keyword categories
 // known to the service.
 categories.add("Food");
@@ -118,11 +121,14 @@ categories.add("Pizza");
 categories.add("Coffee Shop");
 categories.add("Bar or Pub");
 
-// Setting the restriction attributes for walk times
-// when solving for a route.
+// Mutable collections are also used when solving for a route.  Here
+// we set specific attributes for generating a route based on walking
 
 List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
 restrictionAttributes.clear();
+
+// The following three items are required for generating
+// walking routes.
 restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
 restrictionAttributes.add("Preferred for Pedestrians");
 restrictionAttributes.add("Walking");
