@@ -576,11 +576,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   }
 
   /**
-   * Attach the viewpoint change listener
+   * Attach the navigation change listener
    * so that points of interest get updated
    * as the map's visible area is changed.
    */
-  private void setNavigationCompletedListener(){
+  private void setNavigationChangeListener(){
     mNavigationChangedListener = new NavigationChangedListener() {
       // This is a workaround for detecting when a fling
       // motion has completed on the map view. The
@@ -648,7 +648,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mGraphicOverlay.getGraphics().clear();
 
     if (!initialLocationLoaded){
-      setNavigationCompletedListener();
+      setNavigationChangeListener();
     }
     initialLocationLoaded = true;
     if (places == null || places.isEmpty()){
@@ -796,7 +796,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         // Once we've centered on a place, listen
         // for changes in viewpoint.
         if (mNavigationChangedListener == null){
-          setNavigationCompletedListener();
+          setNavigationChangeListener();
         }
       }
     });
