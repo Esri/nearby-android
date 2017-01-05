@@ -9,7 +9,7 @@ The example application is open source and available on GitHub. You can modify i
 ## Identifying Places Nearby
 
 ### Device Location
-The nearby-app uses a [mapless app pattern](https://developers.arcgis.com/android/guide/determine-your-app-map-pattern.htm#ESRI_SECTION1_58C46384E3484890A47629F8F12E6EF5) by first presenting a list of nearby places.  Since the app starts with a list, rather than a map, the device location is obtained using Google’s Location Services API. In the future, the Runtime SDK can be used to obtain the device location outside of the MapView.  Before trying to obtain the device location, the app checks that the device's GPS and wireless settings are turned on and then configures Google's location service.
+The nearby-app uses a [mapless app pattern](https://developers.arcgis.com/android/guide/determine-your-app-map-pattern.htm#ESRI_SECTION1_58C46384E3484890A47629F8F12E6EF5) by first presenting a list of nearby places.  Since the app starts with a list, rather than a map, the device location is obtained using Google’s Location Services API. In the future, the Runtime SDK can be used to obtain the device location outside of the `MapView`.  Before trying to obtain the device location, the app checks that the device's GPS and wireless settings are turned on and then configures Google's location service.
 
 ```java
 // Google's location services are configured in the
@@ -70,7 +70,7 @@ A distance and bearing from the device's location is calculated for each returne
 ### Calculating Bearing and Distance
 To determine distance and bearing, the [geometry engine](https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/geometry/GeometryEngine.html) is used to calculate the [geodesic distance](https://geonet.esri.com/groups/coordinate-reference-systems/blog/2014/09/01/geodetic-distances-how-long-is-that-line-again) between the device location and each nearby point of interest. Measuring distance, determining spatial relationships, and altering geometries can be done locally on the mobile client.
 
-When using the current device location in geospatial calculations, a spatial reference for the device location must be defined since the location returned by Google's location service doesn't specify a spatial reference.
+When using the current device location in geospatial calculations, a spatial reference must be defined since the location returned by Google's location service doesn't specify a spatial reference.
 ```java
 LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);
 AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
@@ -117,7 +117,7 @@ Clicking on the map icon will display the nearby places in the map view.
 
 ## Displaying Places in the Map
 ### Deriving a Viewpoint
-When the user clicks on the map icon to view the map, the map viewpoint is derived based on the locations in the list view.  This is done by iterating over the found places, creating a Multipoint object, and then using the GeometryEngine's buffer method to generate a polygon.  From the polygon, a rectangular area with a spatial reference can be obtained and passed to the map view.
+When the user clicks on the map icon to view the map, the map viewpoint is derived based on the locations in the list view.  This is done by iterating over the found places, creating a `Multipoint` object, and then using the GeometryEngine's buffer method to generate a `Polygon`.  From the `Polygon`, a rectangular area with a spatial reference can be obtained and passed to the map view.
 
 ```java
 List<Point> points = new ArrayList<>();
@@ -134,27 +134,7 @@ Polygon polygon = GeometryEngine.buffer(mp, 0.0007);
 Envelope viewpoint = polygon.getExtent();
 ```
 ### Location Display
-Once we have a MapView, we can set the viewpoint and leverage the SDK's LocationDisplay.  In version 100.00 of the Android SDK there's a bug when setting the viewpoint of the map view and turning on location display.  For example, the following code will not zoom to the given viewpoint.  Instead, the map extent remains unchanged when displaying device location.
-
-```
-mMapView = (MapView) root.findViewById(R.id.map);
-final ArcGISMap map = new ArcGISMap(Basemap.createNavigationVector());
-mMapView.setMap(map);
-
-// Setting the viewpoint and then
-// calling getLocationDisplay will cause
-// the map view to ignore the given viewpoint.
-
-mMapView.setViewpoint(mViewpoint); // a non-null viewpoint
-mLocationDisplay = mMapView.getLocationDisplay();
-mLocationDisplay.startAsync();
-
-```
-The desired behavior is to have the map view change the visible area of the map view to the given viewpoint and display the device location.  This is accomplished by the following steps:
-
-  1.  Setting the viewpoint
-  2.  Waiting for the map's draw status to be complete
-  3.  Getting the location display and starting it asynchronously
+Once we have a MapView, we can set the `Viewpoint` and leverage the SDK's `LocationDisplay`. The desired behavior is to have the `MapView` change the visible area to the current extent and display the device location.  Currently you have to wait for the `MapView` draw status to be completed in order to use the `Viewpoint` with the location display. This is accomplished by the following steps:
 
 ```
 mMapView = (MapView) root.findViewById(R.id.map);
@@ -177,7 +157,7 @@ mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
 ```
 
 ### Refreshing the Map View with New Search Results
-As the user taps, scrolls, or flings the map the app either displays details for a tapped place or a snackbar is displayed offering to re-execute the search in the updated map view.  Handling fling gestures in version 100.00 of the Android SDK requires a workaround to correctly respond to fling gestures in the map.  Navigation changes are monitored by attaching a NavigationChangedListener to the MapView.  With each event received, we check the MapView.isNavigating() property. Such logic works well for discrete gestures. If a fling gesture is being executed, there's a slight pause before the fling that will result in the map view returning false for isNavigating().  To account for this delay, we add logic to the message queue and execute after 50 milliseconds.
+As the user taps or pans the map, the app either displays details for a tapped place or a `SnackBar` is displayed and a  new search is initiated for the panned location. Navigation changes are monitored by attaching a `NavigationChangedListener` to the `MapView`.  With each event received, we check the `MapView.isNavigating()` method and in the case where a user uses a [fling gesture](https://developer.android.com/training/gestures/detector.html) there is a slight pause before the fling that results in the method returning false as the API does not currently account for the delay.  To work around this, we add logic to the message queue and execute after 50 milliseconds which ensures fling gestures are captured.
 
 ```java
 // This is a workaround for detecting when a fling motion has completed on the map view. The
@@ -245,7 +225,7 @@ routeParameters.setTravelMode(mode);
 
 ListenableFuture<RouteResult> routeResFuture = routeTask.solveRouteAsync(routeParameters);
 ```
-Getting and setting attribute lists highlights a common pattern throughout the SDK- the use of mutable collections to control a variety of settings. Examples of this were shown in the Geocoding section above and prevalent throughout the nearby-app. Manipulating graphic overlays for displaying routing results and adding graphics to the map is another area where the pattern occurs.
+Getting and setting attribute lists highlights a common pattern throughout the SDK, the use of mutable collections to control a variety of settings. Examples of this were shown in the Geocoding section above and prevalent throughout the nearby-app. Manipulating graphic overlays for displaying routing results and adding graphics to the map is another area where the pattern occurs.
 ```java
 // Showing the route result, the route overlay is added
 // only once.  Subsequent access is via "getGraphcis"
