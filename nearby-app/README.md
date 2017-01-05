@@ -78,11 +78,13 @@ AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
 //The current location is obtained from the Google Location API 
 //needs to be created as a new point with a spatial reference.
 
+
 // Get the spatial reference from the place returned from the geocoding service
 SpatialReference spatialReference = place.getLocation().getSpatialReference() ;
 
 // Create a new Point and use it for spatial calculations
 Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), spatialReference );
+
 GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
 double distance = result.getDistance();
 place.setDistance(Math.round(distance));
@@ -118,9 +120,11 @@ Clicking on the map icon will display the nearby places in the map view.
 ## Displaying Places in the Map
 ### Deriving a Viewpoint
 When the user clicks on the map icon to view the map, the map viewpoint is derived based on the locations in the list view.  This is done by iterating over the found places, creating a `Multipoint` object, and then using the GeometryEngine's buffer method to generate a `Polygon`.  From the `Polygon`, a rectangular area with a spatial reference can be obtained and passed to the map view.
+er
 
 ```java
 List<Point> points = new ArrayList<>();
+
 
 // Create an array of Point objects based on place locations
 for ( Place place : places){
@@ -203,6 +207,7 @@ A walking route is generated for a place by tapping on the routing arrow in the 
 
 ![](assets/nearby_centered_place.png)       |  |          ![](assets/nearby_route_view.png)
 
+
 Getting navigation directions in the nearby-app is just as easy in the [Runtime SDK](https://developers.arcgis.com/features/directions/) as it is on [ArcGIS Online](http://doc.arcgis.com/en/arcgis-online/use-maps/get-directions.htm).  A good example of how to set this up is found in the [maps-app](https://github.com/Esri/maps-app-android/blob/master/maps-app/README.md) so we won't discuss it here.  In contrast to the maps-app, the nearby-app demonstrates how to set up a request for a walking route using travel modes and restrictions in the routing request.
 
 ```java
@@ -217,6 +222,9 @@ mode.setTimeAttributeName("WalkTime");
 // Setting the restriction attributes for walk times
 List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
 restrictionAttributes.clear();
+
+// The following three items are required for generating
+// walking routes.
 restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
 restrictionAttributes.add("Preferred for Pedestrians");
 restrictionAttributes.add("Walking");
