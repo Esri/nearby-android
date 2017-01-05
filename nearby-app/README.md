@@ -134,7 +134,7 @@ Polygon polygon = GeometryEngine.buffer(mp, 0.0007);
 Envelope viewpoint = polygon.getExtent();
 ```
 ### Location Display
-Once we have a MapView, we can set the `Viewpoint` and leverage the SDK's `LocationDisplay`. The desired behavior is to have the `MapView` change the visible area to the current extent and display the device location.  Currently you have to wait for the `MapView` draw status to be completed in order to use the `Viewpoint` with the location display. This is accomplished by the following steps:
+Once we have a MapView, we can set the `Viewpoint` and leverage the SDK's `LocationDisplay`. The desired behavior is to have the `MapView` change the visible area to the current extent and display the device location.  Currently you have to wait for the `MapView` draw status to be completed in order to use the `Viewpoint` with the location display. 
 
 ```
 mMapView = (MapView) root.findViewById(R.id.map);
@@ -157,7 +157,7 @@ mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
 ```
 
 ### Refreshing the Map View with New Search Results
-As the user taps or pans the map, the app either displays details for a tapped place or a `SnackBar` is displayed and a  new search is initiated for the panned location. Navigation changes are monitored by attaching a `NavigationChangedListener` to the `MapView`.  With each event received, we check the `MapView.isNavigating()` method and in the case where a user uses a [fling gesture](https://developer.android.com/training/gestures/detector.html) there is a slight pause before the fling that results in the method returning false as the API does not currently account for the delay.  To work around this, we add logic to the message queue and execute after 50 milliseconds which ensures fling gestures are captured.
+As the user taps or pans the map, the app either displays details for a tapped place or a `SnackBar` is displayed and a  new search is initiated for the panned location. Navigation changes are monitored by attaching a `NavigationChangedListener` to the `MapView`.  With each event received, we check the `MapView.isNavigating()` method and in the case where a user uses a [fling gesture](https://developer.android.com/training/gestures/detector.html) to pan the map there is a slight pause before the fling that results in the method returning false as the API does not currently account for the delay.  To work around this, we add logic to the message queue and execute after 50 milliseconds which ensures fling gestures are captured.
 
 ```java
 // This is a workaround for detecting when a fling motion has completed on the map view. The
@@ -184,7 +184,7 @@ mNavigationChangedListener = new NavigationChangedListener() {
 mMapView.addNavigationChangedListener(mNavigationChangedListener);
 ```
 
-Each time a search is initiated from the map view, the found places are constrained to the current visible area of the map using the GeometryEngine's within method.
+Each time a search is initiated from the map view, the found places are constrained to the current visible area of the map using the `GeometryEngine`'s within method.
 
 ```java
 Envelope visibleMapArea = mapView.getVisibleArea().getExtent();
