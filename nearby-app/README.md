@@ -120,7 +120,7 @@ Clicking on the map icon will display the nearby places in the map view.
 ## Displaying Places in the Map
 ### Deriving a Viewpoint
 When the user clicks on the map icon to view the map, the map viewpoint is derived based on the locations in the list view.  This is done by iterating over the found places, creating a `Multipoint` object, and then using the GeometryEngine's buffer method to generate a `Polygon`.  From the `Polygon`, a rectangular area with a spatial reference can be obtained and passed to the map view.
-er
+
 
 ```java
 List<Point> points = new ArrayList<>();
