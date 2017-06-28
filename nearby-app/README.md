@@ -78,11 +78,13 @@ AngularUnit angularUnit = new AngularUnit(AngularUnitId.DEGREES);
 //The current location is obtained from the Google Location API 
 //needs to be created as a new point with a spatial reference.
 
+
 // Get the spatial reference from the place returned from the geocoding service
 SpatialReference spatialReference = place.getLocation().getSpatialReference() ;
 
 // Create a new Point and use it for spatial calculations
 Point newPoint = new Point(mCurrentLocation.getX(), mCurrentLocation.getY(), spatialReference );
+
 GeodesicDistanceResult result =GeometryEngine.distanceGeodesic(newPoint, place.getLocation(),linearUnit, angularUnit, GeodeticCurveType.GEODESIC);
 double distance = result.getDistance();
 place.setDistance(Math.round(distance));
@@ -118,9 +120,11 @@ Clicking on the map icon will display the nearby places in the map view.
 ## Displaying Places in the Map
 ### Deriving a Viewpoint
 When the user clicks on the map icon to view the map, the map viewpoint is derived based on the locations in the list view.  This is done by iterating over the found places, creating a `Multipoint` object, and then using the GeometryEngine's buffer method to generate a `Polygon`.  From the `Polygon`, a rectangular area with a spatial reference can be obtained and passed to the map view.
+er
 
 ```java
 List<Point> points = new ArrayList<>();
+
 
 // Create an array of Point objects based on place locations
 for ( Place place : places){
@@ -134,7 +138,7 @@ Polygon polygon = GeometryEngine.buffer(mp, 0.0007);
 Envelope viewpoint = polygon.getExtent();
 ```
 ### Location Display
-Once we have a MapView, we can set the `Viewpoint` and leverage the SDK's `LocationDisplay`. The desired behavior is to have the `MapView` change the visible area to the current extent and display the device location.  Currently you have to wait for the `MapView` draw status to be completed in order to use the `Viewpoint` with the location display. This is accomplished by the following steps:
+Once we have a MapView, we can set the `Viewpoint` and leverage the SDK's `LocationDisplay`. The desired behavior is to have the `MapView` change the visible area to the current extent and display the device location.  Currently you have to wait for the `MapView` draw status to be completed in order to use the `Viewpoint` with the location display. 
 
 ```
 mMapView = (MapView) root.findViewById(R.id.map);
@@ -157,7 +161,7 @@ mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
 ```
 
 ### Refreshing the Map View with New Search Results
-As the user taps or pans the map, the app either displays details for a tapped place or a `SnackBar` is displayed and a  new search is initiated for the panned location. Navigation changes are monitored by attaching a `NavigationChangedListener` to the `MapView`.  With each event received, we check the `MapView.isNavigating()` method and in the case where a user uses a [fling gesture](https://developer.android.com/training/gestures/detector.html) there is a slight pause before the fling that results in the method returning false as the API does not currently account for the delay.  To work around this, we add logic to the message queue and execute after 50 milliseconds which ensures fling gestures are captured.
+As the user taps or pans the map, the app either displays details for a tapped place or a `SnackBar` is displayed and a  new search is initiated for the panned location. Navigation changes are monitored by attaching a `NavigationChangedListener` to the `MapView`.  With each event received, we check the `MapView.isNavigating()` method and in the case where a user uses a [fling gesture](https://developer.android.com/training/gestures/detector.html) to pan the map there is a slight pause before the fling that results in the method returning false as the API does not currently account for the delay.  To work around this, we add logic to the message queue and execute after 50 milliseconds which ensures fling gestures are captured.
 
 ```java
 // This is a workaround for detecting when a fling motion has completed on the map view. The
@@ -184,7 +188,7 @@ mNavigationChangedListener = new NavigationChangedListener() {
 mMapView.addNavigationChangedListener(mNavigationChangedListener);
 ```
 
-Each time a search is initiated from the map view, the found places are constrained to the current visible area of the map using the GeometryEngine's within method.
+Each time a search is initiated from the map view, the found places are constrained to the current visible area of the map using the `GeometryEngine`'s within method.
 
 ```java
 Envelope visibleMapArea = mapView.getVisibleArea().getExtent();
@@ -203,6 +207,7 @@ A walking route is generated for a place by tapping on the routing arrow in the 
 
 ![](assets/nearby_centered_place.png)       |  |          ![](assets/nearby_route_view.png)
 
+
 Getting navigation directions in the nearby-app is just as easy in the [Runtime SDK](https://developers.arcgis.com/features/directions/) as it is on [ArcGIS Online](http://doc.arcgis.com/en/arcgis-online/use-maps/get-directions.htm).  A good example of how to set this up is found in the [maps-app](https://github.com/Esri/maps-app-android/blob/master/maps-app/README.md) so we won't discuss it here.  In contrast to the maps-app, the nearby-app demonstrates how to set up a request for a walking route using travel modes and restrictions in the routing request.
 
 ```java
@@ -217,6 +222,9 @@ mode.setTimeAttributeName("WalkTime");
 // Setting the restriction attributes for walk times
 List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
 restrictionAttributes.clear();
+
+// The following three items are required for generating
+// walking routes.
 restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
 restrictionAttributes.add("Preferred for Pedestrians");
 restrictionAttributes.add("Walking");
