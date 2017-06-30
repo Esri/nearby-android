@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -32,7 +32,7 @@ ext {
 
     // App dependencies
     supportLibraryVersion = '25.0.1'
-    designLibraryVersion = '23.4.0'
-    runtimeVersion = '100.0.0'
+    designLibraryVersion = '25.0.1'
+    runtimeVersion = '100.1.0'
     googleLocationServicesVersion = '10.0.1'
 }
