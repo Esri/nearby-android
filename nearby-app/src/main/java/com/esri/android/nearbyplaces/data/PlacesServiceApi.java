@@ -23,6 +23,7 @@
  */
 package com.esri.android.nearbyplaces.data;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
@@ -46,7 +47,7 @@ public interface PlacesServiceApi {
     void onRouteReturned(RouteResult result);
   }
 
-  void getRouteFromService( Point start, Point end, RouteServiceCallback callback);
+  void getRouteFromService(Point start, Point end, Context context, RouteServiceCallback callback);
 
   void getPlacesFromService(@NonNull GeocodeParameters parameters, @NonNull PlacesServiceCallback callback);
 

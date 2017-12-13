@@ -94,12 +94,7 @@ public class MapPresenter implements MapContract.Presenter {
   @Override public final void getRoute() {
     if ((mCenteredPlace != null) && (mLocationService.getCurrentLocation() != null)){
       mMapView.showProgressIndicator("Retrieving route...");
-      mLocationService.getRouteFromService(mLocationService.getCurrentLocation(), mCenteredPlace.getLocation(),
-          new PlacesServiceApi.RouteServiceCallback() {
-            @Override public void onRouteReturned(final RouteResult result) {
-              mMapView.setRoute(result, mLocationService.getCurrentLocation(),mCenteredPlace.getLocation());
-            }
-          });
+      mMapView.getRoute(mLocationService);
     }
   }
 

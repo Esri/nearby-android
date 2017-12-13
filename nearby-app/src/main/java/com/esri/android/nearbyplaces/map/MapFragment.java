@@ -56,7 +56,9 @@ import android.widget.*;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
+import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.data.PlacesServiceApi;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
@@ -342,6 +344,15 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   @Override public void restoreMapView() {
     removeRouteHeaderView();
+  }
+
+  @Override public void getRoute(final LocationService service) {
+    service.getRouteFromService(service.getCurrentLocation(), mCenteredPlace.getLocation(), getContext() ,
+        new PlacesServiceApi.RouteServiceCallback() {
+          @Override public void onRouteReturned(final RouteResult result) {
+            setRoute(result, service.getCurrentLocation(),mCenteredPlace.getLocation());
+          }
+        });
   }
 
   /**
