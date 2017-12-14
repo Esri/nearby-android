@@ -423,10 +423,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       ab.hide();
     }
 
-    mMapView.addView(mRouteHeaderView, layout);
+    mMapLayout.addView(mRouteHeaderView, layout);
     btnClose.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(final View v) {
-        mMapView.removeView(mRouteHeaderView);
+        mMapLayout.removeView(mRouteHeaderView);
         if (ab != null){
           ab.show();
         }
@@ -454,7 +454,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void removeRouteHeaderView(){
     if(mRouteHeaderView != null){
-      mMapView.removeView(mRouteHeaderView);
+      mMapLayout.removeView(mRouteHeaderView);
     }
     final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
     if (ab != null){
