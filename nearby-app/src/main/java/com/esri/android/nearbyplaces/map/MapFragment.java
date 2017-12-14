@@ -519,8 +519,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void setUpBottomSheet(){
     bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
+    // Explicitly set the peek height (otherwise bottom sheet is shown when map initially loads)
+    bottomSheetBehavior.setPeekHeight(0);
 
-    Log.i(TAG, "Bottom sheet state = "  + bottomSheetBehavior.getState());
+
     bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
       @Override
       public void onStateChanged(@NonNull final View bottomSheet, final int newState) {
