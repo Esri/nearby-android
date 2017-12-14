@@ -40,5 +40,5 @@ ext {
     supportLibraryVersion = '27.0.2'
     designLibraryVersion = '27.0.2'
     runtimeVersion = '100.2.0-1912'
-    googleLocationServicesVersion = '10.0.1'
+    googleLocationServicesVersion = '11.6.2'
 }
