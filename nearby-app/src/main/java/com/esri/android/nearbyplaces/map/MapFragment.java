@@ -45,6 +45,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -504,12 +505,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
           }
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
-
-          mLocationDisplay = mMapView.getLocationDisplay();
-          mLocationDisplay.startAsync();
         }
       }
     });
+
 
     // Setup OnTouchListener to detect and act on long-press
     mMapView.setOnTouchListener(new MapTouchListener(getActivity().getApplicationContext(), mMapView));
@@ -521,6 +520,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private void setUpBottomSheet(){
     bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
 
+    Log.i(TAG, "Bottom sheet state = "  + bottomSheetBehavior.getState());
     bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
       @Override
       public void onStateChanged(@NonNull final View bottomSheet, final int newState) {
@@ -633,6 +633,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     super.onResume();
     if (mMapView != null){
       mMapView.resume();
+      // Turn on location display
+      mLocationDisplay = mMapView.getLocationDisplay();
       if (mLocationDisplay != null && !mLocationDisplay.isStarted()){
         mLocationDisplay.startAsync();
       }
