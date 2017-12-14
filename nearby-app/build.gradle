@@ -44,14 +44,14 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     // App's dependencies, including test
-    compile "com.esri.arcgisruntime:arcgis-android:$rootProject.runtimeVersion"
-    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    compile "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
-    compile "com.android.support:design:$rootProject.designLibraryVersion"
-    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
-    compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+    implementation "com.esri.arcgisruntime:arcgis-android:$rootProject.runtimeVersion"
+    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:design:$rootProject.designLibraryVersion"
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
 
     // Google location services
-    compile "com.google.android.gms:play-services:$rootProject.googleLocationServicesVersion";
+    implementation "com.google.android.gms:play-services:$rootProject.googleLocationServicesVersion";
 
 }

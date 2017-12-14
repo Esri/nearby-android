@@ -39,6 +39,6 @@ ext {
     // App dependencies
     supportLibraryVersion = '27.0.2'
     designLibraryVersion = '27.0.2'
-    runtimeVersion = '100.2.0-1911'
+    runtimeVersion = '100.2.0-1912'
     googleLocationServicesVersion = '10.0.1'
 }
