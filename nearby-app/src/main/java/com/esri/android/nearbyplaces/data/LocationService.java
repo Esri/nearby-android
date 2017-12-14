@@ -64,7 +64,6 @@ public class LocationService implements PlacesServiceApi {
   private Point mCurrentLocation = null;
   private Envelope mCurrentEnvelope = null;
   private RouteTask mRouteTask = null;
-  private Context mContext;
 
 
   public static LocationService getInstance( ){
