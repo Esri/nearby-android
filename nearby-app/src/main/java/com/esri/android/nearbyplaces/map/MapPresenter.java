@@ -104,7 +104,6 @@ public class MapPresenter implements MapContract.Presenter {
    * @param envelope - Envelope representing visible area of map.
    */
   @Override public void setCurrentExtent(final Envelope envelope) {
-    Envelope mCurrentEnvelope = envelope;
     mLocationService.setCurrentEnvelope(envelope);
   }
 
