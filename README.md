@@ -1,17 +1,17 @@
-# Nearby-Places Android
+# Ukil-Munshi Bangladesh
 
-This repo provides an example app called Nearby Places for Android devices built with the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).  With some minor customization, you can change the types of places displayed or simply use the app as is.
+This is to make legal services simplified in Bangladesh and create clean enviroment for Judicial system and a this is a project of [MEDIA JOCKEY](http://mediajockey.xyz), who is Researching Simplicity to make life better.
 
 ## Features
- * Geocoding with categories
- * Device location
- * Calculating bearing and distance
+ * Legal Document Processing
+ * Primary Legal Advice
+ * Lawyer Selection Support
  
 
-## Development Instructions
-This Nearby-Places repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio. 
+## Status Of The Project
+The project is still under development to fine tune the scope of services and operations. 
 
-### Fork the repo
+### 
 **Fork** the [Nearby Places Android](https://github.com/Esri/nearby-android/fork) repo.
 
 ### Clone the repo
