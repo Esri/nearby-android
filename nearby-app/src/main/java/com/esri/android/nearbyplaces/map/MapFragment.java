@@ -45,6 +45,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -56,7 +57,9 @@ import android.widget.*;
 import com.esri.android.nearbyplaces.PlaceListener;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
+import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.data.PlacesServiceApi;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
@@ -344,6 +347,15 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     removeRouteHeaderView();
   }
 
+  @Override public void getRoute(final LocationService service) {
+    service.getRouteFromService(service.getCurrentLocation(), mCenteredPlace.getLocation(), getContext() ,
+        new PlacesServiceApi.RouteServiceCallback() {
+          @Override public void onRouteReturned(final RouteResult result) {
+            setRoute(result, service.getCurrentLocation(),mCenteredPlace.getLocation());
+          }
+        });
+  }
+
   /**
    * Remove special header and navigator buttons for route detail
    */
@@ -411,10 +423,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       ab.hide();
     }
 
-    mMapView.addView(mRouteHeaderView, layout);
+    mMapLayout.addView(mRouteHeaderView, layout);
     btnClose.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(final View v) {
-        mMapView.removeView(mRouteHeaderView);
+        mMapLayout.removeView(mRouteHeaderView);
         if (ab != null){
           ab.show();
         }
@@ -442,7 +454,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void removeRouteHeaderView(){
     if(mRouteHeaderView != null){
-      mMapView.removeView(mRouteHeaderView);
+      mMapLayout.removeView(mRouteHeaderView);
     }
     final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
     if (ab != null){
@@ -493,12 +505,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
           }
           mPresenter.start();
           mMapView.removeDrawStatusChangedListener(this);
-
-          mLocationDisplay = mMapView.getLocationDisplay();
-          mLocationDisplay.startAsync();
         }
       }
     });
+
 
     // Setup OnTouchListener to detect and act on long-press
     mMapView.setOnTouchListener(new MapTouchListener(getActivity().getApplicationContext(), mMapView));
@@ -509,6 +519,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void setUpBottomSheet(){
     bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
+    // Explicitly set the peek height (otherwise bottom sheet is shown when map initially loads)
+    bottomSheetBehavior.setPeekHeight(0);
+
 
     bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
       @Override
@@ -622,6 +635,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     super.onResume();
     if (mMapView != null){
       mMapView.resume();
+      // Turn on location display
+      mLocationDisplay = mMapView.getLocationDisplay();
       if (mLocationDisplay != null && !mLocationDisplay.isStarted()){
         mLocationDisplay.startAsync();
       }

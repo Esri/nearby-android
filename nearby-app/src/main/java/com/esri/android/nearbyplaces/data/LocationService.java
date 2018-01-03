@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import android.content.Context;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -95,8 +97,9 @@ public class LocationService implements PlacesServiceApi {
     }
   }
 
-  @Override public void getRouteFromService(final Point start, final Point end, final RouteServiceCallback callback) {
-    mRouteTask = new RouteTask("https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/");
+  @Override public void getRouteFromService(final Point start, final Point end, Context context,
+      final RouteServiceCallback callback) {
+    mRouteTask = new RouteTask(context,"https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/");
     mRouteTask.addDoneLoadingListener(new RouteSolver(mCurrentLocation,end, callback));
     mRouteTask.loadAsync();
   }
