@@ -23,7 +23,10 @@
  */
 package com.esri.android.nearbyplaces.map;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import android.app.ProgressDialog;
@@ -86,6 +89,7 @@ import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
@@ -115,7 +119,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private int mCurrentPosition = 0;
 
   @Nullable private String centeredPlaceName = null;
-
 
   private LinearLayout mRouteHeaderDetail = null;
 
@@ -167,6 +170,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     //Set up behavior for the bottom sheet
     setUpBottomSheet();
+
   }
 
   @Override
@@ -347,13 +351,13 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     removeRouteHeaderView();
   }
 
-  @Override public void getRoute(final LocationService service) {
+  @Override public void getRoute(final LocationService service, List<Stop> stops) {
     service.getRouteFromService(service.getCurrentLocation(), mCenteredPlace.getLocation(), getContext() ,
         new PlacesServiceApi.RouteServiceCallback() {
           @Override public void onRouteReturned(final RouteResult result) {
             setRoute(result, service.getCurrentLocation(),mCenteredPlace.getLocation());
           }
-        });
+        }, stops);
   }
 
   /**
@@ -602,18 +606,39 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       // a small interval before checking if
       // map is view still navigating.
       @Override public void navigationChanged(final NavigationChangedEvent navigationChangedEvent) {
-       if (!mMapView.isNavigating()){
-         Handler handler = new Handler();
-         handler.postDelayed(new Runnable() {
+//        new Thread(new Runnable() {
+//          @Override public void run() {
+//            try {
+//              Thread.sleep(50);
+//              final boolean isNavigating = mMapView.isNavigating();
+//               if (!isNavigating) {
+//                 Log.i(TAG,"Map view navigation change complete");
+//                 Log.i(TAG,"******************");
+//                 onMapViewChange();
+//               }
+//            } catch (InterruptedException e) {
+//              e.printStackTrace();
+//            }
+//          }
+//        }).start();
+         final boolean isNavigating = mMapView.isNavigating();
+         if (!isNavigating){
+           Log.i(TAG,"Map has STOPPED navigating");
+           Handler handler = new Handler();
+           handler.postDelayed(new Runnable() {
 
-           @Override public void run() {
-
-             if (!mMapView.isNavigating()) {
-               onMapViewChange();
+             @Override public void run() {
+               boolean isStillNavigating = mMapView.isNavigating();
+               if (!isStillNavigating) {
+                 Log.i(TAG,"Map view navigation change complete");
+                 Log.i(TAG,"******************");
+                 onMapViewChange();
+               }
              }
-           }
-         }, 50);
-       }
+           }, 50);
+         }else{
+           Log.i(TAG,"Map is navigating");
+         }
       }
 
     };
@@ -706,12 +731,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * within the bottom sheet
    * @param place - Place item selected by user
    */
-  @Override public final void showDetail(final Place place) {
+  @Override public final void showDetail( final Place place) {
     final TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
     txtName.setText(place.getName());
     String address = place.getAddress();
     final String[] splitStrs = TextUtils.split(address, ",");
-    if (splitStrs.length>0)                                   {
+    if (splitStrs.length>0) {
       address = splitStrs[0];
     }
     final TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress) ;
@@ -737,6 +762,17 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final TextView txtType = (TextView) mBottomSheet.findViewById(R.id.placeType) ;
     txtType.setText(place.getType());
 
+    // Add listener to switch control
+    final Switch switchCtrl = (Switch) mBottomSheet.findViewById(R.id.switchStop);
+
+    switchCtrl.setChecked(place.isStop());
+    switchCtrl.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        place.setStop(switchCtrl.isChecked());
+        mPresenter.addStop(place);
+      }
+    });
+
     // Assign the appropriate icon
     final Drawable d =   CategoryHelper.getDrawableForPlace(place, getActivity()) ;
     txtType.setCompoundDrawablesWithIntrinsicBounds(d,null,null,null);
@@ -746,6 +782,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mPresenter.centerOnPlace(place);
     mShowSnackbar = false;
     centeredPlaceName = place.getName();
+
   }
 
   /**
@@ -755,6 +792,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   @Override public final void onMapViewChange() {
     mShowSnackbar = true;
+    Log.i(TAG,"Bottom sheet state beginning = " + bottomSheetBehavior.getState());
     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
       if (!mShowingRouteDetail){
         // show snackbar prompting for re-doing search
@@ -765,6 +803,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     mPresenter.setCurrentExtent(mMapView.getVisibleArea().getExtent());
+    Log.i(TAG,"Bottom sheet state end = " + bottomSheetBehavior.getState());
   }
 
   /**
@@ -806,15 +845,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // while place is centered in map.
     removeNavigationChangedListener();
     final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
-    viewCentered.addDoneListener(new Runnable() {
-      @Override public void run() {
-        // Once we've centered on a place, listen
-        // for changes in viewpoint.
-        if (mNavigationChangedListener == null){
-          setNavigationChangeListener();
-        }
-      }
-    });
+
     // Change the pin icon
     clearCenteredPin();
 
@@ -829,6 +860,15 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         break;
       }
     }
+    viewCentered.addDoneListener(new Runnable() {
+      @Override public void run() {
+        // Once we've centered on a place, listen
+        // for changes in viewpoint.
+        if (mNavigationChangedListener == null){
+          setNavigationChangeListener();
+        }
+      }
+    });
   }
 
   /**
@@ -987,6 +1027,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
+      Log.i(TAG, "Single tap confirmed gesture " + motionEvent.getAction());
   //    removeNavigationCompletedListener();
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),

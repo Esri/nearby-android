@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="client_id">ald7ygY7FyxuDvzk</string>
+
+    <!-- This redirect URI is the default value for https://www.arcgis.com -->
+    <string name="redirect_uri">nearby://auth</string>
+
+    <string name="client_secret">c92bb2c5d98e4baaa5164cb8c56c889d</string>
+</resources>

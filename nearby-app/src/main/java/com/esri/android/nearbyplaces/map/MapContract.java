@@ -32,6 +32,7 @@ import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 
 import java.util.List;
 
@@ -55,7 +56,7 @@ public interface MapContract {
 
     void restoreMapView();
 
-    void getRoute(LocationService service);
+    void getRoute(LocationService service, List<Stop> stops);
 
   }
 
@@ -70,5 +71,7 @@ public interface MapContract {
     void getRoute();
 
     void setCurrentExtent(Envelope envelope);
+
+    void addStop(Place p);
   }
 }

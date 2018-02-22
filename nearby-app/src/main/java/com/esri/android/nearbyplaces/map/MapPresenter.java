@@ -32,7 +32,9 @@ import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,8 +43,9 @@ public class MapPresenter implements MapContract.Presenter {
   private final static String TAG = MapPresenter.class.getSimpleName();
 
   private final MapContract.View mMapView;
+  private List<Place> mStops = new ArrayList<>();
   private LocationService mLocationService;
-  private final static int MAX_RESULT_COUNT = 10;
+  private final static int MAX_RESULT_COUNT = 50;
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   private Place mCenteredPlace;
 
@@ -81,7 +84,7 @@ public class MapPresenter implements MapContract.Presenter {
 
   @Override public final Place findPlaceForPoint(final Point p) {
     Place foundPlace = null;
-    final List<Place> foundPlaces =mLocationService.getPlacesFromRepo();
+    final List<Place> foundPlaces = mLocationService.getPlacesFromRepo();
     for (final Place place : foundPlaces){
       if (p.equals(place.getLocation())){
         foundPlace = place;
@@ -94,7 +97,13 @@ public class MapPresenter implements MapContract.Presenter {
   @Override public final void getRoute() {
     if ((mCenteredPlace != null) && (mLocationService.getCurrentLocation() != null)){
       mMapView.showProgressIndicator("Retrieving route...");
-      mMapView.getRoute(mLocationService);
+      List<Stop> stops = new ArrayList<>();
+      if (mStops.size() > 0) {
+        for (Place place : mStops) {
+          stops.add(new Stop(place.getLocation()));
+        }
+      }
+      mMapView.getRoute(mLocationService, stops);
     }
   }
 
@@ -105,6 +114,15 @@ public class MapPresenter implements MapContract.Presenter {
    */
   @Override public void setCurrentExtent(final Envelope envelope) {
     mLocationService.setCurrentEnvelope(envelope);
+  }
+
+  @Override public void addStop(Place p) {
+    if (mStops.contains(p)  && !p.isStop()) {
+      mStops.remove(p);
+    } else {
+      mStops.add(p);
+    }
+
   }
 
   /**

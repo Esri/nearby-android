@@ -108,8 +108,7 @@ public class CategoryHelper {
         "Thai Food",
         "Turkish Food",
         "Vegetarian Food",
-        "Vietnamese Food",
-        "Winery");
+        "Vietnamese Food");
 
   /**
    * Checks a specific type of food (e.g. Thai Food) against
@@ -147,6 +146,18 @@ public class CategoryHelper {
         break;
       case "Coffee Shop":
         d = R.drawable.cafe_pin;
+        break;
+      case "Museum":
+        d = R.drawable.museumred;
+        break;
+      case "Trail":
+        d = R.drawable.hikingred;
+        break;
+      case "Winery":
+        d = R.drawable.wineryred;
+        break;
+      case "Waterfall":
+        d = R.drawable.waterfallred;
         break;
       default:
         d = R.drawable.empty_pin;
@@ -269,6 +280,18 @@ public class CategoryHelper {
       case "Coffee Shop":
         d = R.drawable.blue_cafe_pin;
         break;
+      case "Museum":
+        d = R.drawable.museumblue;
+        break;
+      case "Trail":
+        d = R.drawable.hikingblue;
+        break;
+      case "Winery":
+        d = R.drawable.wineblue;
+        break;
+      case "Waterfall":
+        d = R.drawable.waterfallblue;
+        break;
       default:
         d = R.drawable.blue_empty_pin;
     }
@@ -301,6 +324,18 @@ public class CategoryHelper {
         break;
       case "Coffee Shop":
         d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_local_cafe_black_24dp,null);
+        break;
+      case "Waterfall":
+        d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_waterfall_black,null);
+        break;
+      case "Winery":
+        d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_wine_black,null);
+        break;
+      case "Trail":
+        d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_hiking_black,null);
+        break;
+      case "Museum":
+        d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_museum_black,null);
         break;
       default:
         d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_place_black_24dp,null);

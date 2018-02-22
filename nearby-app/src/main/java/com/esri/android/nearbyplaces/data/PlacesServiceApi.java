@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
+import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public interface PlacesServiceApi {
     void onRouteReturned(RouteResult result);
   }
 
-  void getRouteFromService(Point start, Point end, Context context, RouteServiceCallback callback);
+  void getRouteFromService(Point start, Point end, Context context, RouteServiceCallback callback, List<Stop> stops);
 
   void getPlacesFromService(@NonNull GeocodeParameters parameters, @NonNull PlacesServiceCallback callback);
 

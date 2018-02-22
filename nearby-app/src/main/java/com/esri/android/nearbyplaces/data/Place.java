@@ -44,6 +44,7 @@ public final class Place implements Comparable<Place> {
   @Nullable
   private  String mBearing;
   private  long mDistance;
+  private boolean mIsStop = false;
 
   public Place(final String name, @Nullable final String type, @Nullable final Point location, @Nullable final String address, @Nullable final String URL, @Nullable final String phone,
       @Nullable final String bearing, final long distance) {
@@ -117,4 +118,39 @@ public final class Place implements Comparable<Place> {
     }
     return  result;
   }
+
+  public boolean isStop() {
+    return mIsStop;
+  }
+
+  public void setStop(boolean stop) {
+    mIsStop = stop;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+
+    // If the object is compared with itself then return true
+    if (o == this) {
+      return true;
+    }
+
+    /* Check if o is an instance of Place or not
+     "null instanceof [type]" also returns false */
+    if (!(o instanceof Place)) {
+      return false;
+    }
+
+    Place p = (Place) o;
+    return (mAddress == p.getAddress()
+        && mBearing == p.getBearing()
+        && mDistance == p.getDistance()
+        && mLocation.getX() == p.getLocation().getX()
+        && mLocation.getY() == p.getLocation().getY()
+        && mName == p.getName()
+        && mPhone == p.getPhone()
+        && mType == p.getType()
+        && mURL == p.getURL());
+  }
 }
+

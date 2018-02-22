@@ -98,9 +98,9 @@ public class LocationService implements PlacesServiceApi {
   }
 
   @Override public void getRouteFromService(final Point start, final Point end, Context context,
-      final RouteServiceCallback callback) {
+      final RouteServiceCallback callback, List<Stop> stops) {
     mRouteTask = new RouteTask(context,"https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/");
-    mRouteTask.addDoneLoadingListener(new RouteSolver(mCurrentLocation,end, callback));
+    mRouteTask.addDoneLoadingListener(new RouteSolver(mCurrentLocation,end, callback, stops));
     mRouteTask.loadAsync();
   }
 
@@ -136,6 +136,10 @@ public class LocationService implements PlacesServiceApi {
     categories.add("Pizza");
     categories.add("Coffee Shop");
     categories.add("Bar or Pub");
+    categories.add("Trail");
+    categories.add("Waterfall");
+    categories.add("Winery");
+    categories.add("Museum");
   }
   private static void provisionOutputAttributes(@NonNull final GeocodeParameters parameters){
     final List<String> outputAttributes = parameters.getResultAttributeNames();
@@ -303,11 +307,13 @@ public class LocationService implements PlacesServiceApi {
     private final Stop origin;
     private final RouteServiceCallback mCallback;
     private final Stop destination;
+    private final List<Stop> mStops;
 
-    public RouteSolver(final Point start, final Point end, final RouteServiceCallback callback ){
+    public RouteSolver(final Point start, final Point end, final RouteServiceCallback callback, List<Stop> stops  ){
       origin = new Stop(start);
       destination = new Stop(end);
       mCallback = callback;
+      mStops = stops;
     }
     @Override
     public void run (){
@@ -328,6 +334,15 @@ public class LocationService implements PlacesServiceApi {
           public void run() {
             try {
               final RouteParameters routeParameters = routeTaskFuture.get();
+              if (mStops.size() > 0) {
+                for (Stop stop : mStops) {
+                  routeParameters.getStops().add(stop);
+                }
+                routeParameters.setFindBestSequence(true);
+                routeParameters.setPreserveFirstStop(true);
+                routeParameters.setPreserveLastStop(true);
+                Log.i(TAG, "Stops added");
+              }
               final TravelMode mode = routeParameters.getTravelMode();
               mode.setImpedanceAttributeName("WalkTime");
               mode.setTimeAttributeName("WalkTime");
@@ -344,6 +359,7 @@ public class LocationService implements PlacesServiceApi {
               routeParameters.setTravelMode(mode);
               routeParameters.getStops().add(origin);
               routeParameters.getStops().add(destination);
+              Log.i(TAG, "Total stops =" + routeParameters.getStops().size());
               // We want the task to return driving directions and routes
               routeParameters.setReturnDirections(true);
 

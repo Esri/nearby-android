@@ -30,6 +30,18 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                        android:value=".places.PlacesActivity" />
         </activity>
+        <activity
+                android:name="com.esri.arcgisruntime.security.DefaultOAuthIntentReceiver"
+                android:label="OAuthIntentReceiver"
+                android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:scheme="nearby"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

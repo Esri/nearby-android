@@ -39,6 +39,7 @@ import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.security.AuthenticationChallengeHandler;
 import com.esri.arcgisruntime.security.AuthenticationManager;
 import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
+import com.esri.arcgisruntime.security.OAuthConfiguration;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 
 import java.util.List;
@@ -64,8 +65,11 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
    */
   private void setUpAuth(){
     try{
+      OAuthConfiguration oAuthConfiguration = new OAuthConfiguration("https://www.arcgis.com",getString( R.string.client_id), getString(
+          R.string.redirect_uri));
       final AuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
+      AuthenticationManager.addOAuthConfiguration(oAuthConfiguration);
     }catch(final Exception e){
       Log.e("MapActivity", "Authentication handling issue: " + e.getMessage());
     }
