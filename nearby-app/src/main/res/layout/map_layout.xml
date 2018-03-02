@@ -1,62 +1,80 @@
-<android.support.design.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:background="@android:color/background_light"
-        android:fitsSystemWindows="true" android:id="@+id/map_coordinator_layout">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/map_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_light"
+    android:fitsSystemWindows="true">
+
     <android.support.design.widget.AppBarLayout
-            android:id="@+id/map_appbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/gradient"
-            android:theme="@android:style/Theme.Translucent"
-            android:fitsSystemWindows="false">
+        android:id="@+id/map_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient"
+        android:fitsSystemWindows="false"
+        android:theme="@android:style/Theme.Translucent">
 
         <android.support.v7.widget.Toolbar
-                android:id="@+id/map_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:layout_collapseMode="pin"/>
+            android:id="@+id/map_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout android:id="@+id/map_fragment_container"
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:fitsSystemWindows="true">
-    </FrameLayout>
-    <LinearLayout android:layout_width="0dp"
-                  android:layout_height="0dp"
-                  android:orientation="vertical"
-                  android:id="@+id/route_directions_container">
+    <FrameLayout
+        android:id="@+id/map_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:orientation="horizontal"
-                      android:gravity="center_vertical"
-                      android:id="@+id/route_directions_linear_layout"
-                      android:background="@drawable/route_appbar_background"
-                      android:padding="@dimen/activity_horizontal_margin" android:layout_height="60dp">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="70dp"
+            app:backgroundTint="@color/colorFab"
+            app:srcCompat="@drawable/ic_my_location_black_36px" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/route_directions_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/route_directions_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/route_appbar_background"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/activity_horizontal_margin">
+
             <ImageView
-                    android:id="@+id/btnCloseDirections"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_back_white_24px"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="0dp"/>
+                android:id="@+id/btnCloseDirections"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="10dp"
+                android:paddingStart="0dp"
+                android:src="@drawable/ic_arrow_back_white_24px" />
+
             <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Route Directions"
-                    android:id="@+id/route_txt_directions"
-                    android:textSize="@dimen/abc_text_size_large_material"
-                    android:textColor="@android:color/white"
-                    android:gravity="start|center_horizontal"
-                    android:layout_weight="1"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="0dp"/>
+                android:id="@+id/route_txt_directions"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start|center_horizontal"
+                android:paddingEnd="0dp"
+                android:paddingStart="10dp"
+                android:text="Route Directions"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/abc_text_size_large_material" />
         </LinearLayout>
 
     </LinearLayout>
-    <include layout="@layout/place_card_view"/>
+
+    <include layout="@layout/place_card_view" />
 
 </android.support.design.widget.CoordinatorLayout>
