@@ -23,10 +23,7 @@
  */
 package com.esri.android.nearbyplaces.map;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import android.app.ProgressDialog;
@@ -40,15 +37,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.*;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -63,10 +56,14 @@ import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
+import com.esri.android.nearbyplaces.data.TravelMode;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.places.PlacesActivity;
+import com.esri.android.nearbyplaces.travelmode.TravelModeContract;
+import com.esri.android.nearbyplaces.travelmode.TravelModeFragment;
+import com.esri.android.nearbyplaces.travelmode.TravelModePresenter;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
@@ -105,14 +102,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private GraphicsOverlay mRouteOverlay = null;
 
-
-  private boolean initialLocationLoaded = false;
-
   private Graphic mCenteredGraphic = null;
 
   @Nullable private Place mCenteredPlace = null;
-
-  @Nullable private NavigationChangedListener mNavigationChangedListener = null;
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
@@ -146,6 +138,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private Point mEnd = null;
 
+  private List<Stop> mStops;
+
+  private FloatingActionButton mFab;
+
   public MapFragment(){}
 
   public static MapFragment newInstance(){
@@ -178,6 +174,16 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
     final View root = layoutInflater.inflate(R.layout.map_fragment, container,false);
+
+    // Set up the device location FAB
+    mFab = getActivity().findViewById(R.id.fab);
+    mFab.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        if (mLocationDisplay != null && mLocationDisplay.getLocation() != null) {
+          mMapView.setViewpointCenterAsync(mLocationDisplay.getLocation().getPosition());
+        }
+      }
+    });
 
     final Intent intent = getActivity().getIntent();
     // If any extra data was sent, store it.
@@ -219,7 +225,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private void setUpToolbar(){
     final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.map_toolbar);
     ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-    toolbar.setTitle("");
+    toolbar.setTitleTextColor(getContext().getColor(R.color.colorText));
+    toolbar.setContentInsetStartWithNavigation(100);
+    toolbar.setTitleMarginStart(4);
     final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
     if (ab != null){
       ab.setDisplayHomeAsUpEnabled(true);
@@ -243,6 +251,15 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
           if (item.getTitle().toString().equalsIgnoreCase("Route")){
             mPresenter.getRoute();
 
+        }
+
+        // Enable switching of travel modes
+        if (item.getTitle().toString().equalsIgnoreCase("Travel Mode")) {
+          final TravelModeFragment travelModeFragment = new TravelModeFragment();
+          final TravelModeContract.Presenter presenter = new TravelModePresenter();
+          presenter.setTravelMode(mPresenter.getTravelMode().name());
+          travelModeFragment.setPresenter(presenter);
+          travelModeFragment.show(getActivity().getFragmentManager(), "travel_mode_fragment");
         }
         return false;
       }
@@ -304,8 +321,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       });
     }
 
-
-
     // Display arrows to scroll through directions
     if (mSegmentNavigator == null){
       mSegmentNavigator = (LinearLayout)inflater.inflate(R.layout.navigation_arrows,null);
@@ -339,7 +354,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       });
     }
 
-
+    // Hide the device location FAB
+    showFAB(false);
 
     // Populate with directions
     DirectionManeuver maneuver = mRouteDirections.get(position);
@@ -351,13 +367,26 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     removeRouteHeaderView();
   }
 
-  @Override public void getRoute(final LocationService service, List<Stop> stops) {
-    service.getRouteFromService(service.getCurrentLocation(), mCenteredPlace.getLocation(), getContext() ,
+  @Override public void getRoute(final LocationService service,
+                                 final List<Stop> stops, String mode) {
+    service.getRouteFromService(service.getCurrentLocation(),
+            mCenteredPlace.getLocation(),
+            getContext() ,
         new PlacesServiceApi.RouteServiceCallback() {
           @Override public void onRouteReturned(final RouteResult result) {
-            setRoute(result, service.getCurrentLocation(),mCenteredPlace.getLocation());
+            setRoute(result, service.getCurrentLocation(),mCenteredPlace.getLocation(), stops);
           }
-        }, stops);
+        },
+            stops,
+            mode);
+  }
+
+  @Override public void showFAB(boolean show) {
+    if (show) {
+      mFab.show();
+    } else {
+      mFab.hide();
+    }
   }
 
   /**
@@ -370,6 +399,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     navigatorLayout.removeView(mSegmentNavigator);
     mMapView.removeView(mSegmentNavigator);
     mSegmentNavigator = null;
+
+    // Show device location FAB
+    showFAB(true);
   }
 
   /**
@@ -410,6 +442,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * Show a special header when routes are displayed
    */
   private void showRouteHeader(double travelTime){
+    // Hide the FAB
+    showFAB(false);
+
     final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     final LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -422,6 +457,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     time.setText(Math.round(travelTime)+" min");
     final ImageView btnClose = (ImageView) mRouteHeaderView.findViewById(R.id.btnClose);
     final ImageView btnDirections = (ImageView) mRouteHeaderView.findViewById(R.id.btnDirections);
+    // Set appropriate icon based on travelmode
+    TravelMode.TravelModeTypes mode =  mPresenter.getTravelMode();
+    if (mode.name().equalsIgnoreCase( TravelMode.TravelModeTypes.Walk.name())) {
+      btnDirections.setImageDrawable(getContext().getDrawable(R.drawable.ic_directions_walk_white_24px));
+    } else {
+      btnDirections.setImageDrawable(getContext().getDrawable(R.drawable.ic_directions_car_white_24px));
+    }
+
     final ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
     if (ab != null){
       ab.hide();
@@ -464,6 +507,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     if (ab != null){
       ab.show();
     }
+    // Restore the FAB
+    showFAB(true);
   }
 
   /**
@@ -480,7 +525,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void setToolbarTransparent(){
     final AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
-    appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+ //   appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
   }
 
   /**
@@ -533,7 +578,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         getActivity().invalidateOptionsMenu();
         if ((newState == BottomSheetBehavior.STATE_COLLAPSED) && mShowSnackbar) {
           clearCenteredPin();
-          showSearchSnackbar();
           mShowSnackbar = false;
         }
       }
@@ -556,10 +600,19 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onPrepareOptionsMenu(final Menu menu){
     final MenuItem listItem = menu.findItem(R.id.list_action);
     final MenuItem routeItem = menu.findItem(R.id.route_action);
-    final MenuItem directionItem = menu.findItem(R.id.walking_directions);
+    final MenuItem walkItem = menu.findItem(R.id.walking_directions);
+    final MenuItem car = menu.findItem(R.id.driving_directions);
     final MenuItem filterItem = menu.findItem(R.id.filter_in_map);
 
-
+    // Determine travel mode and set appropriate filter item to visible
+    TravelMode.TravelModeTypes mode = mPresenter.getTravelMode();
+    if (mode.equals(TravelMode.TravelModeTypes.Walk)) {
+      car.setVisible(false);
+      walkItem.setVisible(true);
+    } else {
+      car.setVisible(true);
+      walkItem.setVisible(false);
+    }
     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
       listItem.setVisible(true);
       filterItem.setVisible(true);
@@ -588,71 +641,15 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
             mPresenter.findPlacesNearby();
           }
         });
-
-    snackbar.show();
-  }
-
-  /**
-   * Attach the navigation change listener
-   * so that points of interest get updated
-   * as the map's visible area is changed.
-   */
-  private void setNavigationChangeListener(){
-    mNavigationChangedListener = new NavigationChangedListener() {
-      // This is a workaround for detecting when a fling
-      // motion has completed on the map view. The
-      // NavigationChangedListener listens for navigation changes,
-      // not whether navigation has completed.  We wait
-      // a small interval before checking if
-      // map is view still navigating.
-      @Override public void navigationChanged(final NavigationChangedEvent navigationChangedEvent) {
-//        new Thread(new Runnable() {
-//          @Override public void run() {
-//            try {
-//              Thread.sleep(50);
-//              final boolean isNavigating = mMapView.isNavigating();
-//               if (!isNavigating) {
-//                 Log.i(TAG,"Map view navigation change complete");
-//                 Log.i(TAG,"******************");
-//                 onMapViewChange();
-//               }
-//            } catch (InterruptedException e) {
-//              e.printStackTrace();
-//            }
-//          }
-//        }).start();
-         final boolean isNavigating = mMapView.isNavigating();
-         if (!isNavigating){
-           Log.i(TAG,"Map has STOPPED navigating");
-           Handler handler = new Handler();
-           handler.postDelayed(new Runnable() {
-
-             @Override public void run() {
-               boolean isStillNavigating = mMapView.isNavigating();
-               if (!isStillNavigating) {
-                 Log.i(TAG,"Map view navigation change complete");
-                 Log.i(TAG,"******************");
-                 onMapViewChange();
-               }
-             }
-           }, 50);
-         }else{
-           Log.i(TAG,"Map is navigating");
-         }
+    mShowSnackbar = true;
+    snackbar.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+      @Override
+      public void onDismissed(Snackbar transientBottomBar, int event) {
+        super.onDismissed(transientBottomBar, event);
+        mShowSnackbar = false;
       }
-
-    };
-    mMapView.addNavigationChangedListener(mNavigationChangedListener);
-  }
-
-  /**
-   * Remove navigation change listener
-   */
-  private void removeNavigationChangedListener(){
-    if (mNavigationChangedListener != null){
-      mMapView.removeNavigationChangedListener(mNavigationChangedListener);
-      mNavigationChangedListener = null;
-    }
+    });
+    snackbar.show();
   }
 
   @Override
@@ -687,10 +684,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Clear out any existing graphics
     mGraphicOverlay.getGraphics().clear();
 
-    if (!initialLocationLoaded){
-      setNavigationChangeListener();
-    }
-    initialLocationLoaded = true;
     if (places == null || places.isEmpty()){
       Toast.makeText(getContext(),getString(R.string.no_places_found),Toast.LENGTH_SHORT).show();
       if (mProgressDialog !=  null){
@@ -735,14 +728,34 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
     txtName.setText(place.getName());
     String address = place.getAddress();
+
     final String[] splitStrs = TextUtils.split(address, ",");
-    if (splitStrs.length>0) {
+    if (splitStrs.length > 0) {
       address = splitStrs[0];
     }
-    final TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress) ;
-    txtAddress.setText(address);
-    final TextView txtPhone  = (TextView) mBottomSheet.findViewById(R.id.placePhone) ;
-    txtPhone.setText(place.getPhone());
+
+    LinearLayout addressLayout = (LinearLayout) mBottomSheet.findViewById(R.id.addressLayout);
+    final TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress);
+    if (address.isEmpty()) {
+      addressLayout.removeView(txtAddress);
+      addressLayout.requestLayout();
+    } else {
+      txtAddress.setText(address);
+    }
+
+    final TextView txtPhone = (TextView) mBottomSheet.findViewById(R.id.placePhone);
+    LinearLayout phoneLayout = (LinearLayout) mBottomSheet.findViewById(R.id.phoneLayout);
+    if (place.getPhone().isEmpty()) {
+      phoneLayout.setLayoutParams(new LinearLayoutCompat.LayoutParams(0,0));
+      phoneLayout.requestLayout();
+   } else {
+      final int height = (int) (48 * Resources.getSystem().getDisplayMetrics().density);
+      phoneLayout.setLayoutParams(
+              new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, height));
+      phoneLayout.requestLayout();;
+      txtPhone.setText(place.getPhone());
+    }
+
 
     final LinearLayout linkLayout = (LinearLayout) mBottomSheet.findViewById(R.id.linkLayout);
     // Hide the link placeholder if no link is found
@@ -791,19 +804,18 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * presenter
    */
   @Override public final void onMapViewChange() {
-    mShowSnackbar = true;
-    Log.i(TAG,"Bottom sheet state beginning = " + bottomSheetBehavior.getState());
+
     if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
       if (!mShowingRouteDetail){
         // show snackbar prompting for re-doing search
-        showSearchSnackbar();
+        if (!mShowSnackbar) {
+          showSearchSnackbar();
+        }
       }
-
     }else{
       bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     mPresenter.setCurrentExtent(mMapView.getVisibleArea().getExtent());
-    Log.i(TAG,"Bottom sheet state end = " + bottomSheetBehavior.getState());
   }
 
   /**
@@ -843,7 +855,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Stop listening to navigation changes
     // while place is centered in map.
-    removeNavigationChangedListener();
     final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
 
     // Change the pin icon
@@ -860,15 +871,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         break;
       }
     }
-    viewCentered.addDoneListener(new Runnable() {
-      @Override public void run() {
-        // Once we've centered on a place, listen
-        // for changes in viewpoint.
-        if (mNavigationChangedListener == null){
-          setNavigationChangeListener();
-        }
-      }
-    });
   }
 
   /**
@@ -894,11 +896,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param routeResult - RouteResult returned from the routing task
    * @param beginPoint - the point representing the start of the route
    * @param endPoint - the point representing the end of the route
+   * @param stops - any Stops along the route
    */
-  @Override public final void setRoute(final RouteResult routeResult, final Point beginPoint, final Point endPoint) {
+  @Override public final void setRoute(final RouteResult routeResult, final Point beginPoint, final Point endPoint,
+      final List<Stop> stops) {
     mRouteResult = routeResult;
     mStart = beginPoint;
     mEnd = endPoint;
+    mStops = stops;
     displayRoute();
   }
 
@@ -940,8 +945,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       // Add the route graphic to the route layer
       mRouteOverlay.getGraphics().add(routeGraphic);
       // Add start and end pins
-      final BitmapDrawable startPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.route_pin_start) ;
-      final BitmapDrawable endPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.end_route_pin) ;
+      final BitmapDrawable startPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.route_pin_start);
+      final BitmapDrawable endPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.end_route_pin);
+
       // Current location from Google location services
       // needs a spatial reference before it can be added to map.
       final Point startPoint = new Point(mStart.getX(), mStart.getY(), mEnd.getSpatialReference());
@@ -950,6 +956,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       mRouteOverlay.getGraphics().add(begin);
       mRouteOverlay.getGraphics().add(generateRoutePoints(mEnd,endPin));
 
+      // Add stop pins
+      for (Stop stop : mStops) {
+        BitmapDrawable stopPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),R.drawable.stop);
+        Point stopPoint = stop.getGeometry();
+        mRouteOverlay.getGraphics().add(generateRoutePoints(stopPoint, stopPin));
+      }
 
       // Zoom to the extent of the entire route with a padding
       final Envelope routingEnvelope = new Envelope(mStart.getX(),mStart.getY(), mEnd.getX(), mEnd.getY(), SpatialReferences.getWgs84());
@@ -1027,8 +1039,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
-      Log.i(TAG, "Single tap confirmed gesture " + motionEvent.getAction());
-  //    removeNavigationCompletedListener();
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());
@@ -1059,6 +1069,22 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
       });
       return true;
+    }
+    @Override public boolean onFling(MotionEvent event, MotionEvent event2, float velocityX,
+                                     float velcoity2) {
+      super.onFling(event, event2, velocityX, velcoity2);
+      onMapViewChange();
+      return true;
+    }
+    @Override public boolean onScroll(MotionEvent event, MotionEvent event2, float velocityX,
+                                     float velcoity2) {
+      super.onScroll(event, event2, velocityX, velcoity2);
+      onMapViewChange();
+      return true;
+    }
+    @Override public void onScaleEnd(ScaleGestureDetector detector) {
+      super.onScaleEnd(detector);
+      onMapViewChange();
     }
   }
 }

@@ -48,9 +48,11 @@ public interface PlacesServiceApi {
     void onRouteReturned(RouteResult result);
   }
 
-  void getRouteFromService(Point start, Point end, Context context, RouteServiceCallback callback, List<Stop> stops);
+  void getRouteFromService(Point start, Point end, Context context, RouteServiceCallback callback,
+                           List<Stop> stops, String travelMode);
 
-  void getPlacesFromService(@NonNull GeocodeParameters parameters, @NonNull PlacesServiceCallback callback);
+  void getPlacesFromService(@NonNull GeocodeParameters parameters,
+                            @NonNull PlacesServiceCallback callback);
 
   Place getPlaceDetail(String placeName);
 

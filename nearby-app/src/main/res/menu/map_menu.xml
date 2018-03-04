@@ -18,10 +18,17 @@
           android:icon="@drawable/ic_filter_list_white_24px"
           android:orderInCategory="100"
           app:showAsAction="always"/>
-    <item android:id="@+id/walking_directions"
-          android:title="Directions"
-          android:orderInCategory="200"
-          android:visible="false"
-          android:icon="@drawable/ic_directions_walk_white_24px"
-          app:showAsAction="always"/>
+    <item
+        android:id="@+id/walking_directions"
+        android:icon="@drawable/ic_directions_walk_white_24px"
+        android:orderInCategory="200"
+        android:title="Travel Mode"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/driving_directions"
+        android:icon="@drawable/ic_directions_car_white_24px"
+        android:orderInCategory="200"
+        android:title="Travel Mode"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
 </menu>

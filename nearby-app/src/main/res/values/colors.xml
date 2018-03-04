@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorPrimaryDark">#1976d2</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorText">#ffffff</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorFab">#D9D6C0</color>
     <drawable name="touchFeedback">#CFD8DC</drawable>
     <color name="lineColor">#12000000</color>
 </resources>

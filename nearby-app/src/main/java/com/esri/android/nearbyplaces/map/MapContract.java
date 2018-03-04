@@ -28,6 +28,7 @@ import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
+import com.esri.android.nearbyplaces.data.TravelMode;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.mapping.view.MapView;
@@ -46,7 +47,7 @@ public interface MapContract {
 
     void centerOnPlace(Place p);
 
-    void setRoute(RouteResult routeResult, Point start, Point end);
+    void setRoute(RouteResult routeResult, Point start, Point end, List<Stop> stops);
 
     void showMessage(String message);
 
@@ -56,7 +57,9 @@ public interface MapContract {
 
     void restoreMapView();
 
-    void getRoute(LocationService service, List<Stop> stops);
+    void getRoute(LocationService service, List<Stop> stops, String mode);
+
+    void showFAB(boolean show);
 
   }
 
@@ -73,5 +76,9 @@ public interface MapContract {
     void setCurrentExtent(Envelope envelope);
 
     void addStop(Place p);
+
+    void setTravelMode(String mode);
+
+    TravelMode.TravelModeTypes getTravelMode();
   }
 }

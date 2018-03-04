@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
+import com.esri.android.nearbyplaces.data.TravelMode;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
@@ -48,6 +49,7 @@ public class MapPresenter implements MapContract.Presenter {
   private final static int MAX_RESULT_COUNT = 50;
   private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   private Place mCenteredPlace;
+  private String mTravelMode = TravelMode.TravelModeTypes.Walk.name();
 
   public MapPresenter(@NonNull final MapContract.View mapView ){
     mMapView = mapView;
@@ -103,7 +105,10 @@ public class MapPresenter implements MapContract.Presenter {
           stops.add(new Stop(place.getLocation()));
         }
       }
-      mMapView.getRoute(mLocationService, stops);
+      mMapView.getRoute(mLocationService, stops, mTravelMode);
+
+      // Clear out stops
+      mStops.clear();
     }
   }
 
@@ -123,6 +128,21 @@ public class MapPresenter implements MapContract.Presenter {
       mStops.add(p);
     }
 
+  }
+
+  @Override
+  public void setTravelMode(String mode) {
+    mTravelMode = mode;
+    // Change the toolbar icon if needed
+  }
+
+  @Override
+  public TravelMode.TravelModeTypes getTravelMode() {
+    if (mTravelMode.equalsIgnoreCase(TravelMode.TravelModeTypes.Drive.name())){
+      return TravelMode.TravelModeTypes.Drive;
+    } else {
+      return TravelMode.TravelModeTypes.Walk;
+    }
   }
 
   /**

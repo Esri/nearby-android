@@ -33,8 +33,10 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.esri.android.nearbyplaces.R;
+import com.esri.android.nearbyplaces.data.TravelMode;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
+import com.esri.android.nearbyplaces.travelmode.TravelModeContract;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.security.AuthenticationChallengeHandler;
 import com.esri.arcgisruntime.security.AuthenticationManager;
@@ -44,7 +46,8 @@ import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 
 import java.util.List;
 
-public class MapActivity extends AppCompatActivity implements FilterContract.FilterView {
+public class MapActivity extends AppCompatActivity implements FilterContract.FilterView,
+        TravelModeContract.TravelModeView{
 
   private MapPresenter mMapPresenter = null;
 
@@ -197,5 +200,11 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
         finish();
       }
     }
+  }
+
+  @Override
+  public void onTravelModeClose(TravelMode.TravelModeTypes mode) {
+    mMapPresenter.setTravelMode(mode.name());
+    invalidateOptionsMenu();
   }
 }

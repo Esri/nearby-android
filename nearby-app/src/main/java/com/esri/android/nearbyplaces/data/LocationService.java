@@ -98,9 +98,9 @@ public class LocationService implements PlacesServiceApi {
   }
 
   @Override public void getRouteFromService(final Point start, final Point end, Context context,
-      final RouteServiceCallback callback, List<Stop> stops) {
+      final RouteServiceCallback callback, List<Stop> stops, String travelMode) {
     mRouteTask = new RouteTask(context,"https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/");
-    mRouteTask.addDoneLoadingListener(new RouteSolver(mCurrentLocation,end, callback, stops));
+    mRouteTask.addDoneLoadingListener(new RouteSolver(mCurrentLocation,end, callback, stops, travelMode));
     mRouteTask.loadAsync();
   }
 
@@ -308,12 +308,15 @@ public class LocationService implements PlacesServiceApi {
     private final RouteServiceCallback mCallback;
     private final Stop destination;
     private final List<Stop> mStops;
+    private final String mTravelMode;
 
-    public RouteSolver(final Point start, final Point end, final RouteServiceCallback callback, List<Stop> stops  ){
+    public RouteSolver(final Point start, final Point end, final RouteServiceCallback callback,
+                       List<Stop> stops, String mode ){
       origin = new Stop(start);
       destination = new Stop(end);
       mCallback = callback;
       mStops = stops;
+      mTravelMode = mode;
     }
     @Override
     public void run (){
@@ -334,33 +337,12 @@ public class LocationService implements PlacesServiceApi {
           public void run() {
             try {
               final RouteParameters routeParameters = routeTaskFuture.get();
-              if (mStops.size() > 0) {
-                for (Stop stop : mStops) {
-                  routeParameters.getStops().add(stop);
-                }
-                routeParameters.setFindBestSequence(true);
-                routeParameters.setPreserveFirstStop(true);
-                routeParameters.setPreserveLastStop(true);
-                Log.i(TAG, "Stops added");
-              }
-              final TravelMode mode = routeParameters.getTravelMode();
-              mode.setImpedanceAttributeName("WalkTime");
-              mode.setTimeAttributeName("WalkTime");
-              // Set the restriction attributes for walk times
-              List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
-              // clear default restrictions set for vehicles
-              restrictionAttributes.clear();
-              // add pedestrian restrictions
-              restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
-              restrictionAttributes.add("Preferred for Pedestrians");
-              restrictionAttributes.add("Walking");
-
-              // Add a stop for origin and destination
+              TravelMode mode = routeParameters.getTravelMode();
+              configureTravelMode(mode, mTravelMode);
               routeParameters.setTravelMode(mode);
-              routeParameters.getStops().add(origin);
-              routeParameters.getStops().add(destination);
-              Log.i(TAG, "Total stops =" + routeParameters.getStops().size());
-              // We want the task to return driving directions and routes
+              configureStops(routeParameters, mStops);
+
+              // We want the task to return directions and routes
               routeParameters.setReturnDirections(true);
 
               routeParameters.setOutputSpatialReference(SpatialReferences.getWebMercator());
@@ -391,6 +373,77 @@ public class LocationService implements PlacesServiceApi {
           }
         });
       }
+    }
+
+    /**
+     * Configure travel mode based on mode string
+     * @param mode - TravelMode
+     * @param modeString - String
+     */
+    private void configureTravelMode(TravelMode mode, String modeString) {
+      if (modeString.equalsIgnoreCase("Walk")) {
+        mode.setName("Walking Time");
+        mode.setImpedanceAttributeName("WalkTime");
+        mode.setTimeAttributeName("WalkTime");
+        // Set the restriction attributes for walk times
+        List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
+        // clear default restrictions
+        restrictionAttributes.clear();
+        // add pedestrian restrictions
+        restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
+        restrictionAttributes.add("Preferred for Pedestrians");
+        restrictionAttributes.add("Walking");
+
+        for (String s : restrictionAttributes){
+          Log.i(TAG, "Restriciton = " + s);
+        }
+        Log.i(TAG, "Travel mode = " + mode.getName());
+      } else {
+        mode.setName("Driving Time");
+        mode.setType("AUTOMOBILE");
+        mode.setImpedanceAttributeName("TravelTime");
+        mode.setTimeAttributeName("TravelTime");
+        // Set the restriction attributes for walk times
+        List<String> restrictionAttributes = mode.getRestrictionAttributeNames();
+        // clear default restrictions
+        restrictionAttributes.clear();
+        // add pedestrian restrictions
+        restrictionAttributes.add("Avoid Private Roads");
+        restrictionAttributes.add("Driving an Automobile");
+        restrictionAttributes.add("Through Traffic Prohibited");
+        restrictionAttributes.add("Roads Under Construction Prohibited");
+        restrictionAttributes.add("Avoid Gates");
+        restrictionAttributes.add("Avoid Express Lanes");
+        restrictionAttributes.add("Avoid Carpool Roads");
+
+
+        for (String s : restrictionAttributes){
+          Log.i(TAG, "Restriciton = " + s);
+        }
+        Log.i(TAG, "Travel mode = " + mode.getName());
+      }
+    }
+
+    /**
+     * Configure the route stops
+     * @param parameters - RouteParameters
+     * @param stops - List of Stop items
+     */
+    private void configureStops(RouteParameters parameters, List<Stop> stops) {
+      // Add the origin
+      parameters.getStops().add(origin);
+
+      if (mStops.size() > 0) {
+        for (Stop stop : mStops) {
+          parameters.getStops().add(stop);
+        }
+        parameters.setFindBestSequence(true);
+        parameters.setPreserveFirstStop(true);
+        parameters.setPreserveLastStop(true);
+        Log.i(TAG, "Stops added");
+      }
+      parameters.getStops().add(destination);
+      Log.i(TAG, "Total stops =" + parameters.getStops().size());
     }
   }
 

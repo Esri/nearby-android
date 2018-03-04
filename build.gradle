@@ -28,14 +28,14 @@ task clean(type: Delete) {
 // Define versions in a single place
 ext {
     // Sdk and tools
-    minSdkVersion = 21
-    targetSdkVersion = 22
+    minSdkVersion = 23
+    targetSdkVersion = 23
     compileSdkVersion = 27
     buildToolsVersion = '27.0.2'
 
     // App dependencies
     supportLibraryVersion = '27.0.2'
     designLibraryVersion = '27.0.2'
-    runtimeVersion = '100.2.0'
+    runtimeVersion = '100.2.1'
     googleLocationServicesVersion = '11.6.2'
 }
