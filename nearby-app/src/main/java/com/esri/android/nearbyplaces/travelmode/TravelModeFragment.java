@@ -62,8 +62,8 @@ public class TravelModeFragment extends DialogFragment implements TravelModeCont
     getDialog().setTitle(R.string.choose_mode);
     final View view = inflater.inflate(R.layout.travel_model_layout, container,false);
 
-    walkTxt = (AppCompatTextView) view.findViewById(R.id.txtWalk);
-    carTxt = (AppCompatTextView) view.findViewById(R.id.txtCar);
+    walkTxt = view.findViewById(R.id.txtWalk);
+    carTxt = view.findViewById(R.id.txtCar);
 
     if (mPresenter.getTravelMode().equalsIgnoreCase(TravelMode.TravelModeTypes.Walk.name())) {
       showSelectedState(walkTxt, carTxt, true);

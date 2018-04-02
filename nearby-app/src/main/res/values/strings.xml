@@ -16,7 +16,7 @@
     <string name="location_enabled">Location tracking must be enabled for this application</string>
     <string name="location_problem">Location Service Problem</string>
     <string name="google_location_connection_problem">There is a problem obtaining a location</string>
-    <string name="locatin_permission">Location permission request was denied.</string>
+    <string name="location_permission">Location permission request was denied.</string>
     <string name="location_tracking_off">Location tracking is required for this app.  Do you want modify the location options?</string>
     <string name="wireless_off">An internet connection is needed for this app. Do you want to modify the wireless settings?</string>
     <string name="m">m</string>
@@ -44,7 +44,6 @@
     <string name="travel_mode">Travel Mode</string>
     <string name="travel_mode_fragment">travel_mode_fragment</string>
     <string name="route_detail">Route Detail</string>
-    <string name="place_detail">PLACE_DETAIL</string>
     <string name="minx">MIN_X</string>
     <string name="miny">MIN_Y</string>
     <string name="maxx">MAX_X</string>

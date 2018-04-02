@@ -191,7 +191,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     setToolbarTransparent();
 
     setHasOptionsMenu(true);/// allows invalidateOptionsMenu to work
-    mMapLayout = (CoordinatorLayout) getActivity().findViewById(R.id.map_coordinator_layout);
+    mMapLayout = getActivity().findViewById(R.id.map_coordinator_layout);
 
     //Set up behavior for the bottom sheet
     setUpBottomSheet();
@@ -272,7 +272,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * 3) showing the route to selected place in map
    */
   private void setUpToolbar(){
-    final Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.map_toolbar);
+    final Toolbar toolbar = getActivity().findViewById(R.id.map_toolbar);
     ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
     toolbar.setTitleTextColor(getContext().getColor(R.color.colorText));
     toolbar.setContentInsetStartWithNavigation(100);
@@ -355,7 +355,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     if (mRouteHeaderDetail == null){
       mRouteHeaderDetail = (LinearLayout) inflater.inflate(R.layout.route_detail_header, null);
-      TextView title = (TextView) mRouteHeaderDetail.findViewById(R.id.route_txt_detail) ;
+      TextView title = mRouteHeaderDetail.findViewById(R.id.route_txt_detail);
       title.setText(R.string.route_detail);
 
       mRouteHeaderDetail.setBackgroundColor(Color.WHITE);
@@ -363,7 +363,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       mMapView.requestLayout();
 
       // Attach a listener to the back arrow
-      ImageView imageBtn = (ImageView) mRouteHeaderDetail.findViewById(R.id.btnDetailHeaderClose) ;
+      ImageView imageBtn = mRouteHeaderDetail.findViewById(R.id.btnDetailHeaderClose);
       imageBtn.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
           // Navigate back to directions list
@@ -377,7 +377,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     if (mSegmentNavigator == null){
       mSegmentNavigator = (LinearLayout)inflater.inflate(R.layout.navigation_arrows,null);
       final FrameLayout navigatorLayout =
-              (FrameLayout) getActivity().findViewById(R.id.map_fragment_container);
+              getActivity().findViewById(R.id.map_fragment_container);
       FrameLayout.LayoutParams frameLayoutParams =
               new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
           ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM|Gravity.END);
@@ -385,7 +385,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       navigatorLayout.addView(mSegmentNavigator, frameLayoutParams);
       navigatorLayout.requestLayout();
       // Add button click listeners
-      Button btnPrev = (Button) getActivity().findViewById(R.id.btnBack) ;
+      Button btnPrev = getActivity().findViewById(R.id.btnBack);
 
       btnPrev.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
@@ -396,7 +396,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
         }
       });
-      Button btnNext = (Button) getActivity().findViewById(R.id.btnNext);
+      Button btnNext = getActivity().findViewById(R.id.btnNext);
       btnNext.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
           if (mCurrentPosition < mRouteDirections.size() -1){
@@ -449,7 +449,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public void removeRouteDetail(){
     mMapView.removeView(mRouteHeaderDetail);
     mRouteHeaderDetail = null;
-    final FrameLayout navigatorLayout = (FrameLayout) getActivity()
+    final FrameLayout navigatorLayout = getActivity()
             .findViewById(R.id.map_fragment_container);
     navigatorLayout.removeView(mSegmentNavigator);
     mMapView.removeView(mSegmentNavigator);
@@ -464,10 +464,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param maneuver - DirectionManeuver corresponding to the specific direction segment
    */
   private void populateViewWithRouteDetail(DirectionManeuver maneuver ){
-    TextView direction = (TextView) mRouteHeaderDetail.findViewById(R.id.directions_text_textview);
+    TextView direction = mRouteHeaderDetail.findViewById(R.id.directions_text_textview);
 
     direction.setText(maneuver.getDirectionText());
-    TextView travelDistance = (TextView) mRouteHeaderDetail.findViewById(R.id.directions_length_textview);
+    TextView travelDistance = mRouteHeaderDetail.findViewById(R.id.directions_length_textview);
     travelDistance.setText(String.format(getString(R.string.meter_format), maneuver.getLength()));
 
     // Remove any previously highlighted graphic
@@ -508,14 +508,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
             new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT);
     mRouteHeaderView = inflater.inflate(R.layout.route_header,null);
-    final TextView tv = (TextView) mRouteHeaderView.findViewById(R.id.route_bar_title);
+    final TextView tv = mRouteHeaderView.findViewById(R.id.route_bar_title);
     tv.setElevation(6f);
     tv.setText(mCenteredPlace != null ? mCenteredPlace.getName() : null);
     tv.setTextColor(Color.WHITE);
-    final TextView time = (TextView) mRouteHeaderView.findViewById(R.id.routeTime);
+    final TextView time = mRouteHeaderView.findViewById(R.id.routeTime);
     time.setText(Math.round(travelTime)+" min");
-    final ImageView btnClose = (ImageView) mRouteHeaderView.findViewById(R.id.btnClose);
-    final ImageView btnDirections = (ImageView) mRouteHeaderView.findViewById(R.id.btnDirections);
+    final ImageView btnClose = mRouteHeaderView.findViewById(R.id.btnClose);
+    final ImageView btnDirections = mRouteHeaderView.findViewById(R.id.btnDirections);
     // Set appropriate icon based on travelmode
     TravelMode.TravelModeTypes mode =  mPresenter.getTravelMode();
     if (mode.name().equalsIgnoreCase( TravelMode.TravelModeTypes.Walk.name())) {
@@ -585,7 +585,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * of the layout (transparent, in this case)
    */
   private void setToolbarTransparent(){
-    final AppBarLayout appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.map_appbar);
+    final AppBarLayout appBarLayout = getActivity().findViewById(R.id.map_appbar);
  //   appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
   }
 
@@ -595,7 +595,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param root View
    */
   private void setUpMapView(final View root){
-    mMapView = (MapView) root.findViewById(R.id.map);
+    mMapView = root.findViewById(R.id.map);
     final ArcGISMap map = new ArcGISMap(Basemap.createNavigationVector());
     mMapView.setMap(map);
 
@@ -659,7 +659,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       }
     });
 
-    mBottomSheet = (FrameLayout) getActivity().findViewById(R.id.bottom_card_view);
+    mBottomSheet = getActivity().findViewById(R.id.bottom_card_view);
   }
 
 
@@ -799,7 +799,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param place - Place item selected by user
    */
   @Override public final void showDetail( final Place place) {
-    final TextView txtName = (TextView) mBottomSheet.findViewById(R.id.placeName);
+    final TextView txtName = mBottomSheet.findViewById(R.id.placeName);
     txtName.setText(place.getName());
     String address = place.getAddress();
 
@@ -808,8 +808,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       address = splitStrs[0];
     }
 
-    LinearLayout addressLayout = (LinearLayout) mBottomSheet.findViewById(R.id.addressLayout);
-    final TextView txtAddress = (TextView) mBottomSheet.findViewById(R.id.placeAddress);
+    LinearLayout addressLayout = mBottomSheet.findViewById(R.id.addressLayout);
+    final TextView txtAddress = mBottomSheet.findViewById(R.id.placeAddress);
     if (address.isEmpty()) {
       addressLayout.removeView(txtAddress);
       addressLayout.requestLayout();
@@ -817,8 +817,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       txtAddress.setText(address);
     }
 
-    final TextView txtPhone = (TextView) mBottomSheet.findViewById(R.id.placePhone);
-    LinearLayout phoneLayout = (LinearLayout) mBottomSheet.findViewById(R.id.phoneLayout);
+    final TextView txtPhone = mBottomSheet.findViewById(R.id.placePhone);
+    LinearLayout phoneLayout = mBottomSheet.findViewById(R.id.phoneLayout);
     if (place.getPhone().isEmpty()) {
       phoneLayout.setLayoutParams(new LinearLayoutCompat.LayoutParams(0,0));
       phoneLayout.requestLayout();
@@ -831,7 +831,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
 
 
-    final LinearLayout linkLayout = (LinearLayout) mBottomSheet.findViewById(R.id.linkLayout);
+    final LinearLayout linkLayout = mBottomSheet.findViewById(R.id.linkLayout);
     // Hide the link placeholder if no link is found
     if (place.getURL().isEmpty()) {
       linkLayout.setLayoutParams(new LinearLayoutCompat.LayoutParams(0, 0));
@@ -842,16 +842,16 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
               new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
           height));
       linkLayout.requestLayout();
-      final TextView txtUrl = (TextView) mBottomSheet.findViewById(R.id.placeUrl);
+      final TextView txtUrl = mBottomSheet.findViewById(R.id.placeUrl);
       txtUrl.setText(place.getURL());
     }
 
 
-    final TextView txtType = (TextView) mBottomSheet.findViewById(R.id.placeType) ;
+    final TextView txtType = mBottomSheet.findViewById(R.id.placeType);
     txtType.setText(place.getType());
 
     // Add listener to switch control
-    final Switch switchCtrl = (Switch) mBottomSheet.findViewById(R.id.switchStop);
+    final Switch switchCtrl = mBottomSheet.findViewById(R.id.switchStop);
 
     switchCtrl.setChecked(place.isStop());
     switchCtrl.setOnClickListener(new View.OnClickListener() {

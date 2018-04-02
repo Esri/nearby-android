@@ -62,7 +62,7 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     super.onCreateView(inflater, container, savedInstanceState);
     getDialog().setTitle(string.filter_dialog);
     final View view = inflater.inflate(layout.filter_view, container,false);
-    final ListView listView = (ListView) view.findViewById(id.filterView);
+    final ListView listView = view.findViewById(id.filterView);
     final List<FilterItem> filters = mPresenter.getFilteredCategories();
     final ArrayList<FilterItem> arrayList = new ArrayList<>();
     arrayList.addAll(filters);
@@ -70,13 +70,13 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     listView.setAdapter(mFilterItemAdapter);
 
     // Listen for Cancel/Apply
-    final Button cancel = (Button) view.findViewById(id.btnCancel);
+    final Button cancel = view.findViewById(id.btnCancel);
     cancel.setOnClickListener(new OnClickListener() {
       @Override public void onClick(final View v) {
         dismiss();
       }
     });
-    final Button apply = (Button) view.findViewById(id.btnApply);
+    final Button apply = view.findViewById(id.btnApply);
     apply.setOnClickListener(new OnClickListener() {
       @Override public void onClick(final View v) {
         final Activity activity = getActivity();
@@ -120,8 +120,8 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
       if (convertView == null) {
         convertView = LayoutInflater.from(getActivity()).inflate(layout.filter_list_item, parent, false);
         holder = new FilterDialogFragment.FilterItemAdapter.ViewHolder();
-        holder.btn = (Button) convertView.findViewById(id.categoryBtn);
-        holder.txtName =  (TextView) convertView.findViewById(id.categoryName);
+        holder.btn = convertView.findViewById(id.categoryBtn);
+        holder.txtName = convertView.findViewById(id.categoryName);
         convertView.setTag(holder);
       }else{
         holder = (FilterDialogFragment.FilterItemAdapter.ViewHolder) convertView.getTag();

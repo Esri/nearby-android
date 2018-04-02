@@ -96,7 +96,7 @@ public interface MapContract {
     void restoreMapView();
 
     /**
-     * Obtain a route for tiven stops and travel mode
+     * Obtain a route for given stops and travel mode
      * @param service - LocationService
      * @param stops - List<Stop></Stop>
      * @param mode - String representing travel mode

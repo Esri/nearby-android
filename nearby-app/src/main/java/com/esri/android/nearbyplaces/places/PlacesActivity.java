@@ -38,11 +38,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -74,7 +72,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_layout);
 
-    mMainLayout = (CoordinatorLayout) findViewById(R.id.list_coordinator_layout);
+    mMainLayout = findViewById(R.id.list_coordinator_layout);
 
     // Check for gps and wifi
     checkSettings();
@@ -102,7 +100,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * Set up toolbar
    */
    private void setUpToolbar(){
-     final Toolbar toolbar = (Toolbar) findViewById(R.id.placeList_toolbar);
+     final Toolbar toolbar = findViewById(R.id.placeList_toolbar);
      setSupportActionBar(toolbar);
 
      assert toolbar != null;
@@ -221,7 +219,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
       if (grantResults.length != 1 ) {
         // Permission request was denied.
-        Snackbar.make(mMainLayout, R.string.locatin_permission,
+        Snackbar.make(mMainLayout, R.string.location_permission,
                 Snackbar.LENGTH_SHORT).show();
       }
     }

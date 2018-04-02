@@ -249,11 +249,11 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
     public RecyclerViewHolder(final View itemView) {
       super(itemView);
-      placeName = (TextView) itemView.findViewById(R.id.placeName);
-      address = (TextView) itemView.findViewById(R.id.placeAddress);
-      icon = (ImageView) itemView.findViewById(R.id.placeTypeIcon);
-      bearing = (TextView) itemView.findViewById(R.id.placeBearing);
-      distance = (TextView) itemView.findViewById(R.id.placeDistance);
+      placeName = itemView.findViewById(R.id.placeName);
+      address = itemView.findViewById(R.id.placeAddress);
+      icon = itemView.findViewById(R.id.placeTypeIcon);
+      bearing = itemView.findViewById(R.id.placeBearing);
+      distance = itemView.findViewById(R.id.placeDistance);
     }
 
     public final void bind(final Place place){
