@@ -35,16 +35,18 @@ import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
 
 import java.util.List;
 
-
+/**
+ * This is the concrete implementation of the Presenter defined in the PlacesContract.
+ * It encapsulates business logic and drives the behavior of the View.
+ */
 public class PlacesPresenter implements PlacesContract.Presenter {
-
 
   private final PlacesContract.View mPlacesView;
   private Point mDeviceLocation = null;
-
   private LocationService mLocationService;
   private final static int MAX_RESULT_COUNT = 10;
-  private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+  private final static String GEOCODE_URL =
+          "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
 
   public PlacesPresenter( @NonNull PlacesContract.View listView){
     mPlacesView = listView;
@@ -79,11 +81,6 @@ public class PlacesPresenter implements PlacesContract.Presenter {
     }
   }
 
-
-  /**
-   * Delegates the display of places to the view
-   * @param places List<Place> items
-   */
   @Override public final void setPlacesNearby(List<Place> places) {
     mPlacesView.showNearbyPlaces(places);
   }
@@ -111,5 +108,4 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   @Override public final Envelope getExtentForNearbyPlaces() {
     return mLocationService != null ? mLocationService.getResultEnvelope(): null;
   }
-
 }

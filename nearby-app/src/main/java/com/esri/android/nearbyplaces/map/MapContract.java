@@ -37,48 +37,127 @@ import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 
 import java.util.List;
 
+/**
+ * This is the contract between the Presenter and View components of the MVP pattern.
+ * It defines methods and logic used when showing the map.
+ */
 public interface MapContract {
 
   interface View extends BaseView<Presenter>{
 
+    /**
+     * Display places on the map
+     * @param placeList - List<Place></Place>
+     */
     void showNearbyPlaces(List<Place> placeList);
 
+    /**
+     * Return the view
+     * @return - MapView
+     */
     MapView getMapView();
 
+    /**
+     * Center map on given place.
+     * @param p - Place
+     */
     void centerOnPlace(Place p);
 
+    /**
+     * Set the RouteResult in the view
+     * @param routeResult - RouteResult
+     * @param start - Point
+     * @param end - Point
+     * @param stops - List<Stop></Stop>
+     */
     void setRoute(RouteResult routeResult, Point start, Point end, List<Stop> stops);
 
+    /**
+     * Display message to user
+     * @param message - String
+     */
     void showMessage(String message);
 
+    /**
+     * Show a progress indicator with given message
+     * @param message - String
+     */
     void showProgressIndicator(String message);
 
+    /**
+     * Highlight a step in the route
+     * @param position - int representing a specific index in the route directions
+     */
     void showRouteDetail(int position);
 
+    /**
+     * Remove any other views blocking the map
+     */
     void restoreMapView();
 
+    /**
+     * Obtain a route for tiven stops and travel mode
+     * @param service - LocationService
+     * @param stops - List<Stop></Stop>
+     * @param mode - String representing travel mode
+     */
     void getRoute(LocationService service, List<Stop> stops, String mode);
 
+    /**
+     * Show/hide the device location floating action button
+     * @param show - boolean
+     */
     void showFAB(boolean show);
 
   }
 
   interface Presenter extends BasePresenter {
 
+    /**
+     * Find places near the center of the map
+     */
     void findPlacesNearby();
 
+    /**
+     * Center map view on a particular place
+     * @param p - Place
+     */
     void centerOnPlace(Place p);
 
+    /**
+     * Return a place for given point
+     * @param p - Point
+     * @return - Place
+     */
     Place findPlaceForPoint(Point p);
 
+    /**
+     * Get route to selected place from current device location
+     */
     void getRoute();
 
+    /**
+     * Set the envelope based on map's current view.
+     * @param envelope - Envelope representing visible area of map.
+     */
     void setCurrentExtent(Envelope envelope);
 
+    /**
+     * Add place to stops
+     * @param p - Place
+     */
     void addStop(Place p);
 
+    /**
+     * Set the travel mode
+     * @param mode - String
+     */
     void setTravelMode(String mode);
 
+    /**
+     * Return the travel mode
+     * @return - TravelMode
+     */
     TravelMode.TravelModeTypes getTravelMode();
   }
 }

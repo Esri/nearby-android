@@ -38,7 +38,10 @@ import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * This is the concrete implementation of the Presenter defined in the MapContract.
+ * It encapsulates business logic and drives the behavior of the View.
+ */
 public class MapPresenter implements MapContract.Presenter {
 
   private final static String TAG = MapPresenter.class.getSimpleName();
@@ -56,10 +59,6 @@ public class MapPresenter implements MapContract.Presenter {
     mMapView.setPresenter(this);
   }
 
-  /**
-   * Use the location service to geocode places of interest
-   * based on the map's visible area extent.
-   */
   @Override public final void findPlacesNearby() {
     mMapView.showProgressIndicator("Finding nearby places...");
     final Point g =  mMapView.getMapView().getVisibleArea().getExtent().getCenter();
@@ -112,11 +111,6 @@ public class MapPresenter implements MapContract.Presenter {
     }
   }
 
-  /**
-   * Set the envelope based on map's current
-   * view.
-   * @param envelope - Envelope representing visible area of map.
-   */
   @Override public void setCurrentExtent(final Envelope envelope) {
     mLocationService.setCurrentEnvelope(envelope);
   }
@@ -127,13 +121,11 @@ public class MapPresenter implements MapContract.Presenter {
     } else {
       mStops.add(p);
     }
-
   }
 
   @Override
   public void setTravelMode(String mode) {
     mTravelMode = mode;
-    // Change the toolbar icon if needed
   }
 
   @Override
@@ -147,7 +139,7 @@ public class MapPresenter implements MapContract.Presenter {
 
   /**
    * The entry point for this class starts
-   * by loading the gecoding service.
+   * by loading the geocoding service.
    */
   @Override public final void start() {
     mLocationService = LocationService.getInstance();

@@ -48,8 +48,9 @@ import java.util.List;
 
 /**
  * Class representing the filter dialog used to set what types of places are
- * viewed in list or map.
+ * viewed in list or map. It's the View in the MVP pattern.
  */
+
 public class FilterDialogFragment extends DialogFragment implements FilterContract.View {
   private Presenter mPresenter = null;
 

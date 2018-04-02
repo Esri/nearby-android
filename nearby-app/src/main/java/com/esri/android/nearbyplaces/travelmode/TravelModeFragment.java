@@ -1,22 +1,3 @@
-package com.esri.android.nearbyplaces.travelmode;
-
-import android.app.Activity;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.app.DialogFragment;
-import android.support.v7.widget.AppCompatTextView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.TravelMode;
-
 /* Copyright 2018 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +22,29 @@ import com.esri.android.nearbyplaces.data.TravelMode;
  *
  */
 
+package com.esri.android.nearbyplaces.travelmode;
+
+import android.app.Activity;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.app.DialogFragment;
+import android.support.v7.widget.AppCompatTextView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.esri.android.nearbyplaces.R;
+import com.esri.android.nearbyplaces.data.TravelMode;
+
+/**
+ * This fragment is responsible for presenting the list of travel modes and supporting view actions.
+ * It's the View in the MVP pattern.
+ */
 public class TravelModeFragment extends DialogFragment implements TravelModeContract.View {
   TravelModeContract.Presenter mPresenter;
 
@@ -55,7 +59,7 @@ public class TravelModeFragment extends DialogFragment implements TravelModeCont
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
       final Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
-    getDialog().setTitle("Choose Your Travel Mode");
+    getDialog().setTitle(R.string.choose_mode);
     final View view = inflater.inflate(R.layout.travel_model_layout, container,false);
 
     walkTxt = (AppCompatTextView) view.findViewById(R.id.txtWalk);
@@ -119,10 +123,17 @@ public class TravelModeFragment extends DialogFragment implements TravelModeCont
     mPresenter.start();
   }
 
+  /**
+   * Set the travel mode
+   * @param mode - TravelMode
+   */
   private void setTravelMode(TravelMode.TravelModeTypes mode) {
     mMode = mode;
   }
 
+  /**
+   * Apply the travel mode
+   */
   private void applyMode() {
     final Activity activity = getActivity();
     if (activity instanceof TravelModeContract.TravelModeView) {

@@ -149,8 +149,7 @@ public class LocationService implements PlacesServiceApi {
 
   private static List<Place> filterPlaces(final List<Place> foundPlaces){
     final Collection<Place> placesToRemove = new ArrayList<>();
-    final CategoryKeeper keeper = CategoryKeeper.getInstance();
-    final List<String> selectedTypes = keeper.getSelectedTypes();
+    final List<String> selectedTypes = CategoryHelper.getSelectedTypes();
     if (!selectedTypes.isEmpty()){
       for (final Place p: foundPlaces) {
         for (final String filter : selectedTypes){
@@ -304,16 +303,15 @@ public class LocationService implements PlacesServiceApi {
    * A helper class for solving routes
    */
   private class RouteSolver implements Runnable{
-    private final Stop origin;
+    private final Stop mOrigin, mDestination;
     private final RouteServiceCallback mCallback;
-    private final Stop destination;
     private final List<Stop> mStops;
     private final String mTravelMode;
 
     public RouteSolver(final Point start, final Point end, final RouteServiceCallback callback,
                        List<Stop> stops, String mode ){
-      origin = new Stop(start);
-      destination = new Stop(end);
+      mOrigin = new Stop(start);
+      mDestination = new Stop(end);
       mCallback = callback;
       mStops = stops;
       mTravelMode = mode;
@@ -340,7 +338,7 @@ public class LocationService implements PlacesServiceApi {
               TravelMode mode = routeParameters.getTravelMode();
               configureTravelMode(mode, mTravelMode);
               routeParameters.setTravelMode(mode);
-              configureStops(routeParameters, mStops);
+              configureStops(routeParameters, mStops, mOrigin, mDestination);
 
               // We want the task to return directions and routes
               routeParameters.setReturnDirections(true);
@@ -393,11 +391,6 @@ public class LocationService implements PlacesServiceApi {
         restrictionAttributes.add("Avoid Roads Unsuitable for Pedestrians");
         restrictionAttributes.add("Preferred for Pedestrians");
         restrictionAttributes.add("Walking");
-
-        for (String s : restrictionAttributes){
-          Log.i(TAG, "Restriciton = " + s);
-        }
-        Log.i(TAG, "Travel mode = " + mode.getName());
       } else {
         mode.setName("Driving Time");
         mode.setType("AUTOMOBILE");
@@ -415,12 +408,6 @@ public class LocationService implements PlacesServiceApi {
         restrictionAttributes.add("Avoid Gates");
         restrictionAttributes.add("Avoid Express Lanes");
         restrictionAttributes.add("Avoid Carpool Roads");
-
-
-        for (String s : restrictionAttributes){
-          Log.i(TAG, "Restriciton = " + s);
-        }
-        Log.i(TAG, "Travel mode = " + mode.getName());
       }
     }
 
@@ -429,8 +416,9 @@ public class LocationService implements PlacesServiceApi {
      * @param parameters - RouteParameters
      * @param stops - List of Stop items
      */
-    private void configureStops(RouteParameters parameters, List<Stop> stops) {
-      // Add the origin
+    private void configureStops(RouteParameters parameters,
+                                List<Stop> stops, Stop origin, Stop destination) {
+      // Add the mOrigin
       parameters.getStops().add(origin);
 
       if (mStops.size() > 0) {
@@ -440,10 +428,8 @@ public class LocationService implements PlacesServiceApi {
         parameters.setFindBestSequence(true);
         parameters.setPreserveFirstStop(true);
         parameters.setPreserveLastStop(true);
-        Log.i(TAG, "Stops added");
       }
       parameters.getStops().add(destination);
-      Log.i(TAG, "Total stops =" + parameters.getStops().size());
     }
   }
 

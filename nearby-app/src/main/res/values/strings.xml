@@ -4,10 +4,6 @@
     <string name="list_view">List</string>
     <string name="route_view">Route</string>
     <string name="filter">Filter</string>
-    <!-- Service URLs -->
-
-
-    <!-- Search categories for geocoding -->
 
     <!-- Toast and dialog message -->
     <string name="no_places_found">No places found, try zooming out or checking the filter settings</string>
@@ -38,5 +34,8 @@
     <string name="route_fragment">route fragment</string>
     <string name="by_foot">By Foot</string>
     <string name="by_car">By Car</string>
+    <string name="no_drawable_found">No drawable found for</string>
+    <string name="meter_format">%.1f meters</string>
+    <string name="choose_mode">Choose Your Travel Mode</string>
 
 </resources>

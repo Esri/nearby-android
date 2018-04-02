@@ -1,5 +1,4 @@
-package com.esri.android.nearbyplaces.data;
-/* Copyright 2016 Esri
+/* Copyright 2018 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +22,11 @@ package com.esri.android.nearbyplaces.data;
  *
  */
 
+package com.esri.android.nearbyplaces.data;
+
+/**
+ * A simple wrapper for travel mode enums
+ */
 public class TravelMode {
     public enum TravelModeTypes {
       Walk,

@@ -45,6 +45,10 @@ import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This fragment is displayed over the map and shows a list of turn by turn directions
+ * along the displayed route.
+ */
 public class RouteDirectionsFragment extends Fragment {
 
   private List<DirectionManeuver> mDirectionManeuvers = new ArrayList<>();
@@ -126,7 +130,7 @@ public class RouteDirectionsFragment extends Fragment {
       TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
       textView.setText(direction.getDirectionText());
       textView = (TextView) v.findViewById(R.id.directions_length_textview);
-      final String lengthString = String.format("%.1f meters", direction.getLength());
+      final String lengthString = String.format(getString(R.string.meter_format), direction.getLength());
       textView.setText(lengthString);
       return v;
     }
@@ -137,7 +141,7 @@ public class RouteDirectionsFragment extends Fragment {
         Integer id = CategoryHelper.getResourceIdForManeuverType(maneuver);
         return ResourcesCompat.getDrawable(getActivity().getResources(),id,null);
       } catch (final Resources.NotFoundException e) {
-        Log.w(RouteDirectionsFragment.TAG, "No drawable found for" + maneuver.name());
+        Log.w(RouteDirectionsFragment.TAG, getString(R.string.no_drawable_found) + maneuver.name());
         return null;
       }
     }

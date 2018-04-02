@@ -1,4 +1,3 @@
-package com.esri.android.nearbyplaces.travelmode;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,19 +22,38 @@ package com.esri.android.nearbyplaces.travelmode;
  *
  */
 
+package com.esri.android.nearbyplaces.travelmode;
+
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.TravelMode;
 
+/**
+ * This is the contract between the Presenter and View components of the MVP pattern.
+ * It defines methods and logic used when showing the list of travel modes.
+ */
 public interface TravelModeContract {
   interface View extends BaseView<Presenter> {
   }
   interface Presenter extends BasePresenter {
-    void setTravelMode(String travleMode);
+    /**
+     * Set the travel mode
+     * @param travelMode - String
+     */
+    void setTravelMode(String travelMode);
+
+    /**
+     * Get the travel mode
+     * @return - String
+     */
     String getTravelMode();
   }
 
   interface TravelModeView {
+    /**
+     * Pass the chosen travel mode when dialog is closed
+     * @param mode - TravelMode
+     */
     void onTravelModeClose(TravelMode.TravelModeTypes mode);
   }
 }

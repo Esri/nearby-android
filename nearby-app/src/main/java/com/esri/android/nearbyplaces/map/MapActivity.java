@@ -46,6 +46,10 @@ import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 
 import java.util.List;
 
+/**
+ * The MapActivity sets up Auth for routing requests,  starts the MapFragment, and
+ * implements behaviors to support filtering and travel mode selection.
+ */
 public class MapActivity extends AppCompatActivity implements FilterContract.FilterView,
         TravelModeContract.TravelModeView{
 

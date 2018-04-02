@@ -25,6 +25,7 @@
 package com.esri.android.nearbyplaces.places;
 
 import android.location.Location;
+
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
@@ -32,29 +33,56 @@ import com.esri.arcgisruntime.geometry.Envelope;
 
 import java.util.List;
 
-
+/**
+ * This is the contract between the Presenter and View components of the MVP pattern.
+ * It defines methods and logic used when showing the list of places.
+ */
 public interface PlacesContract {
 
   interface View extends BaseView<Presenter> {
 
+    /**
+     * Display the list of nearby places
+     * @param places - List<Place></Place>
+     */
     void showNearbyPlaces(List<Place> places);
 
+    /**
+     * Show a progress indicator with given message
+     * @param message - String
+     */
     void showProgressIndicator(String message);
 
+    /**
+     * Show message to the user
+     * @param message - String
+     */
     void showMessage(String message);
-
-
   }
 
   interface Presenter extends BasePresenter {
 
+    /**
+     * Delegates the display of places to the view
+     * @param places List<Place> items
+     */
     void setPlacesNearby(List<Place> places);
 
+    /**
+     * Set location
+     * @param location - Location
+     */
     void setLocation(Location location);
 
+    /**
+     * Retrieve nearby places
+     */
     void getPlacesNearby();
 
+    /**
+     * Return the envelope represented by the list of found places
+     * @return - Envelope
+     */
     Envelope getExtentForNearbyPlaces();
-
   }
 }

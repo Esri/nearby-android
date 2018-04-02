@@ -28,16 +28,27 @@ import com.esri.android.nearbyplaces.BaseView;
 
 import java.util.List;
 
-
+/**
+ * This is the contract between the Presenter and View components of the MVP pattern.
+ * It defines methods and logic used when showing the filtering places.
+ */
 public interface FilterContract {
   interface View extends BaseView<Presenter> {
 
   }
   interface Presenter extends BasePresenter {
+    /**
+     * Return a list of FilterItems
+     * @return - List<FilterItem></FilterItem>
+     */
     List<FilterItem> getFilteredCategories();
   }
 
   interface FilterView{
+    /**
+     * Defines whether filter is applied after user closes the dialog.
+     * @param applyFilter - boolean
+     */
     void onFilterDialogClose(boolean applyFilter);
   }
 }

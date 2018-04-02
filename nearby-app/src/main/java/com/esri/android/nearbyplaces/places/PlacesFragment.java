@@ -42,6 +42,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.data.LocationService;
@@ -55,7 +56,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
+/**
+ * This fragment is responsible for presenting the list of places and supporting view actions.
+ * It's the View in the MVP pattern.
+ */
 public class PlacesFragment extends Fragment implements PlacesContract.View,
     GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
@@ -119,7 +123,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   @Override public final void showNearbyPlaces(final List<Place> places) {
     if (places.isEmpty()){
-      showMessage("No places found");
+      showMessage(getString(R.string.no_places_found));
     }else{
       Collections.sort(places);
       mPlaceAdapter.setPlaces(places);
@@ -136,14 +140,11 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     mProgressDialog.setTitle(getString(R.string.nearby_places));
     mProgressDialog.setMessage(message);
     mProgressDialog.show();
-
   }
-
 
   @Override public void showMessage(final String message) {
     Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
   }
-
 
   @Override public final void setPresenter(final PlacesContract.Presenter presenter) {
     mPresenter = presenter;
@@ -156,7 +157,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
           .build();
     }
   }
-
 
   public  class PlacesAdapter extends RecyclerView.Adapter<PlacesFragment.RecyclerViewHolder> {
 
@@ -176,7 +176,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       final View itemView = inflater.inflate(R.layout.place, parent, false);
       return new PlacesFragment.RecyclerViewHolder(itemView);
     }
-
 
     @Override public final void onBindViewHolder(final PlacesFragment.RecyclerViewHolder holder, final int position) {
       final Place place = mPlaces.get(position);
@@ -233,8 +232,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
 
   /**
-   * Signals to the activity that this fragment has
-   * completed creation activities.
+   * Signals to the activity that this fragment has completed creation activities.
    */
   public interface FragmentListener{
     void onCreationComplete();
@@ -255,6 +253,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       bearing = (TextView) itemView.findViewById(R.id.placeBearing);
       distance = (TextView) itemView.findViewById(R.id.placeDistance);
     }
+
     public final void bind(final Place place){
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(final View v) {
@@ -265,6 +264,5 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
         }
       });
     }
-
   }
 }

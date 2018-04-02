@@ -27,6 +27,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
+/**
+ * Data object representing a place.
+ */
 public final class Place implements Comparable<Place> {
 
   private final String mName;

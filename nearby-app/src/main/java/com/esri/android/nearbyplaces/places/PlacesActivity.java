@@ -55,7 +55,10 @@ import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.geometry.Envelope;
 
-
+/**
+ * This activity checks for permissions for location and an internet connection before setting
+ * up the PlaceFragment
+ */
 public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
     ActivityCompat.OnRequestPermissionsResultCallback, PlacesFragment.FragmentListener {
 

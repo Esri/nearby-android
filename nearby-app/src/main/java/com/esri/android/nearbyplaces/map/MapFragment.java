@@ -88,6 +88,10 @@ import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 
+/**
+ * This fragment is responsible for handling map-related view actions.
+ * It's the View in the MVP pattern.
+ */
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
   private MapContract.Presenter mPresenter = null;

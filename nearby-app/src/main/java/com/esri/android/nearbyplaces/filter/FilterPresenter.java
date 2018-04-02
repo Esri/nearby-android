@@ -23,12 +23,16 @@
  */
 package com.esri.android.nearbyplaces.filter;
 
-import com.esri.android.nearbyplaces.data.CategoryKeeper;
+import com.esri.android.nearbyplaces.data.CategoryHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This is the concrete implementation of the Presenter defined in the FilterContract.
+ * It encapsulates business logic and drives the behavior of the View.
+ */
 public class FilterPresenter implements FilterContract.Presenter{
   private List<FilterItem> mFilters = new ArrayList<>();
 
@@ -38,8 +42,7 @@ public class FilterPresenter implements FilterContract.Presenter{
   }
 
   @Override public final void start() {
-    final CategoryKeeper keeper = CategoryKeeper.getInstance();
-    mFilters = keeper.getCategories();
+    mFilters = CategoryHelper.getCategories();
   }
 
 }

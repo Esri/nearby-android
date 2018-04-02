@@ -27,20 +27,31 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
+
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
+import com.esri.android.nearbyplaces.filter.FilterItem;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType.*;
-
-import static com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType.*;
-
+/**
+ * A helper class for managing category icons and logic
+ */
 public class CategoryHelper {
+  static final List<FilterItem> categories = Arrays.asList(
+          new FilterItem("Bar", R.drawable.ic_local_bar_grey_48dp, true, R.drawable.ic_local_bar_blue_48dp),
+          new FilterItem("Coffee Shop", R.drawable.ic_local_cafe_grey_48dp, true, R.drawable.ic_local_cafe_blue_48dp),
+          new FilterItem("Food", R.drawable.ic_local_dining_grey_48dp, true, R.drawable.ic_local_dining_blue_48dp),
+          new FilterItem("Hotel", R.drawable.ic_local_hotel_grey_48dp, true, R.drawable.ic_local_hotel_blue_48dp),
+          new FilterItem("Pizza", R.drawable.ic_local_pizza_gray_48dp, false, R.drawable.ic_local_pizza_blue_48dp),
+          new FilterItem("Museum", R.drawable.ic_museum_grey, false, R.drawable.ic_museum_blue),
+          new FilterItem("Trail", R.drawable.ic_hiking_grey, false, R.drawable.ic_hike_blue),
+          new FilterItem("Winery", R.drawable.ic_winery_grey, false, R.drawable.ic_wine_blue),
+          new FilterItem("Waterfall", R.drawable.ic_waterfall_grey, false, R.drawable.ic_waterfall_blue)
+  );
+
   static final List<String> foodTypes = Arrays.asList(
         "African Food",
         "American Food",
@@ -341,5 +352,33 @@ public class CategoryHelper {
         d = ResourcesCompat.getDrawable(a.getResources(), R.drawable.ic_place_black_24dp,null);
     }
     return d;
+  }
+
+  /**
+   * Return a List of FilterItem objects.
+   * @return - List<FilterItem></FilterItem>
+   */
+  public static List<FilterItem> getCategories(){
+    return categories;
+  }
+
+  /**
+   * Return a list of strings that have been selected in the filter.
+   * @return - List<String></String>
+   */
+  public static List<String> getSelectedTypes(){
+    final List<String> selectedTypes = new ArrayList<>();
+    for (final FilterItem item : categories){
+      if (!item.getSelected()){
+        // Because places with food are sub-categorized by
+        // food type, add them to the filter list.
+        if (item.getTitle().equalsIgnoreCase("Food")){
+          selectedTypes.addAll(CategoryHelper.foodTypes);
+        }else {
+          selectedTypes.add(item.getTitle());
+        }
+      }
+    }
+    return selectedTypes;
   }
 }
