@@ -134,11 +134,11 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     // can set viewpoint
 
     if (envelope != null){
-      intent.putExtra("MIN_X", envelope.getXMin());
-      intent.putExtra("MIN_Y", envelope.getYMin());
-      intent.putExtra("MAX_X", envelope.getXMax());
-      intent.putExtra("MAX_Y", envelope.getYMax());
-      intent.putExtra("SR", envelope.getSpatialReference().getWKText());
+      intent.putExtra(a.getString(R.string.minx), envelope.getXMin());
+      intent.putExtra(a.getString(R.string.miny), envelope.getYMin());
+      intent.putExtra(a.getString(R.string.maxx), envelope.getXMax());
+      intent.putExtra(a.getString(R.string.maxy), envelope.getYMax());
+      intent.putExtra(a.getString(R.string.sr), envelope.getSpatialReference().getWKText());
     }
     return  intent;
   }
@@ -159,7 +159,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       // Create the fragment
       mPlacesFragment = PlacesFragment.newInstance();
       ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container, "list fragment");
+          getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container,
+              getString(R.string.list_fragment));
     }
   }
 
@@ -172,7 +173,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
   private void requestLocationPermission() {
     // Permission has not been granted and must be requested.
-    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            Manifest.permission.ACCESS_FINE_LOCATION)) {
 
       // Provide an additional rationale to the user if the permission was
       // not granted
@@ -180,8 +182,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       // the permission.
       // Display a SnackBar with a button to request the missing
       // permission.
-      Snackbar.make(mMainLayout, "Location access is required to search for places nearby.", Snackbar.LENGTH_INDEFINITE)
-          .setAction("OK", new View.OnClickListener() {
+      Snackbar.make(mMainLayout, R.string.location_required, Snackbar.LENGTH_INDEFINITE)
+          .setAction(getString(R.string.ok), new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
               // Request the permission
@@ -192,9 +194,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
           }).show();
 
     } else {
-      // Request the permission. The result will be received in
-      // onRequestPermissionResult()
-      ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},
+      // Request the permission. The result will be received in onRequestPermissionResult()
+      ActivityCompat.requestPermissions(this, new String[]{
+              Manifest.permission.ACCESS_FINE_LOCATION},
           PERMISSION_REQUEST_LOCATION);
     }
   }
@@ -212,13 +214,15 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    *            either PERMISSION_GRANTED or PERMISSION_DENIED
    */
   @Override
-  public final void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+  public final void onRequestPermissionsResult(final int requestCode,
+      @NonNull final String[] permissions,
       @NonNull final int[] grantResults) {
 
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
       if (grantResults.length != 1 ) {
         // Permission request was denied.
-        Snackbar.make(mMainLayout, R.string.locatin_permission, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mMainLayout, R.string.locatin_permission,
+                Snackbar.LENGTH_SHORT).show();
       }
     }
   }
@@ -238,7 +242,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * @return boolean indicating wifi connectivity. True for connected.
    */
   private boolean internetConnectivity(){
-    final ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    final ConnectivityManager connManager =
+            (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     final NetworkInfo wifi = connManager.getActiveNetworkInfo();
     return wifi == null ? false : wifi.isConnected();
   }
@@ -257,10 +262,12 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       completeSetUp();
     }else if (!gpsEnabled) {
       final Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-      showDialog(gpsIntent, REQUEST_LOCATION_SETTINGS, getString(R.string.location_tracking_off));
+      showDialog(gpsIntent, REQUEST_LOCATION_SETTINGS,
+              getString(R.string.location_tracking_off));
     }else if(!internetConnected)	{
       final Intent internetIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-      showDialog(internetIntent, REQUEST_WIFI_SETTINGS, getString(R.string.wireless_off));
+      showDialog(internetIntent, REQUEST_WIFI_SETTINGS,
+              getString(R.string.wireless_off));
     }
   }
   /**
@@ -288,7 +295,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
     final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
     alertDialog.setMessage(message);
-    alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    alertDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 
       @Override
       public void onClick(final DialogInterface dialog, final int which) {
@@ -296,7 +303,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
         startActivityForResult(intent, requestCode);
       }
     });
-    alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+    alertDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 
       @Override
       public void onClick(final DialogInterface dialog, final int which) {

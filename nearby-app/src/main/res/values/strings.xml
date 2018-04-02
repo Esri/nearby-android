@@ -37,5 +37,26 @@
     <string name="no_drawable_found">No drawable found for</string>
     <string name="meter_format">%.1f meters</string>
     <string name="choose_mode">Choose Your Travel Mode</string>
+    <string name="no_route">Cannot find the Route</string>
+    <string name="sorry_no_route">We\'re sorry, we couldn\'t find the route. Please make sure the Start and Destination are different or are connected by a road</string>
+    <string name="dialog_fragment">dialog_fragment</string>
+    <string name="route">Route</string>
+    <string name="travel_mode">Travel Mode</string>
+    <string name="travel_mode_fragment">travel_mode_fragment</string>
+    <string name="route_detail">Route Detail</string>
+    <string name="place_detail">PLACE_DETAIL</string>
+    <string name="minx">MIN_X</string>
+    <string name="miny">MIN_Y</string>
+    <string name="maxx">MAX_X</string>
+    <string name="maxy">MAX_Y</string>
+    <string name="sr">SR</string>
+    <string name="loading_map">Loading map</string>
+    <string name="search_for_places">Search for places?</string>
+    <string name="search_caps">SEARCH</string>
+    <string name="list_fragment">list fragment</string>
+    <string name="location_required">Location access is required to search for places nearby.</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>

@@ -32,6 +32,8 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import com.esri.android.nearbyplaces.NearbyApplication;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.TravelMode;
 import com.esri.android.nearbyplaces.filter.FilterContract;
@@ -209,6 +211,8 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
   @Override
   public void onTravelModeClose(TravelMode.TravelModeTypes mode) {
     mMapPresenter.setTravelMode(mode.name());
+    NearbyApplication app = (NearbyApplication) getApplication();
+    app.setTravelModeType(mode);
     invalidateOptionsMenu();
   }
 }

@@ -170,14 +170,15 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
       notifyDataSetChanged();
     }
 
-    @Override public final PlacesFragment.RecyclerViewHolder onCreateViewHolder(final ViewGroup parent,
-        final int viewType) {
+    @Override public final PlacesFragment.RecyclerViewHolder
+    onCreateViewHolder(final ViewGroup parent, final int viewType) {
       final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
       final View itemView = inflater.inflate(R.layout.place, parent, false);
       return new PlacesFragment.RecyclerViewHolder(itemView);
     }
 
-    @Override public final void onBindViewHolder(final PlacesFragment.RecyclerViewHolder holder, final int position) {
+    @Override public final void onBindViewHolder(final PlacesFragment.RecyclerViewHolder holder,
+                                                 final int position) {
       final Place place = mPlaces.get(position);
       holder.placeName.setText(place.getName());
       holder.address.setText(place.getAddress());
@@ -203,7 +204,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
         mGoogleApiClient);
     if (mLastLocation != null){
-      Log.i(PlacesFragment.TAG, getString(R.string.latlong) + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
+      Log.i(PlacesFragment.TAG, getString(R.string.latlong) +
+              mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
       mPresenter.setLocation(mLastLocation);
       final LocationService locationService = LocationService.getInstance();
       locationService.setCurrentLocation(mLastLocation);
