@@ -202,6 +202,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   @Nullable
   public final View onCreateView(final LayoutInflater layoutInflater, final ViewGroup container,
       final Bundle savedInstance){
+    View view = super.onCreateView(layoutInflater, container, savedInstance);
     final View root = layoutInflater.inflate(R.layout.map_fragment, container,false);
 
     // Set up the device location FAB
@@ -246,6 +247,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   @Override
   public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+    super.onCreateOptionsMenu(menu, inflater);
     // Inflate the menu items for use in the action bar
     inflater.inflate(R.menu.map_menu, menu);
 
@@ -391,7 +393,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         @Override public void onClick(View v) {
           if (mCurrentPosition > 0){
             populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition - 1));
-            mCurrentPosition = mCurrentPosition - 1;
+            mCurrentPosition -= 1;
           }
 
         }
@@ -401,7 +403,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         @Override public void onClick(View v) {
           if (mCurrentPosition < mRouteDirections.size() -1){
             populateViewWithRouteDetail(mRouteDirections.get(mCurrentPosition + 1));
-            mCurrentPosition = mCurrentPosition + 1;
+            mCurrentPosition += 1;
           }
 
         }
@@ -478,7 +480,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Highlight route segment in map
     Geometry geometry = maneuver.getGeometry();
-    Graphic graphic = null;
+    Graphic graphic;
     if (geometry instanceof Polyline){
       SimpleLineSymbol symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID,
               Color.RED, 7);
@@ -670,6 +672,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   @Override
   public final void onPrepareOptionsMenu(final Menu menu){
+    super.onPrepareOptionsMenu(menu);
     final MenuItem listItem = menu.findItem(R.id.list_action);
     final MenuItem routeItem = menu.findItem(R.id.route_action);
     final MenuItem walkItem = menu.findItem(R.id.walking_directions);
@@ -1126,6 +1129,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     }
     @Override
     public final boolean onSingleTapConfirmed(final MotionEvent motionEvent) {
+      boolean b = super.onSingleTapConfirmed(motionEvent);
       final android.graphics.Point screenPoint = new android.graphics.Point(
           (int) motionEvent.getX(),
           (int) motionEvent.getY());
@@ -1177,5 +1181,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       super.onScaleEnd(detector);
       onMapViewChange();
     }
+  }
+
+  @Override public String toString() {
+    return "MapFragment{}";
   }
 }

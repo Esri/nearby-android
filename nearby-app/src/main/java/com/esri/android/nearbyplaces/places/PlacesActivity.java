@@ -226,6 +226,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   public final void onRequestPermissionsResult(final int requestCode,
       @NonNull final String[] permissions,
       @NonNull final int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
       if (grantResults.length != 1 ) {
@@ -307,6 +308,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    */
   @Override
   protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == REQUEST_WIFI_SETTINGS || requestCode == REQUEST_LOCATION_SETTINGS) {
       checkSettings();
     }
@@ -348,5 +350,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     } else {
       finish();
     }
+  }
+
+  @Override public String toString() {
+    return "PlacesActivity{}";
   }
 }

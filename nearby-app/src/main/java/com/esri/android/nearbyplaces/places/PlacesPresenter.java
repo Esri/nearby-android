@@ -118,4 +118,8 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   public final Envelope getExtentForNearbyPlaces() {
     return mLocationService != null ? mLocationService.getResultEnvelope(): null;
   }
+
+  @Override public String toString() {
+    return "PlacesPresenter{}";
+  }
 }

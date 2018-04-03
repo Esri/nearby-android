@@ -27,6 +27,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
+import java.util.Objects;
+
 /**
  * Data object representing a place.
  */
@@ -113,10 +115,10 @@ public final class Place implements Comparable<Place> {
 
   @Override public int compareTo(@NonNull Place anotherPlace) {
     int result = 0;
-    if (mDistance > anotherPlace.mDistance){
+    if (mDistance > anotherPlace.getDistance()){
       result = 1;
     }
-    if (mDistance < anotherPlace.mDistance){
+    if (mDistance < anotherPlace.getDistance()){
       result = -1;
     }
     return  result;
@@ -145,15 +147,15 @@ public final class Place implements Comparable<Place> {
     }
 
     Place p = (Place) o;
-    return (mAddress == p.getAddress()
-        && mBearing == p.getBearing()
+    return (Objects.equals(mAddress, p.getAddress())
+        && Objects.equals(mBearing, p.getBearing())
         && mDistance == p.getDistance()
         && mLocation.getX() == p.getLocation().getX()
         && mLocation.getY() == p.getLocation().getY()
-        && mName == p.getName()
-        && mPhone == p.getPhone()
-        && mType == p.getType()
-        && mURL == p.getURL());
+        && Objects.equals(mName, p.getName())
+        && Objects.equals(mPhone, p.getPhone())
+        && Objects.equals(mType, p.getType())
+        && Objects.equals(mURL, p.getURL()));
   }
 }
 

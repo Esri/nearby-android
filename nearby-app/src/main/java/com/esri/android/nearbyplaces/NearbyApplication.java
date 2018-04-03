@@ -38,4 +38,8 @@ public class NearbyApplication extends Application {
     public void setTravelModeType(TravelMode.TravelModeTypes mTravelModeType) {
         this.mTravelModeType = mTravelModeType;
     }
+
+  @Override public String toString() {
+    return "NearbyApplication{}";
+  }
 }

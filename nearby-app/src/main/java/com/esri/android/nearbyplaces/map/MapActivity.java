@@ -46,6 +46,7 @@ import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;
 import com.esri.arcgisruntime.security.OAuthConfiguration;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 /**
@@ -79,7 +80,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
       final AuthenticationChallengeHandler authenticationChallengeHandler = new DefaultAuthenticationChallengeHandler(this);
       AuthenticationManager.setAuthenticationChallengeHandler(authenticationChallengeHandler);
       AuthenticationManager.addOAuthConfiguration(oAuthConfiguration);
-    }catch(final Exception e){
+    }catch(final MalformedURLException e){
       Log.e("MapActivity", "Authentication handling issue: " + e.getMessage());
     }
   }
@@ -214,5 +215,9 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     NearbyApplication app = (NearbyApplication) getApplication();
     app.setTravelModeType(mode);
     invalidateOptionsMenu();
+  }
+
+  @Override public String toString() {
+    return "MapActivity{}";
   }
 }

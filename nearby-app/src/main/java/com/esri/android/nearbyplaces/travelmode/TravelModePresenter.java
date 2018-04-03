@@ -42,4 +42,8 @@ public class TravelModePresenter implements TravelModeContract.Presenter {
   public String getTravelMode() {
     return mTravelMode;
   }
+
+  @Override public String toString() {
+    return "TravelModePresenter{}";
+  }
 }

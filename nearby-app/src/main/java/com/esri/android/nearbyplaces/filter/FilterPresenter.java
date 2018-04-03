@@ -45,4 +45,7 @@ public class FilterPresenter implements FilterContract.Presenter{
     mFilters = CategoryHelper.getCategories();
   }
 
+  @Override public String toString() {
+    return "FilterPresenter{}";
+  }
 }

@@ -25,8 +25,6 @@
 package com.esri.android.nearbyplaces.travelmode;
 
 import android.app.Activity;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -35,9 +33,6 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import com.esri.android.nearbyplaces.R;
 import com.esri.android.nearbyplaces.data.TravelMode;
 
@@ -46,7 +41,7 @@ import com.esri.android.nearbyplaces.data.TravelMode;
  * It's the View in the MVP pattern.
  */
 public class TravelModeFragment extends DialogFragment implements TravelModeContract.View {
-  TravelModeContract.Presenter mPresenter;
+  private TravelModeContract.Presenter mPresenter;
 
   private TravelMode.TravelModeTypes mMode;
   private AppCompatTextView walkTxt, carTxt;
@@ -141,4 +136,7 @@ public class TravelModeFragment extends DialogFragment implements TravelModeCont
     }
   }
 
+  @Override public String toString() {
+    return "TravelModeFragment{}";
+  }
 }

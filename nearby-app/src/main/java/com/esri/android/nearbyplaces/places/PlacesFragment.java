@@ -85,6 +85,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View {
   @Override
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
       final Bundle savedInstance) {
+    View view = super.onCreateView(inflater, container, savedInstance);
 
     RecyclerView mPlacesView = (RecyclerView) inflater.inflate(
         R.layout.place_recycler_view, container, false);
@@ -171,6 +172,10 @@ public class PlacesFragment extends Fragment implements PlacesContract.View {
       final Place p = mPlaces.get(position);
       return CategoryHelper.getDrawableForPlace(p, getActivity());
     }
+
+    @Override public String toString() {
+      return "PlacesAdapter{}";
+    }
   }
 
   @Override
@@ -186,11 +191,11 @@ public class PlacesFragment extends Fragment implements PlacesContract.View {
 
   public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-    public final TextView placeName;
-    public final TextView address;
-    public final ImageView icon;
-    public final TextView bearing;
-    public final TextView distance;
+    private final TextView placeName;
+    private final TextView address;
+    private final ImageView icon;
+    private final TextView bearing;
+    private final TextView distance;
 
     public RecyclerViewHolder(final View itemView) {
       super(itemView);
@@ -211,5 +216,13 @@ public class PlacesFragment extends Fragment implements PlacesContract.View {
         }
       });
     }
+
+    @Override public String toString() {
+      return "RecyclerViewHolder{}";
+    }
+  }
+
+  @Override public String toString() {
+    return "PlacesFragment{}";
   }
 }

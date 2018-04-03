@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
 import android.location.Location;
@@ -199,7 +200,7 @@ public class LocationService implements PlacesServiceApi {
         final List<Place> places = new ArrayList<Place>();
         int i = 0;
         for (final GeocodeResult r: data){
-          i = i + 1;
+          i += 1;
           final Map<String,Object> attributes = r.getAttributes();
           final String address = (String) attributes.get("Place_addr");
           final String name = (String) attributes.get("PlaceName");
@@ -236,9 +237,13 @@ public class LocationService implements PlacesServiceApi {
         }
 
         mCallback.onLoaded(filterPlaces(places));
-      } catch (final Exception e) {
+      } catch (final ExecutionException | InterruptedException e) {
         Log.e("LocationService", "Geocoding processing problem " + e.getMessage());
       }
+    }
+
+    @Override public String toString() {
+      return "GeocodeProcessor{}";
     }
   }
   private final void setBearingAndDistanceForPlace(final Place place){
@@ -360,12 +365,12 @@ public class LocationService implements PlacesServiceApi {
                       Log.i(TAG, "NO RESULT FROM ROUTING");
                     }
 
-                  } catch (final Exception e) {
+                  } catch (final ExecutionException | InterruptedException  e) {
                     Log.e(TAG, e.getMessage());
                   }
                 }
               });
-            } catch (final Exception e1){
+            } catch (final ExecutionException | InterruptedException  e1){
               Log.e(TAG,e1.getMessage() );
             }
           }
@@ -433,4 +438,7 @@ public class LocationService implements PlacesServiceApi {
     }
   }
 
+  @Override public String toString() {
+    return "LocationService{}";
+  }
 }

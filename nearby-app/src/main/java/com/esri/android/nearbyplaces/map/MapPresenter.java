@@ -25,7 +25,6 @@
 package com.esri.android.nearbyplaces.map;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
@@ -34,7 +33,6 @@ import com.esri.android.nearbyplaces.data.TravelMode;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 
 import java.util.ArrayList;
@@ -165,4 +163,7 @@ public class MapPresenter implements MapContract.Presenter {
     }
   }
 
+  @Override public String toString() {
+    return "MapPresenter{}";
+  }
 }

@@ -62,6 +62,7 @@ public class RouteDirectionsFragment extends Fragment {
   @Override
   public final View onCreateView(final LayoutInflater inflater, final ViewGroup container,
       final Bundle savedInstanceState) {
+    View view1 = super.onCreateView(inflater, container, savedInstanceState);
     final View view = inflater.inflate(R.layout.route_direction_list, container,false);
 
     // Set up the header
@@ -114,6 +115,7 @@ public class RouteDirectionsFragment extends Fragment {
 
     @NonNull @Override
     public final View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
+      View view = super.getView(position, convertView, parent);
       // Inflate view if we haven't been given one to reuse
       View v = convertView;
       if (convertView == null) {
@@ -146,5 +148,9 @@ public class RouteDirectionsFragment extends Fragment {
       }
     }
 
+  }
+
+  @Override public String toString() {
+    return "RouteDirectionsFragment{}";
   }
 }

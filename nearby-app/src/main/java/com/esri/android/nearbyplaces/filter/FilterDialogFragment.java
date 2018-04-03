@@ -107,11 +107,12 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     }
 
     private class ViewHolder {
-      Button btn = null;
-      TextView txtName = null;
+      private Button btn = null;
+      private TextView txtName = null;
     }
     @NonNull @Override
     public final View getView(final int position, View convertView, @NonNull final ViewGroup parent) {
+      super.getView(position, convertView, parent);
       final FilterDialogFragment.FilterItemAdapter.ViewHolder holder;
 
       // Get the data item for this position
