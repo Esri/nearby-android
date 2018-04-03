@@ -58,7 +58,8 @@ public class PlacesPresenter implements PlacesContract.Presenter {
    * location as the initial parameter in the
    * geocode search.
    */
-  @Override public final void start() {
+  @Override
+  public final void start() {
     mPlacesView.showProgressIndicator("Finding places...");
     mLocationService = LocationService.getInstance();
     List<Place> existingPlaces = mLocationService.getPlacesFromRepo();
@@ -81,15 +82,23 @@ public class PlacesPresenter implements PlacesContract.Presenter {
     }
   }
 
-  @Override public final void setPlacesNearby(List<Place> places) {
+  @Override
+  public final void setPlacesNearby(List<Place> places) {
     mPlacesView.showNearbyPlaces(places);
   }
 
-  @Override public final void setLocation(Location location) {
-    mDeviceLocation = new Point(location.getLongitude(), location.getLatitude());
+  @Override
+  public final void setLocation(Location location) {
+    if (location != null) {
+      mDeviceLocation = new Point(location.getLongitude(), location.getLatitude());
+    } else {
+      mPlacesView.showMessage("Location cannot be determined");
+    }
+
   }
 
-  @Override public final void getPlacesNearby() {
+  @Override
+  public final void getPlacesNearby() {
     if (mDeviceLocation != null) {
       GeocodeParameters parameters = new GeocodeParameters();
       parameters.setMaxResults(MAX_RESULT_COUNT);
@@ -105,7 +114,8 @@ public class PlacesPresenter implements PlacesContract.Presenter {
     }
   }
 
-  @Override public final Envelope getExtentForNearbyPlaces() {
+  @Override
+  public final Envelope getExtentForNearbyPlaces() {
     return mLocationService != null ? mLocationService.getResultEnvelope(): null;
   }
 }

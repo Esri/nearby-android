@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -46,26 +47,30 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import com.esri.android.nearbyplaces.R;
+import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.filter.FilterContract;
 import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.android.nearbyplaces.filter.FilterPresenter;
 import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.android.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.geometry.Envelope;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
  * This activity checks for permissions for location and an internet connection before setting
  * up the PlaceFragment
  */
-public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
-    ActivityCompat.OnRequestPermissionsResultCallback, PlacesFragment.FragmentListener {
+public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView {
 
   private static final int PERMISSION_REQUEST_LOCATION = 0;
   private static final int REQUEST_LOCATION_SETTINGS = 1;
   private static final int REQUEST_WIFI_SETTINGS = 2;
-  private PlacesFragment mPlacesFragment = null;
-  private CoordinatorLayout mMainLayout = null;
-  private PlacesPresenter mPresenter = null;
+  private PlacesFragment mPlacesFragment;
+  private CoordinatorLayout mMainLayout;
+  private PlacesPresenter mPresenter;
+  private FusedLocationProviderClient mFusedLocationClient;
 
   @Override
   public final void onCreate(final Bundle savedInstanceState) {
@@ -73,19 +78,16 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     setContentView(R.layout.main_layout);
 
     mMainLayout = findViewById(R.id.list_coordinator_layout);
-
-    // Check for gps and wifi
-    checkSettings();
-  }
-
-  private void completeSetUp(){
-    // request location permission
-    requestLocationPermission();
+    mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
     // Set up the toolbar.
     setUpToolbar();
 
-    setUpFragments();
+    // Set up the places fragment
+    setUpFragment();
+
+    // Check for internet and location
+    checkSettings();
   }
 
   @Override
@@ -121,11 +123,14 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
        }
      });
    }
-  @Override public final void onFilterDialogClose(final boolean applyFilter) {
+
+  @Override
+  public final void onFilterDialogClose(final boolean applyFilter) {
     if (applyFilter){
       mPresenter.start();
     }
   }
+
   public static Intent createMapIntent(final Activity a, final Envelope envelope){
     final Intent intent = new Intent(a, MapActivity.class);
     // Get the extent of search results so map
@@ -140,6 +145,10 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
     return  intent;
   }
+
+  /**
+   * Show map
+   */
   private void showMap(){
     final Envelope envelope = mPresenter.getExtentForNearbyPlaces();
     final Intent intent = createMapIntent(this, envelope);
@@ -147,11 +156,11 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   }
 
   /**
-   * Set up fragments
+   * Set up fragment and presenter
    */
-  private void setUpFragments(){
+  private void setUpFragment(){
 
-    mPlacesFragment = (PlacesFragment) getSupportFragmentManager().findFragmentById(R.id.recycleView) ;
+    mPlacesFragment = (PlacesFragment) getSupportFragmentManager().findFragmentById(R.id.recycleView);
 
     if (mPlacesFragment == null){
       // Create the fragment
@@ -160,6 +169,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
           getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container,
               getString(R.string.list_fragment));
     }
+    mPresenter = new PlacesPresenter(mPlacesFragment);
   }
 
   /**
@@ -168,7 +178,6 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * to launch the request from a SnackBar that includes additional
    * information.
    */
-
   private void requestLocationPermission() {
     // Permission has not been granted and must be requested.
     if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -180,7 +189,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       // the permission.
       // Display a SnackBar with a button to request the missing
       // permission.
-      Snackbar.make(mMainLayout, R.string.location_required, Snackbar.LENGTH_INDEFINITE)
+      Snackbar.make(mMainLayout, R.string.location_required,
+              Snackbar.LENGTH_INDEFINITE)
           .setAction(getString(R.string.ok), new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -198,10 +208,11 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
           PERMISSION_REQUEST_LOCATION);
     }
   }
+
   /**
    * Once the app has prompted for permission to access location, the response
-   * from the user is handled here. If permission exists to access location
-   * check if GPS is available and device is not in airplane mode.
+   * from the user is handled here. If permission exists to access location,
+   * then obtain the location and pass it to the presenter
    *
    * @param requestCode
    *            int: The request code passed into requestPermissions
@@ -221,14 +232,32 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
         // Permission request was denied.
         Snackbar.make(mMainLayout, R.string.location_permission,
                 Snackbar.LENGTH_SHORT).show();
+      } else {
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+          @Override
+          public void onSuccess(Location location) {
+            // Got last known location. In some rare situations this can be null.
+            if (location != null) {
+              // Logic to handle location object
+              mPresenter.setLocation(location);
+              final LocationService locationService = LocationService.getInstance();
+              locationService.setCurrentLocation(location);
+              mPresenter.start();
+            } else {
+              // Notify user that location cannot be found
+              mPresenter.setLocation(null);
+            }
+          }
+        });
       }
+
     }
   }
 
-  @Override public void onCreationComplete() {
-    mPresenter = new PlacesPresenter(mPlacesFragment);
-  }
-
+  /**
+   * Is location tracking enabled?
+   * @return - boolean
+   */
   private boolean locationTrackingEnabled() {
     final LocationManager locationManager = (LocationManager) getApplicationContext()
         .getSystemService(Context.LOCATION_SERVICE);
@@ -246,7 +275,6 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     return wifi == null ? false : wifi.isConnected();
   }
 
-
   /*
    * Prompt user to turn on location tracking and wireless if needed
    */
@@ -257,7 +285,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     final boolean internetConnected = internetConnectivity();
 
     if (gpsEnabled && internetConnected) {
-      completeSetUp();
+      requestLocationPermission();
     }else if (!gpsEnabled) {
       final Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
       showDialog(gpsIntent, REQUEST_LOCATION_SETTINGS,
@@ -268,6 +296,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
               getString(R.string.wireless_off));
     }
   }
+
   /**
    * When returning from activities concerning wifi mode and location
    * settings, check them again.
@@ -281,8 +310,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     if (requestCode == REQUEST_WIFI_SETTINGS || requestCode == REQUEST_LOCATION_SETTINGS) {
       checkSettings();
     }
-
   }
+
   /**
    * Prompt user to change settings required for app
    * @param intent - the Intent containing any data

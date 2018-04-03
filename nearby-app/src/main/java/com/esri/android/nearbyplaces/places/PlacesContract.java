@@ -25,7 +25,6 @@
 package com.esri.android.nearbyplaces.places;
 
 import android.location.Location;
-
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.Place;
@@ -84,5 +83,6 @@ public interface PlacesContract {
      * @return - Envelope
      */
     Envelope getExtentForNearbyPlaces();
+
   }
 }
