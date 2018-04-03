@@ -145,7 +145,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private LinearLayout mSegmentNavigator;
 
-  private BottomSheetBehavior bottomSheetBehavior;
+  private BottomSheetBehavior mBottomSheetBehavior;
 
   private FrameLayout mBottomSheet;
 
@@ -209,6 +209,9 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
         if (mLocationDisplay != null && mLocationDisplay.getLocation() != null) {
+          // Hide detail panel
+          mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
           final ListenableFuture<Boolean> future = mMapView.setViewpointCenterAsync(mLocationDisplay.getLocation().getPosition());
           future.addDoneListener(new Runnable() {
             @Override
@@ -639,11 +642,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * Attach display logic to bottom sheet behavior.
    */
   private void setUpBottomSheet(){
-    bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
+    mBottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
     // Explicitly set the peek height (otherwise bottom sheet is shown when map initially loads)
-    bottomSheetBehavior.setPeekHeight(0);
+    mBottomSheetBehavior.setPeekHeight(0);
 
-    bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+    mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
       @Override
       public void onStateChanged(@NonNull final View bottomSheet, final int newState) {
         getActivity().invalidateOptionsMenu();
@@ -683,11 +686,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       car.setVisible(true);
       walkItem.setVisible(false);
     }
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+    if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
       listItem.setVisible(true);
       filterItem.setVisible(true);
       routeItem.setVisible(false);
-    }else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+    }else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
       listItem.setVisible(false);
       filterItem.setVisible(true);
       routeItem.setVisible(true);
@@ -860,7 +863,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Assign the appropriate icon
     final Drawable d =   CategoryHelper.getDrawableForPlace(place, getActivity()) ;
     txtType.setCompoundDrawablesWithIntrinsicBounds(d,null,null,null);
-    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
     // Center map on selected place
     mPresenter.centerOnPlace(place);
@@ -875,7 +878,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   @Override public final void onMapViewChange() {
 
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+    if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
       if (!mShowingRouteDetail){
         // show snackbar prompting for re-doing search
         if (!mShowSnackbar) {
@@ -883,7 +886,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
         }
       }
     }else{
-      bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+      mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     mPresenter.setCurrentExtent(mMapView.getVisibleArea().getExtent());
   }
@@ -1052,8 +1055,8 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       showRouteHeader(route.getTravelTime());
 
       // Hide bottom sheet
-      bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
-      bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+      mBottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
+      mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
       if (mProgressDialog != null){
         mProgressDialog.dismiss();
