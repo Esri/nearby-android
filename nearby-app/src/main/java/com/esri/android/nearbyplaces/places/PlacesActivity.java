@@ -351,8 +351,4 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       finish();
     }
   }
-
-  @Override public String toString() {
-    return "PlacesActivity{}";
-  }
 }

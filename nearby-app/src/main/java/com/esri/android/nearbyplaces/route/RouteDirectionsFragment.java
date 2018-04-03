@@ -53,7 +53,7 @@ public class RouteDirectionsFragment extends Fragment {
 
   private List<DirectionManeuver> mDirectionManeuvers = new ArrayList<>();
   private final static String TAG = RouteDirectionsFragment.class.getSimpleName();
-  private DirectionsListAdapter mAdapter = null;
+  private DirectionsListAdapter mAdapter;
 
   public static RouteDirectionsFragment newInstance(){
     return new RouteDirectionsFragment();
@@ -92,8 +92,6 @@ public class RouteDirectionsFragment extends Fragment {
         ((MapActivity)getActivity()).showRouteDetail(position);
       }
     });
-
-
     return view;
   }
 
@@ -103,7 +101,6 @@ public class RouteDirectionsFragment extends Fragment {
     if (mAdapter != null){
       mAdapter.notifyDataSetChanged();
     }
-
   }
   /**
    * List adapter for the list of route directions.
@@ -138,7 +135,6 @@ public class RouteDirectionsFragment extends Fragment {
     }
 
     private Drawable getRoutingIcon(final DirectionManeuverType maneuver) {
-
       try {
         Integer id = CategoryHelper.getResourceIdForManeuverType(maneuver);
         return ResourcesCompat.getDrawable(getActivity().getResources(),id,null);
@@ -148,9 +144,5 @@ public class RouteDirectionsFragment extends Fragment {
       }
     }
 
-  }
-
-  @Override public String toString() {
-    return "RouteDirectionsFragment{}";
   }
 }

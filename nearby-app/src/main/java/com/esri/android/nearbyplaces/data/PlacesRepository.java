@@ -34,6 +34,4 @@ public interface PlacesRepository {
 
     void onPlacesLoaded(List<Place> places);
   }
-
-
 }

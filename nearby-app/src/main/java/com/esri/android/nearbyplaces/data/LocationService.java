@@ -60,11 +60,11 @@ import com.esri.arcgisruntime.tasks.networkanalysis.TravelMode;
 public class LocationService implements PlacesServiceApi {
 
   private final static String TAG = LocationService.class.getSimpleName();
-  private static LocatorTask sLocatorTask = null;
-  private static LocationService sInstance = null;
-  private Point mCurrentLocation = null;
-  private Envelope mCurrentEnvelope = null;
-  private RouteTask mRouteTask = null;
+  private static LocatorTask sLocatorTask;
+  private static LocationService sInstance;
+  private Point mCurrentLocation;
+  private Envelope mCurrentEnvelope;
+  private RouteTask mRouteTask;
 
 
   public static LocationService getInstance( ){
@@ -163,7 +163,6 @@ public class LocationService implements PlacesServiceApi {
     if (!placesToRemove.isEmpty()){
       foundPlaces.removeAll(placesToRemove);
     }
-    //Log.i("FilteredPlaces", "After filtering on categories, there are " + foundPlaces.size());
     return foundPlaces;
   }
 
@@ -241,11 +240,8 @@ public class LocationService implements PlacesServiceApi {
         Log.e("LocationService", "Geocoding processing problem " + e.getMessage());
       }
     }
-
-    @Override public String toString() {
-      return "GeocodeProcessor{}";
-    }
   }
+
   private final void setBearingAndDistanceForPlace(final Place place){
     String bearing =  null;
     if ((mCurrentLocation != null) && (place.getLocation() != null)){
@@ -276,7 +272,6 @@ public class LocationService implements PlacesServiceApi {
       if (bearing==null){
         Log.i(TAG, "Can't find bearing for " + degrees);
       }
-
     }
     place.setBearing(bearing);
   }
@@ -302,8 +297,8 @@ public class LocationService implements PlacesServiceApi {
     }else{
       return mCurrentEnvelope;
     }
-
   }
+
   /**
    * A helper class for solving routes
    */
@@ -321,6 +316,7 @@ public class LocationService implements PlacesServiceApi {
       mStops = stops;
       mTravelMode = mode;
     }
+
     @Override
     public void run (){
       final LoadStatus status = mRouteTask.getLoadStatus();
@@ -436,9 +432,5 @@ public class LocationService implements PlacesServiceApi {
       }
       parameters.getStops().add(destination);
     }
-  }
-
-  @Override public String toString() {
-    return "LocationService{}";
   }
 }

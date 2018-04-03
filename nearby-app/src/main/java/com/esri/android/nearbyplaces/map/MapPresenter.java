@@ -162,8 +162,4 @@ public class MapPresenter implements MapContract.Presenter {
           });
     }
   }
-
-  @Override public String toString() {
-    return "MapPresenter{}";
-  }
 }

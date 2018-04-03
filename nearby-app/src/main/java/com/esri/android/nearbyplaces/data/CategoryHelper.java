@@ -134,6 +134,7 @@ public class CategoryHelper {
     }
     return category;
   }
+
   /**
    * Assign appropriate drawable given place type
    * @param p - Place
@@ -267,6 +268,7 @@ public class CategoryHelper {
     }
     return  id;
   }
+
   /**
    * Return appropriate id for given type of place.
    * @param p - Place
@@ -316,7 +318,6 @@ public class CategoryHelper {
    * @return - Drawable
    */
   public static Drawable getDrawableForPlace(final Place p, final Activity a){
-
     final String placeType = p.getType();
     final String category = CategoryHelper.getCategoryForFoodType(placeType);
     final Drawable d;

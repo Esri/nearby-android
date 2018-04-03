@@ -42,7 +42,6 @@ import com.esri.android.nearbyplaces.data.TravelMode;
  */
 public class TravelModeFragment extends DialogFragment implements TravelModeContract.View {
   private TravelModeContract.Presenter mPresenter;
-
   private TravelMode.TravelModeTypes mMode;
   private AppCompatTextView walkTxt, carTxt;
 
@@ -134,9 +133,5 @@ public class TravelModeFragment extends DialogFragment implements TravelModeCont
     if (activity instanceof TravelModeContract.TravelModeView) {
       ((TravelModeContract.TravelModeView) getActivity()).onTravelModeClose(mMode);
     }
-  }
-
-  @Override public String toString() {
-    return "TravelModeFragment{}";
   }
 }

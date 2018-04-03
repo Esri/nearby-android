@@ -89,5 +89,4 @@ public interface PlacesServiceApi {
    * @return - List<Place></Place>
    */
   List<Place> getPlacesFromRepo();
-
 }

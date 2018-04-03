@@ -119,53 +119,53 @@ import java.util.concurrent.ExecutionException;
  */
 public class MapFragment extends Fragment implements  MapContract.View, PlaceListener {
 
-  private MapContract.Presenter mPresenter = null;
+  private MapContract.Presenter mPresenter;
 
-  private CoordinatorLayout mMapLayout = null;
+  private CoordinatorLayout mMapLayout;
 
-  private MapView mMapView = null;
+  private MapView mMapView;
 
-  private LocationDisplay mLocationDisplay = null;
+  private LocationDisplay mLocationDisplay;
 
-  private GraphicsOverlay mGraphicOverlay = null;
+  private GraphicsOverlay mGraphicOverlay;
 
-  private GraphicsOverlay mRouteOverlay = null;
+  private GraphicsOverlay mRouteOverlay;
 
-  private Graphic mCenteredGraphic = null;
+  private Graphic mCenteredGraphic;
 
-  @Nullable private Place mCenteredPlace = null;
+  @Nullable private Place mCenteredPlace;
 
   private final static String TAG = MapFragment.class.getSimpleName();
 
-  private int mCurrentPosition = 0;
+  private int mCurrentPosition;
 
-  @Nullable private String centeredPlaceName = null;
+  @Nullable private String centeredPlaceName;
 
-  private LinearLayout mRouteHeaderDetail = null;
+  private LinearLayout mRouteHeaderDetail;
 
-  private LinearLayout mSegmentNavigator = null;
+  private LinearLayout mSegmentNavigator;
 
-  private BottomSheetBehavior bottomSheetBehavior = null;
+  private BottomSheetBehavior bottomSheetBehavior;
 
-  private FrameLayout mBottomSheet = null;
+  private FrameLayout mBottomSheet;
 
   private boolean mShowingRouteDetail = false;
 
   private boolean mShowSnackbar = false;
 
-  private List<DirectionManeuver> mRouteDirections = null;
+  private List<DirectionManeuver> mRouteDirections;
 
-  private Viewpoint mViewpoint = null;
+  private Viewpoint mViewpoint;
 
-  private View mRouteHeaderView = null;
+  private View mRouteHeaderView;
 
-  private ProgressDialog mProgressDialog = null;
+  private ProgressDialog mProgressDialog ;
 
-  private RouteResult mRouteResult = null;
+  private RouteResult mRouteResult;
 
-  private Point mStart = null;
+  private Point mStart;
 
-  private Point mEnd = null;
+  private Point mEnd;
 
   private List<Stop> mStops;
 
@@ -195,7 +195,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     //Set up behavior for the bottom sheet
     setUpBottomSheet();
-
   }
 
   @Override
@@ -588,7 +587,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private void setToolbarTransparent(){
     final AppBarLayout appBarLayout = getActivity().findViewById(R.id.map_appbar);
- //   appBarLayout.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
   }
 
   /**
@@ -654,16 +652,13 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
           mShowSnackbar = false;
         }
       }
-
       @Override
       public void onSlide(@NonNull final View bottomSheet, final float slideOffset) {
         //no-op
       }
     });
-
     mBottomSheet = getActivity().findViewById(R.id.bottom_card_view);
   }
-
 
   /**
    * Set the menu options based on
@@ -755,7 +750,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * @param places List of Place items
    */
   @Override public final void showNearbyPlaces(final List<Place> places) {
-
     // Clear out any existing graphics
     mGraphicOverlay.getGraphics().clear();
 
@@ -789,13 +783,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     if (mProgressDialog !=  null){
       mProgressDialog.dismiss();
     }
-
   }
+
   private void addGraphicToMap(BitmapDrawable bitdrawable, Geometry geometry){
     final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(bitdrawable);
     final Graphic graphic = new Graphic(geometry, pinSymbol);
     mGraphicOverlay.getGraphics().add(graphic);
   }
+
   /**
    * Populate the place detail contained
    * within the bottom sheet
@@ -833,7 +828,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       txtPhone.setText(place.getPhone());
     }
 
-
     final LinearLayout linkLayout = mBottomSheet.findViewById(R.id.linkLayout);
     // Hide the link placeholder if no link is found
     if (place.getURL().isEmpty()) {
@@ -848,7 +842,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       final TextView txtUrl = mBottomSheet.findViewById(R.id.placeUrl);
       txtUrl.setText(place.getURL());
     }
-
 
     final TextView txtType = mBottomSheet.findViewById(R.id.placeType);
     txtType.setText(place.getType());
@@ -873,7 +866,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mPresenter.centerOnPlace(place);
     mShowSnackbar = false;
     centeredPlaceName = place.getName();
-
   }
 
   /**
@@ -911,7 +903,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   @Override public final MapView getMapView() {
     return mMapView;
   }
-
 
   /**
    * Center the selected place and change the pin
@@ -1181,9 +1172,5 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       super.onScaleEnd(detector);
       onMapViewChange();
     }
-  }
-
-  @Override public String toString() {
-    return "MapFragment{}";
   }
 }

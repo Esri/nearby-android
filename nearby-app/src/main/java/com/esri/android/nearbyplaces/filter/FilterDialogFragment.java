@@ -100,7 +100,6 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
     mPresenter = presenter;
   }
 
-
   public class FilterItemAdapter extends ArrayAdapter<FilterItem>{
     public FilterItemAdapter(final Context context, final List<FilterItem> items){
       super(context,0, items);
@@ -161,5 +160,4 @@ public class FilterDialogFragment extends DialogFragment implements FilterContra
       return convertView;
     }
   }
-
 }

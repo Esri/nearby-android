@@ -94,7 +94,6 @@ public class PlacesPresenter implements PlacesContract.Presenter {
     } else {
       mPlacesView.showMessage("Location cannot be determined");
     }
-
   }
 
   @Override
@@ -117,9 +116,5 @@ public class PlacesPresenter implements PlacesContract.Presenter {
   @Override
   public final Envelope getExtentForNearbyPlaces() {
     return mLocationService != null ? mLocationService.getResultEnvelope(): null;
-  }
-
-  @Override public String toString() {
-    return "PlacesPresenter{}";
   }
 }

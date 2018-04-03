@@ -172,10 +172,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View {
       final Place p = mPlaces.get(position);
       return CategoryHelper.getDrawableForPlace(p, getActivity());
     }
-
-    @Override public String toString() {
-      return "PlacesAdapter{}";
-    }
   }
 
   @Override
@@ -216,13 +212,6 @@ public class PlacesFragment extends Fragment implements PlacesContract.View {
         }
       });
     }
-
-    @Override public String toString() {
-      return "RecyclerViewHolder{}";
-    }
   }
 
-  @Override public String toString() {
-    return "PlacesFragment{}";
-  }
 }

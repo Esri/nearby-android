@@ -67,7 +67,6 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     setUpMapFragment();
 
     setUpAuth();
-
   }
 
   /**
@@ -95,7 +94,6 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     }
   }
 
-
   /**
    * Set up map fragment
    */
@@ -110,7 +108,6 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
           getSupportFragmentManager(), mapFragment, R.id.map_fragment_container, getString(R.string.map_fragment));
     }
     mMapPresenter = new MapPresenter(mapFragment);
-
   }
 
   /**
@@ -215,9 +212,5 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
     NearbyApplication app = (NearbyApplication) getApplication();
     app.setTravelModeType(mode);
     invalidateOptionsMenu();
-  }
-
-  @Override public String toString() {
-    return "MapActivity{}";
   }
 }
