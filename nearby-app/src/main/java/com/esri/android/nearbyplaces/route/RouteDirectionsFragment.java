@@ -112,7 +112,6 @@ public class RouteDirectionsFragment extends Fragment {
 
     @NonNull @Override
     public final View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
-      View view = super.getView(position, convertView, parent);
       // Inflate view if we haven't been given one to reuse
       View v = convertView;
       if (convertView == null) {
