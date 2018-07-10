@@ -2,7 +2,7 @@
 
 This repo provides an example app called Nearby Places for Android devices built with the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).  With some minor customization, you can change the types of places displayed or simply use the app as is.
 
-Visit Esri's[ **example app site** ](https://developers.arcgis.com/example-apps/nearby-android/)to read more about this app and how the Runtime features are implemented.
+Visit Esri's[ **example app site** ](https://developers.arcgis.com/example-apps/nearby-android/?utm_source=github&utm_medium=web&utm_campaign=example_apps_nearby_android)to read more about this app and how the Runtime features are implemented.
 Join our[ **GeoNet community** ](https://community.esri.com/groups/arcgis-example-apps)and keep up to date on the latest discussions about example-apps!
 
 ## Features
