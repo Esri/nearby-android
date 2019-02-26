@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     // App's dependencies, including test
     implementation "com.esri.arcgisruntime:arcgis-android:$rootProject.runtimeVersion"
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
