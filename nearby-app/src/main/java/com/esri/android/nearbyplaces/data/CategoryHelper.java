@@ -245,35 +245,6 @@ public class CategoryHelper {
     }
     return  id;
   }
-  /**
-   * Return appropriate id for given type of place.
-   * @param p - Place
-   * @return - Integer representing icon id
-   */
-  public static Integer getPinForCenterPlace(final Place p){
-    final String category = CategoryHelper.getCategoryForFoodType(p.getType());
-    final Integer d;
-    switch (category){
-      case "Pizza":
-        d = R.drawable.blue_pizza_pin;
-        break;
-      case "Hotel":
-        d = R.drawable.blue_hotel_pin;
-        break;
-      case "Food":
-        d = R.drawable.blue_rest_pin;
-        break;
-      case "Bar or Pub":
-        d = R.drawable.blue_bar_pin;
-        break;
-      case "Coffee Shop":
-        d = R.drawable.blue_cafe_pin;
-        break;
-      default:
-        d = R.drawable.blue_empty_pin;
-    }
-    return d;
-  }
 
   /**
    * Return appropriate drawable base on place type

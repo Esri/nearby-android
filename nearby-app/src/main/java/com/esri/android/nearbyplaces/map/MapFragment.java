@@ -500,11 +500,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
       @Override public void drawStatusChanged(final DrawStatusChangedEvent drawStatusChangedEvent) {
         if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED){
+          mMapView.removeDrawStatusChangedListener(this);
           if (mProgressDialog != null){
             mProgressDialog.dismiss();
           }
           mPresenter.start();
-          mMapView.removeDrawStatusChangedListener(this);
         }
       }
     });
@@ -775,14 +775,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private static int getDrawableForPlace(final Place p){
     return CategoryHelper.getResourceIdForPlacePin(p);
   }
-  private static int getPinForCenterPlace(final Place p){
-    return CategoryHelper.getPinForCenterPlace(p);
-  }
 
   @Override public final MapView getMapView() {
     return mMapView;
   }
-
 
   /**
    * Center the selected place and change the pin
@@ -808,11 +804,21 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
     viewCentered.addDoneListener(new Runnable() {
       @Override public void run() {
-        // Once we've centered on a place, listen
-        // for changes in viewpoint.
-        if (mNavigationChangedListener == null){
-          setNavigationChangeListener();
-        }
+        //Workaround for it not being guaranteed in which order that setViewpointCenterAsync and
+        // navigationChanged events trigger. Occasionally the listener would be set and would catch
+        // a viewpoint completed navigating event that would clear the selection inadvertently. 
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+
+          @Override public void run() {
+            // Once we've centered on a place, listen
+            // for changes in viewpoint.
+            if (mNavigationChangedListener == null){
+              setNavigationChangeListener();
+            }
+          }
+        }, 50);
+
       }
     });
     // Change the pin icon
@@ -823,9 +829,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       if (g.getGeometry().equals(p.getLocation())){
         mCenteredGraphic = g;
         mCenteredGraphic.setZIndex(3);
-        final BitmapDrawable pin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getPinForCenterPlace(p)) ;
-        final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(pin);
-        g.setSymbol(pinSymbol);
+        mCenteredGraphic.setSelected(true);
         break;
       }
     }
@@ -837,8 +841,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private void clearCenteredPin(){
     if (mCenteredGraphic != null){
       mCenteredGraphic.setZIndex(0);
-      final BitmapDrawable oldPin = (BitmapDrawable) ContextCompat.getDrawable(getActivity(),getDrawableForPlace(mCenteredPlace)) ;
-      mCenteredGraphic.setSymbol(new PictureMarkerSymbol(oldPin));
+      mCenteredGraphic.setSelected(false);
     }
   }
 
