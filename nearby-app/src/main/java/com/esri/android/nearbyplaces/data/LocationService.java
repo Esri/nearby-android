@@ -126,7 +126,8 @@ public class LocationService implements PlacesServiceApi {
   }
 
   @Override public List<Place> getPlacesFromRepo() {
-    return mCachedPlaces != null ? filterPlaces(new ArrayList<>(mCachedPlaces.values())) : null;
+    return mCachedPlaces != null ? filterPlaces(new ArrayList<>(mCachedPlaces.values())) :
+            null;
   }
 
   private static void provisionCategories(@NonNull final GeocodeParameters parameters){
@@ -282,7 +283,7 @@ public class LocationService implements PlacesServiceApi {
     if (mCurrentEnvelope == null){
       Envelope envelope = null;
       final List<Place> places = getPlacesFromRepo();
-      if (!places.isEmpty()){
+      if (places != null && !places.isEmpty()){
         final List<Point> points = new ArrayList<>();
         for (final Place place : places){
           points.add(place.getLocation());

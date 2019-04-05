@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -38,11 +39,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,6 +65,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   private CoordinatorLayout mMainLayout = null;
   private PlacesPresenter mPresenter = null;
 
+  private static boolean mUserDeniedPermission = false;
+
   @Override
   public final void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -80,11 +81,6 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   private void completeSetUp(){
     // request location permission
     requestLocationPermission();
-
-    // Set up the toolbar.
-    setUpToolbar();
-
-    setUpFragments();
   }
 
   @Override
@@ -162,37 +158,18 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
   /**
    * Requests the {@link Manifest.permission#ACCESS_FINE_LOCATION}
-   * permission. If an additional rationale should be displayed, the user has
-   * to launch the request from a SnackBar that includes additional
-   * information.
+   * permission.
    */
 
   private void requestLocationPermission() {
-    // Permission has not been granted and must be requested.
-    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-      // Provide an additional rationale to the user if the permission was
-      // not granted
-      // and the user would benefit from additional context for the use of
-      // the permission.
-      // Display a SnackBar with a button to request the missing
-      // permission.
-      Snackbar.make(mMainLayout, "Location access is required to search for places nearby.", Snackbar.LENGTH_INDEFINITE)
-          .setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-              // Request the permission
-              ActivityCompat.requestPermissions(PlacesActivity.this,
-                  new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},
-                  PERMISSION_REQUEST_LOCATION);
-            }
-          }).show();
-
+    if (ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || mUserDeniedPermission) {
+      // Permission has been granted (or denied and ignored), set up the toolbar and fragments.
+      setUpToolbar();
+      setUpFragments();
     } else {
-      // Request the permission. The result will be received in
-      // onRequestPermissionResult()
       ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},
-          PERMISSION_REQUEST_LOCATION);
+              PERMISSION_REQUEST_LOCATION);
     }
   }
   /**
@@ -213,9 +190,35 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       @NonNull final int[] grantResults) {
 
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
-      if (grantResults.length != 1 ) {
-        // Permission request was denied.
-        Snackbar.make(mMainLayout, R.string.locatin_permission, Snackbar.LENGTH_SHORT).show();
+      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+        if (!mUserDeniedPermission) {
+          // Permission request was denied. Provides an additional rationale to the user if the
+          // permission was not granted and the user would benefit from additional context for the
+          // use of the permission.
+          // Displays a SnackBar with a button to request the missing permission, but will only show
+          // the Snackbar one time.
+          mUserDeniedPermission = true;
+          if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            Snackbar.make(mMainLayout, "Location access is required to search for places nearby.", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("OK", new View.OnClickListener() {
+                      @Override
+                      public void onClick(final View view) {
+                        // Request the permission
+                        ActivityCompat.requestPermissions(PlacesActivity.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                PERMISSION_REQUEST_LOCATION);
+                      }
+                    }).show();
+          }
+        } else {
+          // Permission has been denied twice, go ahead and launch without location
+          setUpToolbar();
+          setUpFragments();
+        }
+      } else {
+        // Permission has been granted, launch setup
+        setUpToolbar();
+        setUpFragments();
       }
     }
   }

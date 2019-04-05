@@ -24,15 +24,18 @@
 
 package com.esri.android.nearbyplaces.places;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -50,6 +53,8 @@ import com.esri.arcgisruntime.geometry.Envelope;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -200,15 +205,18 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
   }
 
 
-  @Override public final void onConnected(@Nullable final Bundle bundle) {
-    Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-        mGoogleApiClient);
-    if (mLastLocation != null){
-      Log.i(PlacesFragment.TAG, getString(R.string.latlong) + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude());
-      mPresenter.setLocation(mLastLocation);
-      final LocationService locationService = LocationService.getInstance();
-      locationService.setCurrentLocation(mLastLocation);
-      mPresenter.start();
+  @Override
+  public final void onConnected(@Nullable final Bundle bundle) {
+    if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+      final Task getLocationTask = LocationServices.getFusedLocationProviderClient(this.getContext()).getLastLocation();
+      getLocationTask.addOnCompleteListener(this.getActivity(), new OnCompleteListener<Location>() {
+        @Override
+        public void onComplete(@NonNull Task<Location> task) {
+          startPresenter((Location) getLocationTask.getResult());
+        }
+      });
+    } else {
+      startPresenter(null);
     }
   }
 
@@ -231,6 +239,23 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     Log.e(TAG, getString(R.string.google_location_problem) + connectionResult.getErrorMessage());
   }
 
+
+  /**
+   * Starts the presenter with the given last location. If the location is null, default to a
+   * location in downtown Portland.
+   */
+  private void startPresenter(Location location) {
+    if (location == null) {
+      //Default to downtown Portland
+      location = new Location("Default");
+      location.setLatitude(45.5155);
+      location.setLongitude( -122.676483);
+    }
+    Log.i(PlacesFragment.TAG, getString(R.string.latlong) + location.getLatitude() + "/" + location.getLongitude());
+    mPresenter.setLocation(location);
+    LocationService.getInstance().setCurrentLocation(location);
+    mPresenter.start();
+  }
 
   /**
    * Signals to the activity that this fragment has
