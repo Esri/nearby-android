@@ -45,7 +45,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -114,7 +113,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private int mCurrentPosition = 0;
 
-  @Nullable private String centeredPlaceName = null;
+  @Nullable private String mCenteredPlaceName = null;
 
 
   private LinearLayout mRouteHeaderDetail = null;
@@ -178,7 +177,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final Intent intent = getActivity().getIntent();
     // If any extra data was sent, store it.
     if (intent.getSerializableExtra("PLACE_DETAIL") != null){
-      centeredPlaceName = getActivity().getIntent().getStringExtra("PLACE_DETAIL");
+      mCenteredPlaceName = getActivity().getIntent().getStringExtra("PLACE_DETAIL");
     }
     if (intent.hasExtra("MIN_X")){
 
@@ -581,6 +580,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
               mRouteOverlay.getGraphics().clear();
             }
             mCenteredPlace = null;
+            mCenteredPlaceName = null;
             mPresenter.findPlacesNearby();
           }
         });
@@ -682,11 +682,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // If a centered place name is not null,
     // show detail view
-    if (centeredPlaceName != null){
+    if (mCenteredPlaceName != null){
       for (final Place p: places){
-        if (p.getName().equalsIgnoreCase(centeredPlaceName)){
+        if (p.getName().equalsIgnoreCase(mCenteredPlaceName)){
           showDetail(p);
-          centeredPlaceName = null;
+          mCenteredPlaceName = null;
           break;
         }
       }
@@ -745,7 +745,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Center map on selected place
     mPresenter.centerOnPlace(place);
     mShowSnackbar = false;
-    centeredPlaceName = place.getName();
+    mCenteredPlaceName = place.getName();
   }
 
   /**
