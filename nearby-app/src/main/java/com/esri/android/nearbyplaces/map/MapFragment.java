@@ -582,6 +582,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
             mCenteredPlace = null;
             mCenteredPlaceName = null;
             mPresenter.findPlacesNearby();
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
           }
         });
 
@@ -806,7 +807,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
       @Override public void run() {
         //Workaround for it not being guaranteed in which order that setViewpointCenterAsync and
         // navigationChanged events trigger. Occasionally the listener would be set and would catch
-        // a viewpoint completed navigating event that would clear the selection inadvertently. 
+        // a navigation changed event that would clear the selection inadvertently.
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
 
