@@ -192,11 +192,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
         if (!mUserDeniedPermission) {
-          // Permission request was denied. Provides an additional rationale to the user if the
-          // permission was not granted and the user would benefit from additional context for the
-          // use of the permission.
-          // Displays a SnackBar with a button to request the missing permission, but will only show
-          // the Snackbar one time.
+          // Display Snackbar with extra rationale if permission was denied but will only show the
+          // snackbar once.
           mUserDeniedPermission = true;
           if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             Snackbar.make(mMainLayout, "Location access is required to search for places nearby.", Snackbar.LENGTH_INDEFINITE)
