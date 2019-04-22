@@ -805,7 +805,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final ListenableFuture<Boolean>  viewCentered = mMapView.setViewpointCenterAsync(p.getLocation());
     viewCentered.addDoneListener(new Runnable() {
       @Override public void run() {
-        //Workaround for it not being guaranteed in which order that setViewpointCenterAsync and
+        // Workaround for it not being guaranteed in which order that setViewpointCenterAsync and
         // navigationChanged events trigger. Occasionally the listener would be set and would catch
         // a navigation changed event that would clear the selection inadvertently.
         Handler handler = new Handler();

@@ -246,7 +246,7 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
    */
   private void startPresenter(Location location) {
     if (location == null) {
-      //Default to downtown Portland
+      // Default to downtown Portland
       location = new Location("Default");
       location.setLatitude(45.5155);
       location.setLongitude( -122.676483);
