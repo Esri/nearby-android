@@ -28,10 +28,10 @@ import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
+
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 
 import java.util.List;
 

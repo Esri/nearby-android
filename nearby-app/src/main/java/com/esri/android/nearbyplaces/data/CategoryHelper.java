@@ -28,17 +28,10 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType;
 
 import java.util.Arrays;
 import java.util.List;
-
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType.*;
-
-import static com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType.*;
 
 public class CategoryHelper {
   static final List<String> foodTypes = Arrays.asList(

@@ -82,6 +82,7 @@ import com.esri.arcgisruntime.mapping.view.NavigationChangedListener;
 import com.esri.arcgisruntime.symbology.PictureMarkerSymbol;
 import com.esri.arcgisruntime.symbology.SimpleLineSymbol;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
+import com.esri.arcgisruntime.symbology.Symbol;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.Route;
 import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
@@ -100,7 +101,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private GraphicsOverlay mRouteOverlay = null;
 
-
   private boolean initialLocationLoaded = false;
 
   private Graphic mCenteredGraphic = null;
@@ -114,7 +114,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   private int mCurrentPosition = 0;
 
   @Nullable private String mCenteredPlaceName = null;
-
 
   private LinearLayout mRouteHeaderDetail = null;
 
@@ -386,15 +385,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
     // Highlight route segment in map
     Geometry geometry = maneuver.getGeometry();
-    Graphic graphic = null;
+    Symbol symbol;
     if (geometry instanceof Polyline){
-      SimpleLineSymbol symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 7);
-      graphic = new Graphic(geometry, symbol);
+      symbol = new SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.RED, 7);
     }else{
-      SimpleMarkerSymbol marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.RED, 7);
-      graphic = new Graphic(geometry, marker);
+      symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.RED, 7);
     }
 
+    Graphic graphic = new Graphic(geometry, symbol);
     mRouteOverlay.getGraphics().add(0,graphic);
 
     // Zoom to segment

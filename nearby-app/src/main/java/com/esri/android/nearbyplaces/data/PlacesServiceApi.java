@@ -51,10 +51,5 @@ public interface PlacesServiceApi {
 
   void getPlacesFromService(@NonNull GeocodeParameters parameters, @NonNull PlacesServiceCallback callback);
 
-  Place getPlaceDetail(String placeName);
-
-
   List<Place> getPlacesFromRepo();
-
-
 }

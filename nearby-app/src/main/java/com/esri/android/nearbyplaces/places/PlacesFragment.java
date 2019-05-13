@@ -88,9 +88,8 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
     super.onCreate(savedInstanceState);
     // retain this fragment
     setRetainInstance(true);
-    final List<Place> placeList = new ArrayList<>();
 
-    mPlaceAdapter = new PlacesFragment.PlacesAdapter(getContext(), R.id.placesContainer,placeList);
+    mPlaceAdapter = new PlacesFragment.PlacesAdapter(new ArrayList<>());
 
     mCallback.onCreationComplete();
   }
@@ -165,12 +164,13 @@ public class PlacesFragment extends Fragment implements PlacesContract.View,
 
   public  class PlacesAdapter extends RecyclerView.Adapter<PlacesFragment.RecyclerViewHolder> {
 
-    private List<Place> mPlaces = Collections.emptyList();
-    public PlacesAdapter(final Context context, final int resource, final List<Place> places){
-          mPlaces = places;
+    private List<Place> mPlaces;
+
+    public PlacesAdapter(final List<Place> places) {
+      mPlaces = places;
     }
 
-    public final void setPlaces(final List<Place> places){
+    public final void setPlaces(final List<Place> places) {
       mPlaces = places;
       notifyDataSetChanged();
     }

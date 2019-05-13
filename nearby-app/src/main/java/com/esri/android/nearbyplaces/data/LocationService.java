@@ -76,7 +76,7 @@ public class LocationService implements PlacesServiceApi {
   private Map<String,Place> mCachedPlaces = null;
 
 
-  public final static void configureService(@NonNull String locatorUrl, @NonNull final Runnable onSuccess, @NonNull final
+  public static void configureService(@NonNull String locatorUrl, @NonNull final Runnable onSuccess, @NonNull final
       Runnable onError){
     if (null == sLocatorTask){
       sLocatorTask = new LocatorTask(locatorUrl);
@@ -112,17 +112,6 @@ public class LocationService implements PlacesServiceApi {
         .geocodeAsync(searchText, parameters);
     Log.i(TAG,"Geocode search started...");
     results.addDoneListener(new GeocodeProcessor(results, callback));
-  }
-
-
-  @Override public Place getPlaceDetail(final String placeName) {
-    Place foundPlace = null;
-    if (!mCachedPlaces.isEmpty()){
-      if (mCachedPlaces.get(placeName) != null){
-        foundPlace = mCachedPlaces.get(placeName);
-      }
-    }
-    return foundPlace;
   }
 
   @Override public List<Place> getPlacesFromRepo() {
@@ -171,12 +160,9 @@ public class LocationService implements PlacesServiceApi {
   public void setCurrentEnvelope(final Envelope envelope){
     mCurrentEnvelope = envelope;
   }
+
   public Point getCurrentLocation(){
     return mCurrentLocation;
-  }
-
-  public Envelope getCurrentEnvelope(){
-    return mCurrentEnvelope;
   }
 
   private class GeocodeProcessor implements Runnable{
@@ -239,7 +225,7 @@ public class LocationService implements PlacesServiceApi {
       }
     }
   }
-  private final void setBearingAndDistanceForPlace(final Place place){
+  private void setBearingAndDistanceForPlace(final Place place){
     String bearing =  null;
     if ((mCurrentLocation != null) && (place.getLocation() != null)){
       final LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);

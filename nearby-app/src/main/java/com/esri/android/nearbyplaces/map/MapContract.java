@@ -23,11 +23,11 @@
  */
 package com.esri.android.nearbyplaces.map;
 
-import android.widget.LinearLayout;
 import com.esri.android.nearbyplaces.BasePresenter;
 import com.esri.android.nearbyplaces.BaseView;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
+
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.mapping.view.MapView;
