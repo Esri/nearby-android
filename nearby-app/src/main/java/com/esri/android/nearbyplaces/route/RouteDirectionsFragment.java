@@ -61,7 +61,7 @@ public class RouteDirectionsFragment extends Fragment {
     final View view = inflater.inflate(R.layout.route_direction_list, container,false);
 
     // Set up the header
-    ImageView backBtn = (ImageView) getActivity().findViewById(R.id.btnCloseDirections);
+    ImageView backBtn = getActivity().findViewById(R.id.btnCloseDirections);
     backBtn.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         ((MapActivity)getActivity()).restoreRouteView();
@@ -75,7 +75,7 @@ public class RouteDirectionsFragment extends Fragment {
     }
 
     // Setup list adapter
-    final ListView listView = (ListView) view.findViewById(R.id.directions_list);
+    final ListView listView = view.findViewById(R.id.directions_list);
     mAdapter = new DirectionsListAdapter(mDirectionManeuvers);
     listView.setAdapter(mAdapter);
 
@@ -118,14 +118,14 @@ public class RouteDirectionsFragment extends Fragment {
 
       // Configure the view for this item
       final DirectionManeuver direction = getItem(position);
-      final ImageView imageView = (ImageView) v.findViewById(R.id.directions_maneuver_imageview);
+      final ImageView imageView = v.findViewById(R.id.directions_maneuver_imageview);
       final Drawable drawable = getRoutingIcon(direction != null ? direction.getManeuverType() : null);
       if (drawable != null) {
         imageView.setImageDrawable(drawable);
       }
-      TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
+      TextView textView = v.findViewById(R.id.directions_text_textview);
       textView.setText(direction.getDirectionText());
-      textView = (TextView) v.findViewById(R.id.directions_length_textview);
+      textView = v.findViewById(R.id.directions_length_textview);
       final String lengthString = String.format("%.1f meters", direction.getLength());
       textView.setText(lengthString);
       return v;
