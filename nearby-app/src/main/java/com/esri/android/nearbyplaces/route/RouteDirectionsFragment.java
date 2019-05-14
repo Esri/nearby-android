@@ -134,13 +134,104 @@ public class RouteDirectionsFragment extends Fragment {
     private Drawable getRoutingIcon(final DirectionManeuverType maneuver) {
 
       try {
-        Integer id = CategoryHelper.getResourceIdForManeuverType(maneuver);
+        Integer id = getResourceIdForManeuverType(maneuver);
         return ResourcesCompat.getDrawable(getActivity().getResources(),id,null);
       } catch (final Resources.NotFoundException e) {
         Log.w(RouteDirectionsFragment.TAG, "No drawable found for" + maneuver.name());
         return null;
       }
     }
+  }
 
+  /**
+   * Return appropriate resource id for given type of direction
+   */
+  public Integer getResourceIdForManeuverType(DirectionManeuverType maneuverType){
+    final int id;
+    switch (maneuverType) {
+      case STRAIGHT :
+        id = R.drawable.ic_routing_straight_arrow;
+        break;
+      case BEAR_LEFT :
+        id = R.drawable.ic_routing_bear_left;
+        break;
+      case BEAR_RIGHT :
+        id = R.drawable.ic_routing_bear_right;
+        break;
+      case TURN_LEFT :
+        id = R.drawable.ic_routing_turn_left;
+        break;
+      case TURN_RIGHT :
+        id = R.drawable.ic_routing_turn_right;
+        break;
+      case SHARP_LEFT :
+        id = R.drawable.ic_routing_turn_sharp_left;
+        break;
+      case SHARP_RIGHT :
+        id = R.drawable.ic_routing_turn_sharp_right;
+        break;
+      case U_TURN :
+        id = R.drawable.ic_routing_u_turn;
+        break;
+      case FERRY :
+        id = R.drawable.ic_routing_take_ferry;
+        break;
+      case ROUNDABOUT :
+        id = R.drawable.ic_routing_get_on_roundabout;
+        break;
+      case HIGHWAY_MERGE :
+        id = R.drawable.ic_routing_merge_onto_highway;
+        break;
+      case HIGHWAY_CHANGE :
+        id = R.drawable.ic_routing_highway_change;
+        break;
+      case FORK_CENTER :
+        id = R.drawable.ic_routing_take_center_fork;
+        break;
+      case FORK_LEFT :
+        id = R.drawable.ic_routing_take_fork_left;
+        break;
+      case FORK_RIGHT :
+        id = R.drawable.ic_routing_take_fork_right;
+        break;
+      case END_OF_FERRY :
+        id = R.drawable.ic_routing_get_off_ferry;
+        break;
+      case RAMP_RIGHT :
+        id = R.drawable.ic_routing_take_ramp_right;
+        break;
+      case RAMP_LEFT :
+        id = R.drawable.ic_routing_take_ramp_left;
+        break;
+      case TURN_LEFT_RIGHT :
+        id = R.drawable.ic_routing_left_right;
+        break;
+      case TURN_RIGHT_LEFT :
+        id = R.drawable.ic_routing_right_left;
+        break;
+      case TURN_RIGHT_RIGHT :
+        id = R.drawable.ic_routing_right_right;
+        break;
+      case TURN_LEFT_LEFT :
+        id = R.drawable.ic_routing_left_left;
+        break;
+      case STOP :
+        id = R.drawable.end_route_pin;
+        break;
+      case DEPART:
+        id = R.drawable.route_pin_start;
+        break;
+      case HIGHWAY_EXIT :
+      case TRIP_ITEM :
+      case PEDESTRIAN_RAMP :
+      case ELEVATOR :
+      case ESCALATOR :
+      case STAIRS :
+      case DOOR_PASSAGE :
+      default :
+        Log.w("CategoryHelper", maneuverType.name() + "not supported");
+        return null;
+    }
+    return  id;
   }
 }
