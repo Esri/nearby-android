@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Helper that maintains the categories of supported places.
+ */
 public class CategoryKeeper {
     private static CategoryKeeper instance = null;
     private final ArrayList<FilterItem> categories = new ArrayList<>();

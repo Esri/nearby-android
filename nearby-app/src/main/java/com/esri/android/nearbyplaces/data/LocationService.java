@@ -56,6 +56,9 @@ import com.esri.arcgisruntime.tasks.networkanalysis.RouteTask;
 import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 import com.esri.arcgisruntime.tasks.networkanalysis.TravelMode;
 
+/**
+ * Handles location based functionality, namely geocoding and routing.
+ */
 public class LocationService implements PlacesServiceApi {
 
   private final static String TAG = LocationService.class.getSimpleName();
@@ -149,7 +152,6 @@ public class LocationService implements PlacesServiceApi {
     if (!placesToRemove.isEmpty()){
       foundPlaces.removeAll(placesToRemove);
     }
-    //Log.i("FilteredPlaces", "After filtering on categories, there are " + foundPlaces.size());
     return foundPlaces;
   }
 
