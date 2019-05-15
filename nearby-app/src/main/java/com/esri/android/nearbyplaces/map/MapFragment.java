@@ -549,7 +549,6 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
   public final void onPrepareOptionsMenu(final Menu menu){
     final MenuItem listItem = menu.findItem(R.id.list_action);
     final MenuItem routeItem = menu.findItem(R.id.route_action);
-    final MenuItem directionItem = menu.findItem(R.id.walking_directions);
     final MenuItem filterItem = menu.findItem(R.id.filter_in_map);
 
 

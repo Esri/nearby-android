@@ -138,8 +138,7 @@ public class LocationService implements PlacesServiceApi {
 
   private static List<Place> filterPlaces(final List<Place> foundPlaces){
     final Collection<Place> placesToRemove = new ArrayList<>();
-    final CategoryKeeper keeper = CategoryKeeper.getInstance();
-    final List<String> selectedTypes = keeper.getSelectedTypes();
+    final List<String> selectedTypes = CategoryKeeper.getInstance().getSelectedTypes();
     if (!selectedTypes.isEmpty()){
       for (final Place p: foundPlaces) {
         for (final String filter : selectedTypes){
@@ -182,7 +181,7 @@ public class LocationService implements PlacesServiceApi {
         }
         mCachedPlaces.clear();
         final List<GeocodeResult> data = mResults.get();
-        final List<Place> places = new ArrayList<Place>();
+        final List<Place> places = new ArrayList<>();
         int i = 0;
         for (final GeocodeResult r: data){
           i = i + 1;
@@ -227,6 +226,7 @@ public class LocationService implements PlacesServiceApi {
       }
     }
   }
+
   private void setBearingAndDistanceForPlace(final Place place){
     String bearing =  null;
     if ((mCurrentLocation != null) && (place.getLocation() != null)){

@@ -37,7 +37,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.CategoryHelper;
 import com.esri.android.nearbyplaces.map.MapActivity;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType;
@@ -81,7 +80,7 @@ public class RouteDirectionsFragment extends Fragment {
 
     // When directions are tapped, show selected route section
     // highlighted on map and zoomed in with route section description
-    // overlayed on map
+    // overlaid on map
     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ((MapActivity)getActivity()).showRouteDetail(position);

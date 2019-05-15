@@ -108,8 +108,7 @@ public class MapPresenter implements MapContract.Presenter {
   }
 
   /**
-   * The entry point for this class starts
-   * by loading the gecoding service.
+   * The entry point for this class starts by loading the geocoding service.
    */
   @Override public final void start() {
     mLocationService = LocationService.getInstance();
