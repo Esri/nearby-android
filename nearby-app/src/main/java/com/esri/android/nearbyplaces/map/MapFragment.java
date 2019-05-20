@@ -101,7 +101,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private GraphicsOverlay mRouteOverlay = null;
 
-  private boolean initialLocationLoaded = false;
+  private boolean mInitialLocationLoaded = false;
 
   private Graphic mCenteredGraphic = null;
 
@@ -119,7 +119,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   private LinearLayout mSegmentNavigator = null;
 
-  private BottomSheetBehavior bottomSheetBehavior = null;
+  private BottomSheetBehavior mBottomSheetBehavior = null;
 
   private FrameLayout mBottomSheet = null;
 
@@ -515,12 +515,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    * Attach display logic to bottom sheet behavior.
    */
   private void setUpBottomSheet(){
-    bottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
+    mBottomSheetBehavior = BottomSheetBehavior.from(getActivity().findViewById(R.id.bottom_card_view));
     // Explicitly set the peek height (otherwise bottom sheet is shown when map initially loads)
-    bottomSheetBehavior.setPeekHeight(0);
+    mBottomSheetBehavior.setPeekHeight(0);
 
 
-    bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+    mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
       @Override
       public void onStateChanged(@NonNull final View bottomSheet, final int newState) {
         getActivity().invalidateOptionsMenu();
@@ -552,11 +552,11 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     final MenuItem filterItem = menu.findItem(R.id.filter_in_map);
 
 
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+    if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
       listItem.setVisible(true);
       filterItem.setVisible(true);
       routeItem.setVisible(false);
-    }else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
+    }else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED){
       listItem.setVisible(false);
       filterItem.setVisible(true);
       routeItem.setVisible(true);
@@ -579,7 +579,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
             mCenteredPlace = null;
             mCenteredPlaceName = null;
             mPresenter.findPlacesNearby();
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
           }
         });
 
@@ -660,10 +660,10 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Clear out any existing graphics
     mGraphicOverlay.getGraphics().clear();
 
-    if (!initialLocationLoaded){
+    if (!mInitialLocationLoaded){
       setNavigationChangeListener();
     }
-    initialLocationLoaded = true;
+    mInitialLocationLoaded = true;
     if (places == null || places.isEmpty()){
       Toast.makeText(getContext(),getString(R.string.no_places_found),Toast.LENGTH_SHORT).show();
       if (mProgressDialog !=  null){
@@ -738,7 +738,7 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
     // Assign the appropriate icon
     final Drawable d =   CategoryHelper.getDrawableForPlace(place, getActivity()) ;
     txtType.setCompoundDrawablesWithIntrinsicBounds(d,null,null,null);
-    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
     // Center map on selected place
     mPresenter.centerOnPlace(place);
@@ -753,14 +753,14 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   @Override public final void onMapViewChange() {
     mShowSnackbar = true;
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
+    if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED){
       if (!mShowingRouteDetail){
         // show snackbar prompting for re-doing search
         showSearchSnackbar();
       }
 
     }else{
-      bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+      mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
     mPresenter.setCurrentExtent(mMapView.getVisibleArea().getExtent());
   }
