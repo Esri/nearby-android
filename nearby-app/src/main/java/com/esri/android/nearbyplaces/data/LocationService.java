@@ -57,7 +57,7 @@ import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 import com.esri.arcgisruntime.tasks.networkanalysis.TravelMode;
 
 /**
- * Handles location based functionality, namely geocoding and routing.
+ * Handles location-based functionality, namely geocoding and routing.
  */
 public class LocationService implements PlacesServiceApi {
 
