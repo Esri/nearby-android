@@ -26,20 +26,14 @@ package com.esri.android.nearbyplaces.data;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType;
 
 import java.util.Arrays;
 import java.util.List;
 
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
-import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType.*;
-
-import static com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType.*;
-
+/**
+ * Helper for getting resources for each place category.
+ */
 public class CategoryHelper {
   static final List<String> foodTypes = Arrays.asList(
         "African Food",
@@ -131,7 +125,7 @@ public class CategoryHelper {
    */
   public static Integer getResourceIdForPlacePin(final Place p){
     final String category = CategoryHelper.getCategoryForFoodType(p.getType());
-    final Integer d;
+    final int d;
     switch (category){
       case "Pizza":
         d = R.drawable.pizza_pin;
@@ -152,98 +146,6 @@ public class CategoryHelper {
         d = R.drawable.empty_pin;
     }
     return d;
-  }
-
-  /**
-   * Return appropriate resource id for given type of direction
-   */
-  public static Integer getResourceIdForManeuverType(DirectionManeuverType maneuverType){
-    final Integer id;
-    switch (maneuverType) {
-      case STRAIGHT :
-        id = R.drawable.ic_routing_straight_arrow;
-        break;
-      case BEAR_LEFT :
-        id = R.drawable.ic_routing_bear_left;
-        break;
-      case BEAR_RIGHT :
-        id = R.drawable.ic_routing_bear_right;
-        break;
-      case TURN_LEFT :
-        id = R.drawable.ic_routing_turn_left;
-        break;
-      case TURN_RIGHT :
-        id = R.drawable.ic_routing_turn_right;
-        break;
-      case SHARP_LEFT :
-        id = R.drawable.ic_routing_turn_sharp_left;
-        break;
-      case SHARP_RIGHT :
-        id = R.drawable.ic_routing_turn_sharp_right;
-        break;
-      case U_TURN :
-        id = R.drawable.ic_routing_u_turn;
-        break;
-      case FERRY :
-        id = R.drawable.ic_routing_take_ferry;
-        break;
-      case ROUNDABOUT :
-        id = R.drawable.ic_routing_get_on_roundabout;
-        break;
-      case HIGHWAY_MERGE :
-        id = R.drawable.ic_routing_merge_onto_highway;
-        break;
-      case HIGHWAY_CHANGE :
-        id = R.drawable.ic_routing_highway_change;
-        break;
-      case FORK_CENTER :
-        id = R.drawable.ic_routing_take_center_fork;
-        break;
-      case FORK_LEFT :
-        id = R.drawable.ic_routing_take_fork_left;
-        break;
-      case FORK_RIGHT :
-        id = R.drawable.ic_routing_take_fork_right;
-        break;
-      case END_OF_FERRY :
-        id = R.drawable.ic_routing_get_off_ferry;
-        break;
-      case RAMP_RIGHT :
-        id = R.drawable.ic_routing_take_ramp_right;
-        break;
-      case RAMP_LEFT :
-        id = R.drawable.ic_routing_take_ramp_left;
-        break;
-      case TURN_LEFT_RIGHT :
-        id = R.drawable.ic_routing_left_right;
-        break;
-      case TURN_RIGHT_LEFT :
-        id = R.drawable.ic_routing_right_left;
-        break;
-      case TURN_RIGHT_RIGHT :
-        id = R.drawable.ic_routing_right_right;
-        break;
-      case TURN_LEFT_LEFT :
-        id = R.drawable.ic_routing_left_left;
-        break;
-      case STOP :
-        id = R.drawable.end_route_pin;
-        break;
-      case DEPART:
-        id = R.drawable.route_pin_start;
-        break;
-      case HIGHWAY_EXIT :
-      case TRIP_ITEM :
-      case PEDESTRIAN_RAMP :
-      case ELEVATOR :
-      case ESCALATOR :
-      case STAIRS :
-      case DOOR_PASSAGE :
-      default :
-        Log.w("CategoryHelper", maneuverType.name() + "not supported");
-        return null;
-    }
-    return  id;
   }
 
   /**

@@ -25,7 +25,7 @@ package com.esri.android.nearbyplaces.filter;
 
 /**
  * Represents a filter setting used to control what types of places are
- * viewed in map and list
+ * viewed in the map or list.
  */
 public class FilterItem {
 

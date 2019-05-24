@@ -28,10 +28,10 @@ import android.support.annotation.NonNull;
 import com.esri.android.nearbyplaces.data.LocationService;
 import com.esri.android.nearbyplaces.data.Place;
 import com.esri.android.nearbyplaces.data.PlacesServiceApi;
+
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeParameters;
-import com.esri.arcgisruntime.tasks.networkanalysis.RouteResult;
 
 import java.util.List;
 
@@ -108,8 +108,7 @@ public class MapPresenter implements MapContract.Presenter {
   }
 
   /**
-   * The entry point for this class starts
-   * by loading the gecoding service.
+   * The entry point for this class starts by loading the geocoding service.
    */
   @Override public final void start() {
     mLocationService = LocationService.getInstance();

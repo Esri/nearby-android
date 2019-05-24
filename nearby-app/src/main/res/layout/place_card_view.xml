@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/bottom_card_view"
+        android:id="@+id/bottom_card_view"
         android:layout_width="match_parent"
         android:background="@color/background_floating_material_light"
         android:layout_height="200dp"

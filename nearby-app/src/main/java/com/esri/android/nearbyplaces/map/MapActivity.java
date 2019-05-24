@@ -112,13 +112,13 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
           getSupportFragmentManager(), routeDirectionsFragment, R.id.route_directions_container, getString(R.string.route_fragment));
     }
     // Show the fragment
-    final LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
+    final LinearLayout layout = findViewById(R.id.route_directions_container);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
     layout.requestLayout();
 
     // Hide the map
-    final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_fragment_container);
+    final FrameLayout mapLayout = findViewById(R.id.map_fragment_container);
     final CoordinatorLayout.LayoutParams  layoutParams  =  new CoordinatorLayout.LayoutParams(0,0);
     layoutParams.setMargins(0, 0,0,0);
     mapLayout.setLayoutParams(layoutParams);
@@ -135,7 +135,7 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
    */
   public final void showRouteDetail(final int position){
     // Hide the list of directions
-    final LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
+    final LinearLayout layout = findViewById(R.id.route_directions_container);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(0,0));
     layout.requestLayout();
 
@@ -152,12 +152,12 @@ public class MapActivity extends AppCompatActivity implements FilterContract.Fil
    */
   public final MapFragment restoreMapAndRemoveRouteDetail(){
     // Remove the route directions
-    final LinearLayout layout = (LinearLayout) findViewById(R.id.route_directions_container);
+    final LinearLayout layout = findViewById(R.id.route_directions_container);
     layout.setLayoutParams(new CoordinatorLayout.LayoutParams(0, 0));
     layout.requestLayout();
 
     // Show the map
-    final FrameLayout mapLayout = (FrameLayout) findViewById(R.id.map_fragment_container);
+    final FrameLayout mapLayout = findViewById(R.id.map_fragment_container);
 
     final CoordinatorLayout.LayoutParams  layoutParams  =  new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT);

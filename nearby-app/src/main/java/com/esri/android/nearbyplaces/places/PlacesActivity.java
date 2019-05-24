@@ -72,7 +72,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main_layout);
 
-    mMainLayout = (CoordinatorLayout) findViewById(R.id.list_coordinator_layout);
+    mMainLayout = findViewById(R.id.list_coordinator_layout);
 
     // Check for gps and wifi
     checkSettings();
@@ -95,7 +95,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * Set up toolbar
    */
    private void setUpToolbar(){
-     final Toolbar toolbar = (Toolbar) findViewById(R.id.placeList_toolbar);
+     final Toolbar toolbar = findViewById(R.id.placeList_toolbar);
      setSupportActionBar(toolbar);
 
      assert toolbar != null;
@@ -237,7 +237,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
   private boolean internetConnectivity(){
     final ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     final NetworkInfo wifi = connManager.getActiveNetworkInfo();
-    return wifi == null ? false : wifi.isConnected();
+    return wifi != null && wifi.isConnected();
   }
 
 
@@ -252,10 +252,10 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
     if (gpsEnabled && internetConnected) {
       completeSetUp();
-    }else if (!gpsEnabled) {
+    } else if (!gpsEnabled) {
       final Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
       showDialog(gpsIntent, REQUEST_LOCATION_SETTINGS, getString(R.string.location_tracking_off));
-    }else if(!internetConnected)	{
+    } else {
       final Intent internetIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
       showDialog(internetIntent, REQUEST_WIFI_SETTINGS, getString(R.string.wireless_off));
     }

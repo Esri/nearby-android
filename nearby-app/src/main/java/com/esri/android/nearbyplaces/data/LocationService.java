@@ -56,6 +56,9 @@ import com.esri.arcgisruntime.tasks.networkanalysis.RouteTask;
 import com.esri.arcgisruntime.tasks.networkanalysis.Stop;
 import com.esri.arcgisruntime.tasks.networkanalysis.TravelMode;
 
+/**
+ * Handles location-based functionality, namely geocoding and routing.
+ */
 public class LocationService implements PlacesServiceApi {
 
   private final static String TAG = LocationService.class.getSimpleName();
@@ -76,7 +79,7 @@ public class LocationService implements PlacesServiceApi {
   private Map<String,Place> mCachedPlaces = null;
 
 
-  public final static void configureService(@NonNull String locatorUrl, @NonNull final Runnable onSuccess, @NonNull final
+  public static void configureService(@NonNull String locatorUrl, @NonNull final Runnable onSuccess, @NonNull final
       Runnable onError){
     if (null == sLocatorTask){
       sLocatorTask = new LocatorTask(locatorUrl);
@@ -114,17 +117,6 @@ public class LocationService implements PlacesServiceApi {
     results.addDoneListener(new GeocodeProcessor(results, callback));
   }
 
-
-  @Override public Place getPlaceDetail(final String placeName) {
-    Place foundPlace = null;
-    if (!mCachedPlaces.isEmpty()){
-      if (mCachedPlaces.get(placeName) != null){
-        foundPlace = mCachedPlaces.get(placeName);
-      }
-    }
-    return foundPlace;
-  }
-
   @Override public List<Place> getPlacesFromRepo() {
     return mCachedPlaces != null ? filterPlaces(new ArrayList<>(mCachedPlaces.values())) :
             null;
@@ -146,8 +138,7 @@ public class LocationService implements PlacesServiceApi {
 
   private static List<Place> filterPlaces(final List<Place> foundPlaces){
     final Collection<Place> placesToRemove = new ArrayList<>();
-    final CategoryKeeper keeper = CategoryKeeper.getInstance();
-    final List<String> selectedTypes = keeper.getSelectedTypes();
+    final List<String> selectedTypes = CategoryKeeper.getInstance().getSelectedTypes();
     if (!selectedTypes.isEmpty()){
       for (final Place p: foundPlaces) {
         for (final String filter : selectedTypes){
@@ -160,7 +151,6 @@ public class LocationService implements PlacesServiceApi {
     if (!placesToRemove.isEmpty()){
       foundPlaces.removeAll(placesToRemove);
     }
-    //Log.i("FilteredPlaces", "After filtering on categories, there are " + foundPlaces.size());
     return foundPlaces;
   }
 
@@ -171,12 +161,9 @@ public class LocationService implements PlacesServiceApi {
   public void setCurrentEnvelope(final Envelope envelope){
     mCurrentEnvelope = envelope;
   }
+
   public Point getCurrentLocation(){
     return mCurrentLocation;
-  }
-
-  public Envelope getCurrentEnvelope(){
-    return mCurrentEnvelope;
   }
 
   private class GeocodeProcessor implements Runnable{
@@ -194,7 +181,7 @@ public class LocationService implements PlacesServiceApi {
         }
         mCachedPlaces.clear();
         final List<GeocodeResult> data = mResults.get();
-        final List<Place> places = new ArrayList<Place>();
+        final List<Place> places = new ArrayList<>();
         int i = 0;
         for (final GeocodeResult r: data){
           i = i + 1;
@@ -239,7 +226,8 @@ public class LocationService implements PlacesServiceApi {
       }
     }
   }
-  private final void setBearingAndDistanceForPlace(final Place place){
+
+  private void setBearingAndDistanceForPlace(final Place place){
     String bearing =  null;
     if ((mCurrentLocation != null) && (place.getLocation() != null)){
       final LinearUnit linearUnit = new LinearUnit(LinearUnitId.METERS);
