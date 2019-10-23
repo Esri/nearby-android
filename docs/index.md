@@ -1,14 +1,14 @@
 ## Description
 
-Customize your exploration of places around you using [Esri’s World Geocoding Service](/features/geocoding/) or your own [custom geocoding service](http://desktop.arcgis.com/en/arcmap/latest/manage-data/geocoding/the-geocoding-workflow.htm). The app uses Esri’s geocoding service to find hotels, restaurants or bars within a default radius of the device’s current location and provides routing directions to a selected place of interest. The ArcGIS Android Geometry Engine API is used to sort the list of places based on distance and bearing from the device’s location.
+Customize your exploration of places around you using [Esri’s World Geocoding Service](https://developers.arcgis.com/features/geocoding/) or your own [custom geocoding service](http://desktop.arcgis.com/en/arcmap/latest/manage-data/geocoding/the-geocoding-workflow.htm). The app uses Esri’s geocoding service to find hotels, restaurants or bars within a default radius of the device’s current location and provides routing directions to a selected place of interest. The ArcGIS Android Geometry Engine API is used to sort the list of places based on distance and bearing from the device’s location.
 
-The example application is open source and available on GitHub. You can modify it to display [categories](/rest/geocode/api-reference/geocoding-category-filtering.htm) of places you care about or [configure](http://desktop.arcgis.com/en/arcmap/latest/manage-data/geocoding/creating-an-address-locator.htm) your own custom locator.
+The example application is open source and available on GitHub. You can modify it to display [categories](https://developers.arcgis.com/rest/geocode/api-reference/geocoding-category-filtering.htm) of places you care about or [configure](http://desktop.arcgis.com/en/arcmap/latest/manage-data/geocoding/creating-an-address-locator.htm) your own custom locator.
 
 ## Identifying places nearby
 
 ### Device location
 
-The nearby-app uses a [mapless app pattern](/android/guide/determine-your-app-map-pattern.htm#ESRI_SECTION1_58C46384E3484890A47629F8F12E6EF5) by first presenting a list of nearby places.  Since the app starts with a list, rather than a map, the device location is obtained using Google’s Location Services API. In the future, the Runtime SDK can be used to obtain the device location outside of the `MapView`.  Before trying to obtain the device location, the app checks that the device's GPS and wireless settings are turned on and then configures Google's location service.
+The nearby-app uses a [mapless app pattern](https://developers.arcgis.com/android/guide/determine-your-app-map-pattern.htm#ESRI_SECTION1_58C46384E3484890A47629F8F12E6EF5) by first presenting a list of nearby places.  Since the app starts with a list, rather than a map, the device location is obtained using Google’s Location Services API. In the future, the Runtime SDK can be used to obtain the device location outside of the `MapView`.  Before trying to obtain the device location, the app checks that the device's GPS and wireless settings are turned on and then configures Google's location service.
 
 ```java
 // Google's location services are configured in the
@@ -34,9 +34,9 @@ Once a location is obtained, a search for places can begin.
 
 ### Geocoding
 
-The search for places uses category filters (e.g. “Hotel”, “Food”, “Pizza”) to find places matching these types near the current device location. The World Geocoding service uses a hierarchical structure of categories allowing high level concepts, like a category level 1 descriptor (e.g. “POI” for place of interest) to be searched as well as more specific category level 3 types like “Brazilian Food” or “Science Museum” to be used. The category filters and other search criteria are defined using the SDK’s [Geocode Parameters](/android/latest/api-reference/reference/com/esri/arcgisruntime/tasks/geocode/GeocodeParameters.html).
+The search for places uses category filters (e.g. “Hotel”, “Food”, “Pizza”) to find places matching these types near the current device location. The World Geocoding service uses a hierarchical structure of categories allowing high level concepts, like a category level 1 descriptor (e.g. “POI” for place of interest) to be searched as well as more specific category level 3 types like “Brazilian Food” or “Science Museum” to be used. The category filters and other search criteria are defined using the SDK’s [Geocode Parameters](https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/tasks/geocode/GeocodeParameters.html).
 
-The geocode parameters are configured with the maximum number of results to return, the desired categories, the device's current location, and [output fields](/rest/geocode/api-reference/geocoding-service-output.htm#ESRI_SECTION1_42D7D3D0231241E9B656C01438209440) using the following pattern.  Note that the geocoding service supports a specific list of categories defined [here](/rest/geocode/api-reference/geocoding-category-filtering.htm#ESRI_SECTION1_502B3FE2028145D7B189C25B1A00E17B).  In the nearby-app, we're interested in the top 10 results within a radius of 50 kilometers of the current location.
+The geocode parameters are configured with the maximum number of results to return, the desired categories, the device's current location, and [output fields](https://developers.arcgis.com/rest/geocode/api-reference/geocoding-service-output.htm#ESRI_SECTION1_42D7D3D0231241E9B656C01438209440) using the following pattern.  Note that the geocoding service supports a specific list of categories defined [here](https://developers.arcgis.com/rest/geocode/api-reference/geocoding-category-filtering.htm#ESRI_SECTION1_502B3FE2028145D7B189C25B1A00E17B).  In the nearby-app, we're interested in the top 10 results within a radius of 50 kilometers of the current location.
 
 ```java
 GeocodeParameters parameters = new GeocodeParameters();
@@ -71,7 +71,7 @@ A distance and bearing from the device's location is calculated for each returne
 
 ### Calculating bearing and distance
 
-To determine distance and bearing, the [geometry engine](/android/latest/api-reference/reference/com/esri/arcgisruntime/geometry/GeometryEngine.html) is used to calculate the [geodesic distance](https://geonet.esri.com/groups/coordinate-reference-systems/blog/2014/09/01/geodetic-distances-how-long-is-that-line-again) between the device location and each nearby point of interest. Measuring distance, determining spatial relationships, and altering geometries can be done locally on the mobile client.
+To determine distance and bearing, the [geometry engine](https://developers.arcgis.com/android/latest/api-reference/reference/com/esri/arcgisruntime/geometry/GeometryEngine.html) is used to calculate the [geodesic distance](https://geonet.esri.com/groups/coordinate-reference-systems/blog/2014/09/01/geodetic-distances-how-long-is-that-line-again) between the device location and each nearby point of interest. Measuring distance, determining spatial relationships, and altering geometries can be done locally on the mobile client.
 
 When using the current device location in geospatial calculations, a spatial reference must be defined since the location returned by Google's location service doesn't specify a spatial reference.
 
@@ -215,7 +215,7 @@ A walking route is generated for a place by tapping on the routing arrow in the 
 |----|----|
 |![Nearby Centered](./images/nearby_centered_place.png)|![Route View](./images/nearby_route_view.png)|
 
-Getting navigation directions in the nearby-app is just as easy in the [Runtime SDK](/features/directions/) as it is on [ArcGIS Online](http://doc.arcgis.com/en/arcgis-online/use-maps/get-directions.htm).  A good example of how to set this up is found in the [maps-app](https://github.com/Esri/maps-app-android/blob/master/README.md) so we won't discuss it here.  In contrast to the maps-app, the nearby-app demonstrates how to set up a request for a walking route using travel modes and restrictions in the routing request.
+Getting navigation directions in the nearby-app is just as easy in the [Runtime SDK](https://developers.arcgis.com/features/directions/) as it is on [ArcGIS Online](http://doc.arcgis.com/en/arcgis-online/use-maps/get-directions.htm).  A good example of how to set this up is found in the [maps-app](https://github.com/Esri/maps-app-android/blob/master/README.md) so we won't discuss it here.  In contrast to the maps-app, the nearby-app demonstrates how to set up a request for a walking route using travel modes and restrictions in the routing request.
 
 ```java
 
