@@ -34,8 +34,11 @@ ext {
     buildToolsVersion = '28.0.3'
 
     // App dependencies
-    supportLibraryVersion = '28.0.0'
-    designLibraryVersion = '28.0.0'
-    runtimeVersion = '100.6.0'
-    googleLocationServicesVersion = '16.0.0'
+    appcompatLibraryVersion = '1.1.0'
+    cardviewLibraryVersion = '1.0.0'
+    materialLibraryVersion = '1.0.0'
+    recyclerviewLibraryVersion = '1.1.0'
+    legacyLibraryVersion = '1.0.0'
+    runtimeVersion = '100.7.0'
+    googleLocationServicesVersion = '17.0.0'
 }

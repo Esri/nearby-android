@@ -23,7 +23,7 @@ package com.esri.android.nearbyplaces.data;
  *
  */
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

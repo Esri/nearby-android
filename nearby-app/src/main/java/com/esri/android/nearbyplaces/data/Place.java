@@ -23,8 +23,8 @@
  */
 package com.esri.android.nearbyplaces.data;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.esri.arcgisruntime.geometry.Point;
 
 /**

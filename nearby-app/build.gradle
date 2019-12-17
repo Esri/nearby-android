@@ -13,7 +13,7 @@ android {
         // Enabling multidex support.
         multiDexEnabled true
 
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         debug {
@@ -50,11 +50,11 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // App's dependencies, including test
     implementation "com.esri.arcgisruntime:arcgis-android:$rootProject.runtimeVersion"
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:design:$rootProject.designLibraryVersion"
-    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+    implementation "androidx.appcompat:appcompat:$rootProject.appcompatLibraryVersion"
+    implementation "androidx.cardview:cardview:$rootProject.cardviewLibraryVersion"
+    implementation "com.google.android.material:material:$rootProject.materialLibraryVersion"
+    implementation "androidx.recyclerview:recyclerview:$rootProject.recyclerviewLibraryVersion"
+    implementation "androidx.legacy:legacy-support-v4:$rootProject.legacyLibraryVersion"
 
     // Google location services
     implementation "com.google.android.gms:play-services-location:$rootProject.googleLocationServicesVersion"
