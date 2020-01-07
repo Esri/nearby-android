@@ -25,7 +25,7 @@ package com.esri.android.nearbyplaces.data;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.core.content.res.ResourcesCompat;
 import com.esri.android.nearbyplaces.R;
 
 import java.util.Arrays;

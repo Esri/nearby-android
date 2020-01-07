@@ -31,7 +31,7 @@ import java.util.Map;
 
 import android.content.Context;
 import android.location.Location;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
