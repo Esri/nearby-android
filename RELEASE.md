@@ -1,3 +1,7 @@
+# Release 1.0.5
+
+- Update app package name
+
 # Release 1.0.4
 
 - Update app launcher icons to include adaptive and legacy launcher icons
