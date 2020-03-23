@@ -21,7 +21,7 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.route;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.route;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -36,8 +36,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.map.MapActivity;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.map.MapActivity;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuver;
 import com.esri.arcgisruntime.tasks.networkanalysis.DirectionManeuverType;
 

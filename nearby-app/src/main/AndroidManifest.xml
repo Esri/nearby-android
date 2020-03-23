@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.esri.android.nearbyplaces">
+          package="com.esri.arcgisruntime.opensourceapps.nearbyplaces">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -16,18 +16,18 @@
             android:theme="@style/AppTheme">
 
         <activity
-                android:name=".places.PlacesActivity"
+                android:name="com.esri.arcgisruntime.opensourceapps.nearbyplaces.places.PlacesActivity"
                 android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".map.MapActivity"
-                  android:parentActivityName=".places.PlacesActivity"
+        <activity android:name="com.esri.arcgisruntime.opensourceapps.nearbyplaces.map.MapActivity"
+                  android:parentActivityName="com.esri.arcgisruntime.opensourceapps.nearbyplaces.places.PlacesActivity"
                   android:configChanges="orientation|screenSize">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                       android:value=".places.PlacesActivity" />
+                       android:value="com.esri.arcgisruntime.opensourceapps.nearbyplaces.places.PlacesActivity" />
         </activity>
     </application>
 

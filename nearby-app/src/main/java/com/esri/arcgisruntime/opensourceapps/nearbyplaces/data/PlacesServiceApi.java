@@ -21,7 +21,7 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.data;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.data;
 
 import android.content.Context;
 import androidx.annotation.NonNull;

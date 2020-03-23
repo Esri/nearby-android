@@ -21,7 +21,7 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.filter;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter;
 
 import android.R.style;
 import android.app.Activity;
@@ -37,11 +37,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.esri.android.nearbyplaces.R.id;
-import com.esri.android.nearbyplaces.R.layout;
-import com.esri.android.nearbyplaces.R.string;
-import com.esri.android.nearbyplaces.filter.FilterContract.FilterView;
-import com.esri.android.nearbyplaces.filter.FilterContract.Presenter;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R.id;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R.layout;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R.string;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterContract.FilterView;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterContract.Presenter;
 
 import java.util.ArrayList;
 import java.util.List;

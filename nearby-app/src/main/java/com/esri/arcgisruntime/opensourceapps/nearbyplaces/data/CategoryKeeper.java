@@ -21,10 +21,10 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.data;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.data;
 
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.filter.FilterItem;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterItem;
 
 import java.util.ArrayList;
 import java.util.Collections;

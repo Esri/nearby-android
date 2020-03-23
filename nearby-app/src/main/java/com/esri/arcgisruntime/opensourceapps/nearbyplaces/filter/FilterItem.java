@@ -21,7 +21,7 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.filter;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter;
 
 /**
  * Represents a filter setting used to control what types of places are

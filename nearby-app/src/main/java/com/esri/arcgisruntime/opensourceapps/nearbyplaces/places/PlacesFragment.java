@@ -22,7 +22,7 @@
  *
  */
 
-package com.esri.android.nearbyplaces.places;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.places;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -45,10 +45,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.CategoryHelper;
-import com.esri.android.nearbyplaces.data.LocationService;
-import com.esri.android.nearbyplaces.data.Place;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.CategoryHelper;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.LocationService;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.Place;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;

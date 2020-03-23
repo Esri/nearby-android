@@ -22,7 +22,7 @@
  *
  */
 
-package com.esri.android.nearbyplaces.util;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.util;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
