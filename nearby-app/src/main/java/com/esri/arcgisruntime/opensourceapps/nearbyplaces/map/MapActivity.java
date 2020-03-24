@@ -22,7 +22,7 @@
  *
  */
 
-package com.esri.android.nearbyplaces.map;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.map;
 
 import android.os.Bundle;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -32,10 +32,10 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.filter.FilterContract;
-import com.esri.android.nearbyplaces.route.RouteDirectionsFragment;
-import com.esri.android.nearbyplaces.util.ActivityUtils;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterContract;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.route.RouteDirectionsFragment;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.security.AuthenticationChallengeHandler;
 import com.esri.arcgisruntime.security.AuthenticationManager;
 import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler;

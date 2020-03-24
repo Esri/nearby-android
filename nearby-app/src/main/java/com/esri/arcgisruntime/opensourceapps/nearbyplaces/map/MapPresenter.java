@@ -22,12 +22,12 @@
  *
  */
 
-package com.esri.android.nearbyplaces.map;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.map;
 
 import androidx.annotation.NonNull;
-import com.esri.android.nearbyplaces.data.LocationService;
-import com.esri.android.nearbyplaces.data.Place;
-import com.esri.android.nearbyplaces.data.PlacesServiceApi;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.LocationService;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.Place;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.PlacesServiceApi;
 
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;

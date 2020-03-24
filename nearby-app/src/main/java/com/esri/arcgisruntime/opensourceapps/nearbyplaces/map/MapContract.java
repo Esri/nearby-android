@@ -21,12 +21,12 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.map;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.map;
 
-import com.esri.android.nearbyplaces.BasePresenter;
-import com.esri.android.nearbyplaces.BaseView;
-import com.esri.android.nearbyplaces.data.LocationService;
-import com.esri.android.nearbyplaces.data.Place;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.BasePresenter;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.BaseView;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.LocationService;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.Place;
 
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;

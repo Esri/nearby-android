@@ -22,10 +22,9 @@
  *
  */
 
-package com.esri.android.nearbyplaces;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces;
 
+public interface BaseView<T> {
 
-public interface BasePresenter {
-
-  void start();
+  void setPresenter(T presenter);
 }

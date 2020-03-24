@@ -21,12 +21,23 @@
  * email: contracts@esri.com
  *
  */
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter;
 
-package com.esri.android.nearbyplaces;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.BasePresenter;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.BaseView;
 
-import com.esri.android.nearbyplaces.data.Place;
+import java.util.List;
 
-public interface PlaceListener {
-  void showDetail(Place place);
-  void onMapViewChange();
+
+public interface FilterContract {
+  interface View extends BaseView<Presenter> {
+
+  }
+  interface Presenter extends BasePresenter {
+    List<FilterItem> getFilteredCategories();
+  }
+
+  interface FilterView{
+    void onFilterDialogClose(boolean applyFilter);
+  }
 }

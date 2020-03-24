@@ -1,4 +1,4 @@
-package com.esri.android.nearbyplaces.data;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.data;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Enables injection of production implementations for
- * {@link com.esri.android.nearbyplaces.data.PlacesServiceApi} at compile time.
+ * {@link com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.PlacesServiceApi} at compile time.
  */
 public class Injection {
   public static PlacesRepository providePlacesRepository(@NonNull Context context){

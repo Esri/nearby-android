@@ -22,7 +22,7 @@
  *
  */
 
-package com.esri.android.nearbyplaces.places;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.places;
 
 import android.Manifest;
 import android.app.Activity;
@@ -46,12 +46,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.filter.FilterContract;
-import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
-import com.esri.android.nearbyplaces.filter.FilterPresenter;
-import com.esri.android.nearbyplaces.map.MapActivity;
-import com.esri.android.nearbyplaces.util.ActivityUtils;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterContract;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterDialogFragment;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterPresenter;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.map.MapActivity;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.util.ActivityUtils;
 import com.esri.arcgisruntime.geometry.Envelope;
 
 

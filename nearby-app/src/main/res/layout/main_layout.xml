@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-        tools:context="com.esri.android.nearbyplaces.places.PlacesActivity">
+        tools:context="com.esri.opensourceapps.nearbyplaces.places.PlacesActivity">
 
         <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"

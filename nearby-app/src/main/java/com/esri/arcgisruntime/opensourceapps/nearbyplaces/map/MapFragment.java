@@ -21,7 +21,7 @@
  * email: contracts@esri.com
  *
  */
-package com.esri.android.nearbyplaces.map;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.map;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -53,16 +53,16 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
-import com.esri.android.nearbyplaces.PlaceListener;
-import com.esri.android.nearbyplaces.R;
-import com.esri.android.nearbyplaces.data.CategoryHelper;
-import com.esri.android.nearbyplaces.data.LocationService;
-import com.esri.android.nearbyplaces.data.Place;
-import com.esri.android.nearbyplaces.data.PlacesServiceApi;
-import com.esri.android.nearbyplaces.filter.FilterContract;
-import com.esri.android.nearbyplaces.filter.FilterDialogFragment;
-import com.esri.android.nearbyplaces.filter.FilterPresenter;
-import com.esri.android.nearbyplaces.places.PlacesActivity;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.PlaceListener;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.CategoryHelper;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.LocationService;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.Place;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.data.PlacesServiceApi;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterContract;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterDialogFragment;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterPresenter;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.places.PlacesActivity;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.geometry.*;
 import com.esri.arcgisruntime.mapping.ArcGISMap;

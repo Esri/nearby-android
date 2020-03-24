@@ -1,4 +1,4 @@
-package com.esri.android.nearbyplaces.data;
+package com.esri.arcgisruntime.opensourceapps.nearbyplaces.data;
 /* Copyright 2016 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
