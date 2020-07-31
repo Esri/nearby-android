@@ -1,5 +1,22 @@
 # Nearby-Places Android
 
+<!-- MDTOC maxdepth:6 firsth1:0 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [Features](#features)   
+- [Development Instructions](#development-instructions)   
+   - [Fork the repo](#fork-the-repo)   
+   - [Clone the repo](#clone-the-repo)   
+      - [Command line Git](#command-line-git)   
+   - [Configuring a Remote for a Fork](#configuring-a-remote-for-a-fork)   
+- [Requirements](#requirements)   
+- [Resources](#resources)   
+- [Issues](#issues)   
+- [Contributing](#contributing)   
+- [Licensing](#licensing)   
+
+<!-- /MDTOC -->
+---
+
 This repo provides an example app called Nearby Places for Android devices built with the [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).  With some minor customization, you can change the types of places displayed or simply use the app as is.
 
 Visit Esri's [**example app site**](https://developers.arcgis.com/example-apps/nearby-android/?utm_source=github&utm_medium=web&utm_campaign=example_apps_nearby_android) to read more about this app and how the Runtime features are implemented.
@@ -9,10 +26,10 @@ Join our [**GeoNet community**](https://community.esri.com/community/developers/
  * Geocoding with categories
  * Device location
  * Calculating bearing and distance
- 
+
 
 ## Development Instructions
-This Nearby-Places repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio. 
+This Nearby-Places repo is an Android Studio Project and App Module that can be directly cloned and imported into Android Studio.
 
 ### Fork the repo
 **Fork** the [Nearby Places Android](https://github.com/Esri/nearby-android/fork) repo.
