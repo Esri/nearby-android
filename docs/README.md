@@ -1,3 +1,21 @@
+# Nearby Places for Android documentation
+
+<!-- MDTOC maxdepth:6 firsth1:0 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
+
+- [Description](#description)   
+- [Identifying places nearby](#identifying-places-nearby)   
+   - [Device location](#device-location)   
+   - [Geocoding](#geocoding)   
+   - [Calculating bearing and distance](#calculating-bearing-and-distance)   
+- [Displaying places in the map](#displaying-places-in-the-map)   
+   - [Deriving a viewpoint](#deriving-a-viewpoint)   
+   - [Location display](#location-display)   
+   - [Refreshing the map view with new search results](#refreshing-the-map-view-with-new-search-results)   
+- [Routing](#routing)   
+
+<!-- /MDTOC -->
+---
+
 ## Description
 
 Customize your exploration of places around you using [Esri’s World Geocoding Service](https://developers.arcgis.com/features/geocoding/) or your own [custom geocoding service](http://desktop.arcgis.com/en/arcmap/latest/manage-data/geocoding/the-geocoding-workflow.htm). The app uses Esri’s geocoding service to find hotels, restaurants or bars within a default radius of the device’s current location and provides routing directions to a selected place of interest. The ArcGIS Android Geometry Engine API is used to sort the list of places based on distance and bearing from the device’s location.
