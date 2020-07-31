@@ -3,6 +3,7 @@
 <!-- MDTOC maxdepth:6 firsth1:0 numbering:0 flatten:0 bullets:1 updateOnSave:1 -->
 
 - [Features](#features)   
+- [Detailed Documentation](#detailed-documentation)   
 - [Development Instructions](#development-instructions)   
    - [Fork the Repo](#fork-the-repo)   
    - [Clone the Repo](#clone-the-repo)   
@@ -27,6 +28,10 @@ Join our [**GeoNet community**](https://community.esri.com/community/developers/
  * Geocoding with categories
  * Displaying device location
  * Calculating bearing and distance
+
+## Detailed Documentation
+
+Read the [docs](./docs/README.md) for a detailed explanation of the application, including its architecture and how it leverages the ArcGIS platform, as well as how you can begin using the app right away.
 
 ## Development Instructions
 
