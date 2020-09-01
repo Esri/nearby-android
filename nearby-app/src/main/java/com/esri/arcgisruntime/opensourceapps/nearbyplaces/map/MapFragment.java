@@ -695,7 +695,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
 
   }
   private void addGraphicToMap(BitmapDrawable bitdrawable, Geometry geometry){
-    final PictureMarkerSymbol pinSymbol = new PictureMarkerSymbol(bitdrawable);
+    PictureMarkerSymbol pinSymbol = null;
+    try {
+      pinSymbol = PictureMarkerSymbol.createAsync(bitdrawable).get();
+    } catch (InterruptedException | ExecutionException exception) {
+      Log.e(TAG, "PictureMarkerSymbol failed to load: " + exception.getMessage());
+    }
     final Graphic graphic = new Graphic(geometry, pinSymbol);
     mGraphicOverlay.getGraphics().add(graphic);
   }
@@ -952,7 +957,12 @@ public class MapFragment extends Fragment implements  MapContract.View, PlaceLis
    */
   private Graphic generateRoutePoints(final Point p, final BitmapDrawable pin){
     final float offsetY = convertPixelsToDp(getActivity(), pin.getBounds().bottom);
-    final PictureMarkerSymbol symbol = new PictureMarkerSymbol(pin);
+    PictureMarkerSymbol symbol = null;
+    try {
+      symbol = PictureMarkerSymbol.createAsync(pin).get();
+    } catch (InterruptedException | ExecutionException exception) {
+      Log.e(TAG, "PictureMarkerSymbol failed to load: " + exception.getMessage());
+    }
     symbol.setOffsetY(offsetY);
     return new Graphic(p, symbol);
   }

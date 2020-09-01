@@ -331,8 +331,10 @@ public class LocationService implements PlacesServiceApi {
 
               // Add a stop for origin and destination
               routeParameters.setTravelMode(mode);
-              routeParameters.getStops().add(origin);
-              routeParameters.getStops().add(destination);
+              List<Stop> stops = new ArrayList<>();
+              stops.add(origin);
+              stops.add(destination);
+              routeParameters.setStops(stops);
               // We want the task to return driving directions and routes
               routeParameters.setReturnDirections(true);
 
