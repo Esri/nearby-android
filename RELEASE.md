@@ -1,3 +1,7 @@
+# Release 1.0.8
+- Updates doc to avoid all use of `http:`
+- Updates Bintray maven reference for ArcGIS Runtime SDK for Android in gradle scripts
+
 # Release 1.0.7
 
 - Support for ArcGIS Runtime SDK for Android 100.9.0
