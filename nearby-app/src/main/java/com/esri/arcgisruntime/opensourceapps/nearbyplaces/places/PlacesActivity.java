@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -152,7 +152,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       // Create the fragment
       mPlacesFragment = PlacesFragment.newInstance();
       ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container, "list fragment");
+          getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container,
+          "list fragment");
     }
   }
 
@@ -186,7 +187,8 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    *            either PERMISSION_GRANTED or PERMISSION_DENIED
    */
   @Override
-  public final void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+  public final void onRequestPermissionsResult(final int requestCode,
+      @NonNull final String[] permissions,
       @NonNull final int[] grantResults) {
 
     if (requestCode == PERMISSION_REQUEST_LOCATION) {
@@ -270,6 +272,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    */
   @Override
   protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == REQUEST_WIFI_SETTINGS || requestCode == REQUEST_LOCATION_SETTINGS) {
       checkSettings();
     }

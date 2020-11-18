@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ public class MapPresenter implements MapContract.Presenter {
   private final MapContract.View mMapView;
   private LocationService mLocationService;
   private final static int MAX_RESULT_COUNT = 10;
-  private final static String GEOCODE_URL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+  private final static String GEOCODE_URL = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   private Place mCenteredPlace;
 
   public MapPresenter(@NonNull final MapContract.View mapView ){
