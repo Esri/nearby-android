@@ -37,6 +37,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.databinding.MainLayoutBinding;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -67,12 +69,19 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
   private static boolean mUserDeniedPermission = false;
 
+  // ViewBinding
+  private MainLayoutBinding binding;
+
   @Override
   public final void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.main_layout);
 
-    mMainLayout = findViewById(R.id.list_coordinator_layout);
+    // ViewBinding initialization
+    binding = MainLayoutBinding.inflate(getLayoutInflater());
+    View view = binding.getRoot();
+    setContentView(view);
+
+    mMainLayout = binding.listCoordinatorLayout;
 
     // Check for gps and wifi
     checkSettings();
@@ -95,25 +104,25 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * Set up toolbar
    */
    private void setUpToolbar(){
-     final Toolbar toolbar = findViewById(R.id.placeList_toolbar);
+     final Toolbar toolbar = binding.placeListToolbar;
      setSupportActionBar(toolbar);
 
      assert toolbar != null;
-     toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-       @Override public boolean onMenuItemClick(final MenuItem item) {
-         if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.map_view))){
-           // Hide the list, show the map
-          showMap();
-         }
-         if (item.getTitle().toString().equalsIgnoreCase(getString(R.string.filter))){
-           final FilterDialogFragment dialogFragment = new FilterDialogFragment();
-           final FilterPresenter filterPresenter = new FilterPresenter();
-           dialogFragment.setPresenter(filterPresenter);
-           dialogFragment.show(getFragmentManager(),"dialog_fragment");
+     toolbar.setOnMenuItemClickListener(item -> {
+       final String itemTitle = item.getTitle().toString();
 
-         }
-         return false;
+       if (itemTitle.equalsIgnoreCase(getString(R.string.map_view))){
+         // Hide the list, show the map
+        showMap();
        }
+       if (itemTitle.equalsIgnoreCase(getString(R.string.filter))){
+         final FilterDialogFragment dialogFragment = new FilterDialogFragment();
+         final FilterPresenter filterPresenter = new FilterPresenter();
+         dialogFragment.setPresenter(filterPresenter);
+         dialogFragment.show(getFragmentManager(),"dialog_fragment");
+
+       }
+       return false;
      });
    }
   @Override public final void onFilterDialogClose(final boolean applyFilter) {
@@ -169,7 +178,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       setUpToolbar();
       setUpFragments();
     } else {
-      ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION},
+      ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
               PERMISSION_REQUEST_LOCATION);
     }
   }
@@ -198,16 +207,14 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
           // snackbar once.
           mUserDeniedPermission = true;
           if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            Snackbar.make(mMainLayout, "Location access is required to search for places nearby.", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("OK", new View.OnClickListener() {
-                      @Override
-                      public void onClick(final View view) {
-                        // Request the permission
-                        ActivityCompat.requestPermissions(PlacesActivity.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                PERMISSION_REQUEST_LOCATION);
-                      }
-                    }).show();
+            Snackbar.make(mMainLayout, "Location access is required to search for places nearby.",
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction("OK", view -> {
+                  // Request the permission
+                  ActivityCompat.requestPermissions(PlacesActivity.this,
+                      new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+                      PERMISSION_REQUEST_LOCATION);
+                }).show();
           }
         } else {
           // Permission has been denied twice, go ahead and launch without location
@@ -288,21 +295,10 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
 
     final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
     alertDialog.setMessage(message);
-    alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-
-      @Override
-      public void onClick(final DialogInterface dialog, final int which) {
-        //
-        startActivityForResult(intent, requestCode);
-      }
+    alertDialog.setPositiveButton("Yes", (dialog, which) -> {
+      startActivityForResult(intent, requestCode);
     });
-    alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-
-      @Override
-      public void onClick(final DialogInterface dialog, final int which) {
-        finish();
-      }
-    });
+    alertDialog.setNegativeButton("No", (dialog, which) -> finish());
     alertDialog.create().show();
   }
 
