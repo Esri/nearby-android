@@ -196,6 +196,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
   }
 
+  /**
+   * Checks for required permissions and sets up the toolbar and related fragments accordingly.
+   */
   private void completeSetUp(){
     // request location permission
     requestLocationPermission();
@@ -227,6 +230,9 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     });
   }
 
+  /**
+   * Displays the map to the user.
+   */
   private void showMap(){
     final Envelope envelope = mPresenter.getExtentForNearbyPlaces();
     final Intent intent = createMapIntent(this, envelope);
@@ -265,6 +271,10 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
   }
 
+  /**
+   * Determines if GPS is enabled.
+   * @return boolean indicating if GPS is enabled
+   */
   private boolean isLocationTrackingEnabled() {
     final LocationManager locationManager = (LocationManager) getApplicationContext()
         .getSystemService(Context.LOCATION_SERVICE);
