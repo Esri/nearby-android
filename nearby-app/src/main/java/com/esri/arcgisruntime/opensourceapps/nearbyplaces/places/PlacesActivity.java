@@ -277,12 +277,15 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    */
   private boolean isWifiAvailable(){
     final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    // If user's device is on API 23 or higher
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Network network = connectivityManager.getActiveNetwork();
-      if (network == null) return false;
+      if (network == null) {
+        return false;
+      }
       NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
-      return networkCapabilities != null
-          && (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI));
+      return networkCapabilities != null && (networkCapabilities
+          .hasTransport(NetworkCapabilities.TRANSPORT_WIFI));
       // or if it less than api 23
     } else {
       final NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
