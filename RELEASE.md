@@ -1,3 +1,8 @@
+# Release 1.0.9
+- Contribution from github user MadRatSRP 
+- Update Gradle dependency and Android Gradle plugin
+- Add ViewBinding support and refactor PlacesActivity
+
 # Release 1.0.8
 
 - Updates project to favor the use of secured `https` rather than `http`
