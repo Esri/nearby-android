@@ -58,7 +58,6 @@ import com.esri.arcgisruntime.opensourceapps.nearbyplaces.map.MapActivity;
 import com.esri.arcgisruntime.opensourceapps.nearbyplaces.util.ActivityUtils;
 import com.google.android.material.snackbar.Snackbar;
 
-
 public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
     ActivityCompat.OnRequestPermissionsResultCallback, PlacesFragment.FragmentListener {
 
@@ -89,11 +88,6 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     checkSettings();
   }
 
-  private void completeSetUp(){
-    // request location permission
-    requestLocationPermission();
-  }
-
   @Override
   public final boolean onCreateOptionsMenu(final Menu menu) {
     // Inflate the menu items for use in the action bar
@@ -102,36 +96,13 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     return super.onCreateOptionsMenu(menu);
   }
 
-  /**
-   * Set up toolbar
-   */
-   private void setUpToolbar(){
-     final Toolbar toolbar = binding.placeListToolbar;
-     setSupportActionBar(toolbar);
-
-     assert toolbar != null;
-     toolbar.setOnMenuItemClickListener(item -> {
-       final String itemTitle = item.getTitle().toString();
-
-       if (itemTitle.equalsIgnoreCase(getString(R.string.map_view))){
-         // Hide the list, show the map
-        showMap();
-       }
-       if (itemTitle.equalsIgnoreCase(getString(R.string.filter))){
-         final FilterDialogFragment dialogFragment = new FilterDialogFragment();
-         final FilterPresenter filterPresenter = new FilterPresenter();
-         dialogFragment.setPresenter(filterPresenter);
-         dialogFragment.show(getFragmentManager(),"dialog_fragment");
-
-       }
-       return false;
-     });
-   }
-  @Override public final void onFilterDialogClose(final boolean applyFilter) {
+  @Override
+  public final void onFilterDialogClose(final boolean applyFilter) {
     if (applyFilter){
       mPresenter.start();
     }
   }
+
   public static Intent createMapIntent(final Activity a, final Envelope envelope){
     final Intent intent = new Intent(a, MapActivity.class);
     // Get the extent of search results so map
@@ -146,44 +117,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
     return  intent;
   }
-  private void showMap(){
-    final Envelope envelope = mPresenter.getExtentForNearbyPlaces();
-    final Intent intent = createMapIntent(this, envelope);
-    startActivity(intent);
-  }
 
-  /**
-   * Set up fragments
-   */
-  private void setUpFragments(){
-
-    mPlacesFragment = (PlacesFragment) getSupportFragmentManager().findFragmentById(R.id.recycleView) ;
-
-    if (mPlacesFragment == null){
-      // Create the fragment
-      mPlacesFragment = PlacesFragment.newInstance();
-      ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container,
-          "list fragment");
-    }
-  }
-
-  /**
-   * Requests the {@link Manifest.permission#ACCESS_FINE_LOCATION}
-   * permission.
-   */
-
-  private void requestLocationPermission() {
-    if (ActivityCompat.checkSelfPermission(this,
-            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || mUserDeniedPermission) {
-      // Permission has been granted (or denied and ignored), set up the toolbar and fragments.
-      setUpToolbar();
-      setUpFragments();
-    } else {
-      ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-              PERMISSION_REQUEST_LOCATION);
-    }
-  }
   /**
    * Once the app has prompted for permission to access location, the response
    * from the user is handled here. If permission exists to access location
@@ -231,8 +165,104 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
   }
 
-  @Override public void onCreationComplete() {
+  @Override
+  public void onCreationComplete() {
     mPresenter = new PlacesPresenter(mPlacesFragment);
+  }
+
+  @Override
+  public void onBackPressed() {
+    int count = getSupportFragmentManager().getBackStackEntryCount();
+    if (count == 0) {
+      super.onBackPressed();
+    } else {
+      finish();
+    }
+  }
+
+  /**
+   * When returning from activities concerning wifi mode and location
+   * settings, check them again.
+   *
+   * @param requestCode - an integer representing the type of request
+   * @param resultCode - an integer representing the result of the returning activity
+   * @param data - the Intent returned
+   */
+  @Override
+  protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == REQUEST_WIFI_SETTINGS || requestCode == REQUEST_LOCATION_SETTINGS) {
+      checkSettings();
+    }
+  }
+
+  private void completeSetUp(){
+    // request location permission
+    requestLocationPermission();
+  }
+
+  /**
+   * Set up toolbar
+   */
+  private void setUpToolbar(){
+    final Toolbar toolbar = binding.placeListToolbar;
+    setSupportActionBar(toolbar);
+
+    assert toolbar != null;
+    toolbar.setOnMenuItemClickListener(item -> {
+      final String itemTitle = item.getTitle().toString();
+
+      if (itemTitle.equalsIgnoreCase(getString(R.string.map_view))){
+        // Hide the list, show the map
+        showMap();
+      }
+      if (itemTitle.equalsIgnoreCase(getString(R.string.filter))){
+        final FilterDialogFragment dialogFragment = new FilterDialogFragment();
+        final FilterPresenter filterPresenter = new FilterPresenter();
+        dialogFragment.setPresenter(filterPresenter);
+        dialogFragment.show(getFragmentManager(),"dialog_fragment");
+
+      }
+      return false;
+    });
+  }
+
+  private void showMap(){
+    final Envelope envelope = mPresenter.getExtentForNearbyPlaces();
+    final Intent intent = createMapIntent(this, envelope);
+    startActivity(intent);
+  }
+
+  /**
+   * Set up fragments
+   */
+  private void setUpFragments(){
+
+    mPlacesFragment = (PlacesFragment) getSupportFragmentManager().findFragmentById(R.id.recycleView) ;
+
+    if (mPlacesFragment == null){
+      // Create the fragment
+      mPlacesFragment = PlacesFragment.newInstance();
+      ActivityUtils.addFragmentToActivity(
+          getSupportFragmentManager(), mPlacesFragment, R.id.list_fragment_container,
+          "list fragment");
+    }
+  }
+
+  /**
+   * Requests the {@link Manifest.permission#ACCESS_FINE_LOCATION}
+   * permission.
+   */
+  private void requestLocationPermission() {
+    if (ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || mUserDeniedPermission) {
+      // Permission has been granted (or denied and ignored), set up the toolbar and fragments.
+      setUpToolbar();
+      setUpFragments();
+    } else {
+      ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
+              PERMISSION_REQUEST_LOCATION);
+    }
   }
 
   private boolean locationTrackingEnabled() {
@@ -260,8 +290,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
   }
 
-
-  /*
+  /**
    * Prompt user to turn on location tracking and wireless if needed
    */
   private void checkSettings() {
@@ -280,22 +309,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
       showDialog(internetIntent, REQUEST_WIFI_SETTINGS, getString(R.string.wireless_off));
     }
   }
-  /**
-   * When returning from activities concerning wifi mode and location
-   * settings, check them again.
-   *
-   * @param requestCode - an integer representing the type of request
-   * @param resultCode - an integer representing the result of the returning activity
-   * @param data - the Intent returned
-   */
-  @Override
-  protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == REQUEST_WIFI_SETTINGS || requestCode == REQUEST_LOCATION_SETTINGS) {
-      checkSettings();
-    }
 
-  }
   /**
    * Prompt user to change settings required for app
    * @param intent - the Intent containing any data
@@ -313,13 +327,4 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     alertDialog.create().show();
   }
 
-  @Override
-  public void onBackPressed() {
-    int count = getSupportFragmentManager().getBackStackEntryCount();
-    if (count == 0) {
-      super.onBackPressed();
-    } else {
-      finish();
-    }
-  }
 }
