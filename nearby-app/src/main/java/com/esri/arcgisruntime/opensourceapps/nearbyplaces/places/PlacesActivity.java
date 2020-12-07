@@ -27,34 +27,36 @@ package com.esri.arcgisruntime.opensourceapps.nearbyplaces.places;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
 
-import com.esri.arcgisruntime.opensourceapps.nearbyplaces.databinding.MainLayoutBinding;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.opensourceapps.nearbyplaces.R;
+import com.esri.arcgisruntime.opensourceapps.nearbyplaces.databinding.MainLayoutBinding;
 import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterContract;
 import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterDialogFragment;
 import com.esri.arcgisruntime.opensourceapps.nearbyplaces.filter.FilterPresenter;
 import com.esri.arcgisruntime.opensourceapps.nearbyplaces.map.MapActivity;
 import com.esri.arcgisruntime.opensourceapps.nearbyplaces.util.ActivityUtils;
-import com.esri.arcgisruntime.geometry.Envelope;
+import com.google.android.material.snackbar.Snackbar;
 
 
 public class PlacesActivity extends AppCompatActivity implements FilterContract.FilterView,
@@ -243,10 +245,19 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    * Determine wifi connectivity.
    * @return boolean indicating wifi connectivity. True for connected.
    */
-  private boolean internetConnectivity(){
-    final ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    final NetworkInfo wifi = connManager.getActiveNetworkInfo();
-    return wifi != null && wifi.isConnected();
+  private boolean isWifiAvailable(){
+    final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      Network network = connectivityManager.getActiveNetwork();
+      if (network == null) return false;
+      NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
+      return networkCapabilities != null
+          && (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI));
+      // or if it less than api 23
+    } else {
+      final NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+      return networkInfo != null && networkInfo.isConnected();
+    }
   }
 
 
@@ -255,13 +266,13 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    */
   private void checkSettings() {
     // Is GPS enabled?
-    final boolean gpsEnabled = locationTrackingEnabled();
+    final boolean isGpsEnabled = locationTrackingEnabled();
     // Is there internet connectivity?
-    final boolean internetConnected = internetConnectivity();
+    final boolean isInternetConnected = isWifiAvailable();
 
-    if (gpsEnabled && internetConnected) {
+    if (isGpsEnabled && isInternetConnected) {
       completeSetUp();
-    } else if (!gpsEnabled) {
+    } else if (!isGpsEnabled) {
       final Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
       showDialog(gpsIntent, REQUEST_LOCATION_SETTINGS, getString(R.string.location_tracking_off));
     } else {
