@@ -265,7 +265,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
     }
   }
 
-  private boolean locationTrackingEnabled() {
+  private boolean isLocationTrackingEnabled() {
     final LocationManager locationManager = (LocationManager) getApplicationContext()
         .getSystemService(Context.LOCATION_SERVICE);
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -298,7 +298,7 @@ public class PlacesActivity extends AppCompatActivity implements FilterContract.
    */
   private void checkSettings() {
     // Is GPS enabled?
-    final boolean isGpsEnabled = locationTrackingEnabled();
+    final boolean isGpsEnabled = isLocationTrackingEnabled();
     // Is there internet connectivity?
     final boolean isInternetConnected = isWifiAvailable();
 
