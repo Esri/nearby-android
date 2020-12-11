@@ -8,7 +8,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.8"
+        versionName "1.0.9"
 
         // Enabling multidex support.
         multiDexEnabled true
@@ -43,6 +43,10 @@ android {
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 }
 
