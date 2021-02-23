@@ -26,7 +26,7 @@ The example application is open source and available on GitHub. You can modify i
 
 ### Device location
 
-Nearby Places uses a [mapless app pattern](https://developers.arcgis.com/android/guide/determine-your-app-map-pattern.htm#ESRI_SECTION1_58C46384E3484890A47629F8F12E6EF5) by first presenting a list of nearby places.  Since the app starts with a list, rather than a map, the device location is obtained using Google’s Location Services API. In the future, the Runtime SDK can be used to obtain the device location outside of the `MapView`.  Before trying to obtain the device location, the app checks that the device's GPS and wireless settings are turned on and then configures Google's location service.
+Nearby Places uses a mapless app pattern by first presenting a list of nearby places.  Since the app starts with a list, rather than a map, the device location is obtained using Google’s Location Services API. In the future, the Runtime SDK can be used to obtain the device location outside of the `MapView`.  Before trying to obtain the device location, the app checks that the device's GPS and wireless settings are turned on and then configures Google's location service.
 
 ```java
 // Google's location services are configured in the
