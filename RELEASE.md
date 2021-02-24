@@ -1,3 +1,7 @@
+# Release 1.0.10
+
+- Support for ArcGIS Runtime SDK for Android 100.10.0
+
 # Release 1.0.9
 
 - Contribution from github user MadRatSRP 
