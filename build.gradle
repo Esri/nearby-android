@@ -38,6 +38,6 @@ ext {
     materialLibraryVersion = '1.3.0'
     recyclerviewLibraryVersion = '1.1.0'
     legacyLibraryVersion = '1.0.0'
-    runtimeVersion = '100.10.0'
+    runtimeVersion = '100.11.0'
     googleLocationServicesVersion = '17.1.0'
 }
